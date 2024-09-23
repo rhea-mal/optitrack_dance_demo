@@ -7,7 +7,7 @@ from datetime import datetime
 # Redis configuration
 REDIS_HOST = '127.0.0.1'
 REDIS_PORT = 6379
-INPUT_FILE = '/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack/recordings/NEW_JUMP_ACTUAL.txt'  # Input file with the data
+INPUT_FILE = '/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack/recordings/jump.txt'  # Input file with the data
 #INPUT_FILE = '/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack/recordings/jump.txt'  # Input file with the data
 
 # Connect to Redis
