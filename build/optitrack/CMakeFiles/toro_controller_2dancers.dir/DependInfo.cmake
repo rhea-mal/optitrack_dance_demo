@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack/toro_controller_2dancers.cpp" "optitrack/CMakeFiles/toro_controller_2dancers.dir/toro_controller_2dancers.cpp.o" "gcc" "optitrack/CMakeFiles/toro_controller_2dancers.dir/toro_controller_2dancers.cpp.o.d"
+  "/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/optitrack/toro_controller_2dancers.cpp" "optitrack/CMakeFiles/toro_controller_2dancers.dir/toro_controller_2dancers.cpp.o" "gcc" "optitrack/CMakeFiles/toro_controller_2dancers.dir/toro_controller_2dancers.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

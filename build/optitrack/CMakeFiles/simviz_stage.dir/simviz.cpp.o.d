@@ -1,5 +1,5 @@
 optitrack/CMakeFiles/simviz_stage.dir/simviz.cpp.o: \
-  /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack/simviz.cpp \
+  /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/optitrack/simviz.cpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/math.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__config \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__config_site \
@@ -1588,4 +1588,4 @@ optitrack/CMakeFiles/simviz_stage.dir/simviz.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/sys/_types/_posix_vdisable.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/sys/select.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/gethostuuid.h \
-  /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack/redis_keys.h
+  /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/optitrack/redis_keys.h

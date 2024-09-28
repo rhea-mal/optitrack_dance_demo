@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack/simviz.cpp" "optitrack/CMakeFiles/simviz_stage.dir/simviz.cpp.o" "gcc" "optitrack/CMakeFiles/simviz_stage.dir/simviz.cpp.o.d"
+  "/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/optitrack/simviz.cpp" "optitrack/CMakeFiles/simviz_stage.dir/simviz.cpp.o" "gcc" "optitrack/CMakeFiles/simviz_stage.dir/simviz.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

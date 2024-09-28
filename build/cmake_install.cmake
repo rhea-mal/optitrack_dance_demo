@@ -1,4 +1,4 @@
-# Install script for directory: /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance
+# Install script for directory: /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,7 +39,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build/optitrack/cmake_install.cmake")
+  include("/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build/optitrack/cmake_install.cmake")
 
 endif()
 
@@ -58,6 +58,6 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-  file(WRITE "/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

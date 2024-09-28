@@ -1,6 +1,6 @@
 CMakeFiles/center-demo.dir/include/Human.cpp.o: \
-  /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/include/Human.cpp \
-  /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/include/Human.h \
+  /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/include/Human.cpp \
+  /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/include/Human.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/map \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__algorithm/equal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__algorithm/comp.h \

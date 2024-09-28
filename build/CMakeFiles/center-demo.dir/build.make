@@ -53,10 +53,10 @@ RM = /opt/homebrew/Cellar/cmake/3.30.2/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance
+CMAKE_SOURCE_DIR = /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build
+CMAKE_BINARY_DIR = /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/center-demo.dir/depend.make
@@ -70,18 +70,18 @@ include CMakeFiles/center-demo.dir/progress.make
 include CMakeFiles/center-demo.dir/flags.make
 
 CMakeFiles/center-demo.dir/include/Human.cpp.o: CMakeFiles/center-demo.dir/flags.make
-CMakeFiles/center-demo.dir/include/Human.cpp.o: /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/include/Human.cpp
+CMakeFiles/center-demo.dir/include/Human.cpp.o: /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/include/Human.cpp
 CMakeFiles/center-demo.dir/include/Human.cpp.o: CMakeFiles/center-demo.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/center-demo.dir/include/Human.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/center-demo.dir/include/Human.cpp.o -MF CMakeFiles/center-demo.dir/include/Human.cpp.o.d -o CMakeFiles/center-demo.dir/include/Human.cpp.o -c /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/include/Human.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/center-demo.dir/include/Human.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/center-demo.dir/include/Human.cpp.o -MF CMakeFiles/center-demo.dir/include/Human.cpp.o.d -o CMakeFiles/center-demo.dir/include/Human.cpp.o -c /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/include/Human.cpp
 
 CMakeFiles/center-demo.dir/include/Human.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/center-demo.dir/include/Human.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/include/Human.cpp > CMakeFiles/center-demo.dir/include/Human.cpp.i
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/include/Human.cpp > CMakeFiles/center-demo.dir/include/Human.cpp.i
 
 CMakeFiles/center-demo.dir/include/Human.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/center-demo.dir/include/Human.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/include/Human.cpp -o CMakeFiles/center-demo.dir/include/Human.cpp.s
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/include/Human.cpp -o CMakeFiles/center-demo.dir/include/Human.cpp.s
 
 # Object files for target center-demo
 center__demo_OBJECTS = \
@@ -93,7 +93,7 @@ center__demo_EXTERNAL_OBJECTS =
 libcenter-demo.a: CMakeFiles/center-demo.dir/include/Human.cpp.o
 libcenter-demo.a: CMakeFiles/center-demo.dir/build.make
 libcenter-demo.a: CMakeFiles/center-demo.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libcenter-demo.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libcenter-demo.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/center-demo.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/center-demo.dir/link.txt --verbose=$(VERBOSE)
 
@@ -106,6 +106,6 @@ CMakeFiles/center-demo.dir/clean:
 .PHONY : CMakeFiles/center-demo.dir/clean
 
 CMakeFiles/center-demo.dir/depend:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build/CMakeFiles/center-demo.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build/CMakeFiles/center-demo.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/center-demo.dir/depend
 

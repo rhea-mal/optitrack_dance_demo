@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/simviz_2dancers"
-  "/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/simviz_2dancers.pdb"
+  "/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/simviz_2dancers"
+  "/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/simviz_2dancers.pdb"
   "CMakeFiles/simviz_2dancers.dir/simviz_2dancers.cpp.o"
   "CMakeFiles/simviz_2dancers.dir/simviz_2dancers.cpp.o.d"
 )

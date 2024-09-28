@@ -53,10 +53,10 @@ RM = /opt/homebrew/Cellar/cmake/3.30.2/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance
+CMAKE_SOURCE_DIR = /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build
+CMAKE_BINARY_DIR = /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build
 
 # Include any dependencies generated for this target.
 include optitrack/CMakeFiles/toro_controller.dir/depend.make
@@ -70,18 +70,18 @@ include optitrack/CMakeFiles/toro_controller.dir/progress.make
 include optitrack/CMakeFiles/toro_controller.dir/flags.make
 
 optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.o: optitrack/CMakeFiles/toro_controller.dir/flags.make
-optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.o: /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack/toro_controller.cpp
+optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.o: /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/optitrack/toro_controller.cpp
 optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.o: optitrack/CMakeFiles/toro_controller.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.o"
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build/optitrack && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.o -MF CMakeFiles/toro_controller.dir/toro_controller.cpp.o.d -o CMakeFiles/toro_controller.dir/toro_controller.cpp.o -c /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack/toro_controller.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.o"
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build/optitrack && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.o -MF CMakeFiles/toro_controller.dir/toro_controller.cpp.o.d -o CMakeFiles/toro_controller.dir/toro_controller.cpp.o -c /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/optitrack/toro_controller.cpp
 
 optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/toro_controller.dir/toro_controller.cpp.i"
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build/optitrack && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack/toro_controller.cpp > CMakeFiles/toro_controller.dir/toro_controller.cpp.i
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build/optitrack && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/optitrack/toro_controller.cpp > CMakeFiles/toro_controller.dir/toro_controller.cpp.i
 
 optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/toro_controller.dir/toro_controller.cpp.s"
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build/optitrack && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack/toro_controller.cpp -o CMakeFiles/toro_controller.dir/toro_controller.cpp.s
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build/optitrack && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/optitrack/toro_controller.cpp -o CMakeFiles/toro_controller.dir/toro_controller.cpp.s
 
 # Object files for target toro_controller
 toro_controller_OBJECTS = \
@@ -90,40 +90,40 @@ toro_controller_OBJECTS = \
 # External object files for target toro_controller
 toro_controller_EXTERNAL_OBJECTS =
 
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.o
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: optitrack/CMakeFiles/toro_controller.dir/build.make
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-interfaces/build/libsai2-interfaces.a
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-model/build/libsai2-model.a
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-model/rbdl/build/librbdl.dylib
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-graphics/build/libsai2-graphics.a
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /opt/homebrew/lib/libglfw.dylib
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-simulation/build/libsai2-simulation.a
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-simulation/lib/macOS/arm64/libsai2-simulation-core.a
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-common/build/libsai2-common.a
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /opt/homebrew/lib/libjsoncpp.dylib
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /opt/homebrew/lib/libhiredis.dylib
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-urdfreader/build/libsai2-urdf.a
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /opt/homebrew/lib/libtinyxml2.dylib
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/chai3d/build/libchai3d.a
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /opt/homebrew/lib/libhiredis.dylib
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-primitives/build/libsai2-primitives.a
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-primitives/ruckig/build/libruckig.dylib
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: libcenter-demo.a
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /opt/homebrew/lib/libtinyxml2.dylib
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-primitives/ruckig/build/libruckig.dylib
-/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller: optitrack/CMakeFiles/toro_controller.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller"
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build/optitrack && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/toro_controller.dir/link.txt --verbose=$(VERBOSE)
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.o
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: optitrack/CMakeFiles/toro_controller.dir/build.make
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-interfaces/build/libsai2-interfaces.a
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-model/build/libsai2-model.a
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-model/rbdl/build/librbdl.dylib
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-graphics/build/libsai2-graphics.a
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /opt/homebrew/lib/libglfw.dylib
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-simulation/build/libsai2-simulation.a
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-simulation/lib/macOS/arm64/libsai2-simulation-core.a
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-common/build/libsai2-common.a
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /opt/homebrew/lib/libjsoncpp.dylib
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /opt/homebrew/lib/libhiredis.dylib
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-urdfreader/build/libsai2-urdf.a
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /opt/homebrew/lib/libtinyxml2.dylib
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/chai3d/build/libchai3d.a
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /opt/homebrew/lib/libhiredis.dylib
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-primitives/build/libsai2-primitives.a
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-primitives/ruckig/build/libruckig.dylib
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: libcenter-demo.a
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /opt/homebrew/lib/libtinyxml2.dylib
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: /Users/rheamalhotra/Desktop/robotics/OpenSai/core/sai2-primitives/ruckig/build/libruckig.dylib
+/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller: optitrack/CMakeFiles/toro_controller.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller"
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build/optitrack && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/toro_controller.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
-optitrack/CMakeFiles/toro_controller.dir/build: /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bin/optitrack/toro_controller
+optitrack/CMakeFiles/toro_controller.dir/build: /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller
 .PHONY : optitrack/CMakeFiles/toro_controller.dir/build
 
 optitrack/CMakeFiles/toro_controller.dir/clean:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build/optitrack && $(CMAKE_COMMAND) -P CMakeFiles/toro_controller.dir/cmake_clean.cmake
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build/optitrack && $(CMAKE_COMMAND) -P CMakeFiles/toro_controller.dir/cmake_clean.cmake
 .PHONY : optitrack/CMakeFiles/toro_controller.dir/clean
 
 optitrack/CMakeFiles/toro_controller.dir/depend:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build/optitrack /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build/optitrack/CMakeFiles/toro_controller.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/optitrack /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build/optitrack /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build/optitrack/CMakeFiles/toro_controller.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : optitrack/CMakeFiles/toro_controller.dir/depend
 

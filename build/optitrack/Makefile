@@ -57,10 +57,10 @@ RM = /opt/homebrew/Cellar/cmake/3.30.2/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance
+CMAKE_SOURCE_DIR = /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build
+CMAKE_BINARY_DIR = /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -68,7 +68,7 @@ CMAKE_BINARY_DIR = /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/bu
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
-	/opt/homebrew/Cellar/cmake/3.30.0/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/opt/homebrew/Cellar/cmake/3.30.2/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -87,14 +87,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(CMAKE_COMMAND) -E cmake_progress_start /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build/CMakeFiles /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build/optitrack//CMakeFiles/progress.marks
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 optitrack/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build/CMakeFiles 0
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(CMAKE_COMMAND) -E cmake_progress_start /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build/CMakeFiles /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build/optitrack//CMakeFiles/progress.marks
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 optitrack/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 optitrack/clean
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 optitrack/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,22 +103,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 optitrack/preinstall
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 optitrack/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 optitrack/preinstall
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 optitrack/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 optitrack/CMakeFiles/toro_controller.dir/rule:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 optitrack/CMakeFiles/toro_controller.dir/rule
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 optitrack/CMakeFiles/toro_controller.dir/rule
 .PHONY : optitrack/CMakeFiles/toro_controller.dir/rule
 
 # Convenience name for target.
@@ -127,12 +127,12 @@ toro_controller: optitrack/CMakeFiles/toro_controller.dir/rule
 
 # fast build rule for target.
 toro_controller/fast:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/toro_controller.dir/build.make optitrack/CMakeFiles/toro_controller.dir/build
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/toro_controller.dir/build.make optitrack/CMakeFiles/toro_controller.dir/build
 .PHONY : toro_controller/fast
 
 # Convenience name for target.
 optitrack/CMakeFiles/simviz_stage.dir/rule:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 optitrack/CMakeFiles/simviz_stage.dir/rule
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 optitrack/CMakeFiles/simviz_stage.dir/rule
 .PHONY : optitrack/CMakeFiles/simviz_stage.dir/rule
 
 # Convenience name for target.
@@ -141,12 +141,12 @@ simviz_stage: optitrack/CMakeFiles/simviz_stage.dir/rule
 
 # fast build rule for target.
 simviz_stage/fast:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/simviz_stage.dir/build.make optitrack/CMakeFiles/simviz_stage.dir/build
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/simviz_stage.dir/build.make optitrack/CMakeFiles/simviz_stage.dir/build
 .PHONY : simviz_stage/fast
 
 # Convenience name for target.
 optitrack/CMakeFiles/toro_controller_2dancers.dir/rule:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 optitrack/CMakeFiles/toro_controller_2dancers.dir/rule
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 optitrack/CMakeFiles/toro_controller_2dancers.dir/rule
 .PHONY : optitrack/CMakeFiles/toro_controller_2dancers.dir/rule
 
 # Convenience name for target.
@@ -155,12 +155,12 @@ toro_controller_2dancers: optitrack/CMakeFiles/toro_controller_2dancers.dir/rule
 
 # fast build rule for target.
 toro_controller_2dancers/fast:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/toro_controller_2dancers.dir/build.make optitrack/CMakeFiles/toro_controller_2dancers.dir/build
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/toro_controller_2dancers.dir/build.make optitrack/CMakeFiles/toro_controller_2dancers.dir/build
 .PHONY : toro_controller_2dancers/fast
 
 # Convenience name for target.
 optitrack/CMakeFiles/simviz_2dancers.dir/rule:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 optitrack/CMakeFiles/simviz_2dancers.dir/rule
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 optitrack/CMakeFiles/simviz_2dancers.dir/rule
 .PHONY : optitrack/CMakeFiles/simviz_2dancers.dir/rule
 
 # Convenience name for target.
@@ -169,7 +169,7 @@ simviz_2dancers: optitrack/CMakeFiles/simviz_2dancers.dir/rule
 
 # fast build rule for target.
 simviz_2dancers/fast:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/simviz_2dancers.dir/build.make optitrack/CMakeFiles/simviz_2dancers.dir/build
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/simviz_2dancers.dir/build.make optitrack/CMakeFiles/simviz_2dancers.dir/build
 .PHONY : simviz_2dancers/fast
 
 simviz.o: simviz.cpp.o
@@ -177,7 +177,7 @@ simviz.o: simviz.cpp.o
 
 # target to build an object file
 simviz.cpp.o:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/simviz_stage.dir/build.make optitrack/CMakeFiles/simviz_stage.dir/simviz.cpp.o
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/simviz_stage.dir/build.make optitrack/CMakeFiles/simviz_stage.dir/simviz.cpp.o
 .PHONY : simviz.cpp.o
 
 simviz.i: simviz.cpp.i
@@ -185,7 +185,7 @@ simviz.i: simviz.cpp.i
 
 # target to preprocess a source file
 simviz.cpp.i:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/simviz_stage.dir/build.make optitrack/CMakeFiles/simviz_stage.dir/simviz.cpp.i
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/simviz_stage.dir/build.make optitrack/CMakeFiles/simviz_stage.dir/simviz.cpp.i
 .PHONY : simviz.cpp.i
 
 simviz.s: simviz.cpp.s
@@ -193,7 +193,7 @@ simviz.s: simviz.cpp.s
 
 # target to generate assembly for a file
 simviz.cpp.s:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/simviz_stage.dir/build.make optitrack/CMakeFiles/simviz_stage.dir/simviz.cpp.s
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/simviz_stage.dir/build.make optitrack/CMakeFiles/simviz_stage.dir/simviz.cpp.s
 .PHONY : simviz.cpp.s
 
 simviz_2dancers.o: simviz_2dancers.cpp.o
@@ -201,7 +201,7 @@ simviz_2dancers.o: simviz_2dancers.cpp.o
 
 # target to build an object file
 simviz_2dancers.cpp.o:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/simviz_2dancers.dir/build.make optitrack/CMakeFiles/simviz_2dancers.dir/simviz_2dancers.cpp.o
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/simviz_2dancers.dir/build.make optitrack/CMakeFiles/simviz_2dancers.dir/simviz_2dancers.cpp.o
 .PHONY : simviz_2dancers.cpp.o
 
 simviz_2dancers.i: simviz_2dancers.cpp.i
@@ -209,7 +209,7 @@ simviz_2dancers.i: simviz_2dancers.cpp.i
 
 # target to preprocess a source file
 simviz_2dancers.cpp.i:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/simviz_2dancers.dir/build.make optitrack/CMakeFiles/simviz_2dancers.dir/simviz_2dancers.cpp.i
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/simviz_2dancers.dir/build.make optitrack/CMakeFiles/simviz_2dancers.dir/simviz_2dancers.cpp.i
 .PHONY : simviz_2dancers.cpp.i
 
 simviz_2dancers.s: simviz_2dancers.cpp.s
@@ -217,7 +217,7 @@ simviz_2dancers.s: simviz_2dancers.cpp.s
 
 # target to generate assembly for a file
 simviz_2dancers.cpp.s:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/simviz_2dancers.dir/build.make optitrack/CMakeFiles/simviz_2dancers.dir/simviz_2dancers.cpp.s
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/simviz_2dancers.dir/build.make optitrack/CMakeFiles/simviz_2dancers.dir/simviz_2dancers.cpp.s
 .PHONY : simviz_2dancers.cpp.s
 
 toro_controller.o: toro_controller.cpp.o
@@ -225,7 +225,7 @@ toro_controller.o: toro_controller.cpp.o
 
 # target to build an object file
 toro_controller.cpp.o:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/toro_controller.dir/build.make optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.o
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/toro_controller.dir/build.make optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.o
 .PHONY : toro_controller.cpp.o
 
 toro_controller.i: toro_controller.cpp.i
@@ -233,7 +233,7 @@ toro_controller.i: toro_controller.cpp.i
 
 # target to preprocess a source file
 toro_controller.cpp.i:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/toro_controller.dir/build.make optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.i
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/toro_controller.dir/build.make optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.i
 .PHONY : toro_controller.cpp.i
 
 toro_controller.s: toro_controller.cpp.s
@@ -241,7 +241,7 @@ toro_controller.s: toro_controller.cpp.s
 
 # target to generate assembly for a file
 toro_controller.cpp.s:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/toro_controller.dir/build.make optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.s
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/toro_controller.dir/build.make optitrack/CMakeFiles/toro_controller.dir/toro_controller.cpp.s
 .PHONY : toro_controller.cpp.s
 
 toro_controller_2dancers.o: toro_controller_2dancers.cpp.o
@@ -249,7 +249,7 @@ toro_controller_2dancers.o: toro_controller_2dancers.cpp.o
 
 # target to build an object file
 toro_controller_2dancers.cpp.o:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/toro_controller_2dancers.dir/build.make optitrack/CMakeFiles/toro_controller_2dancers.dir/toro_controller_2dancers.cpp.o
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/toro_controller_2dancers.dir/build.make optitrack/CMakeFiles/toro_controller_2dancers.dir/toro_controller_2dancers.cpp.o
 .PHONY : toro_controller_2dancers.cpp.o
 
 toro_controller_2dancers.i: toro_controller_2dancers.cpp.i
@@ -257,7 +257,7 @@ toro_controller_2dancers.i: toro_controller_2dancers.cpp.i
 
 # target to preprocess a source file
 toro_controller_2dancers.cpp.i:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/toro_controller_2dancers.dir/build.make optitrack/CMakeFiles/toro_controller_2dancers.dir/toro_controller_2dancers.cpp.i
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/toro_controller_2dancers.dir/build.make optitrack/CMakeFiles/toro_controller_2dancers.dir/toro_controller_2dancers.cpp.i
 .PHONY : toro_controller_2dancers.cpp.i
 
 toro_controller_2dancers.s: toro_controller_2dancers.cpp.s
@@ -265,7 +265,7 @@ toro_controller_2dancers.s: toro_controller_2dancers.cpp.s
 
 # target to generate assembly for a file
 toro_controller_2dancers.cpp.s:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/toro_controller_2dancers.dir/build.make optitrack/CMakeFiles/toro_controller_2dancers.dir/toro_controller_2dancers.cpp.s
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(MAKE) $(MAKESILENT) -f optitrack/CMakeFiles/toro_controller_2dancers.dir/build.make optitrack/CMakeFiles/toro_controller_2dancers.dir/toro_controller_2dancers.cpp.s
 .PHONY : toro_controller_2dancers.cpp.s
 
 # Help Target
@@ -303,6 +303,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

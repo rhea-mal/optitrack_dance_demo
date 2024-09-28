@@ -1,4 +1,4 @@
-# Install script for directory: /Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack
+# Install script for directory: /Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/optitrack
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
