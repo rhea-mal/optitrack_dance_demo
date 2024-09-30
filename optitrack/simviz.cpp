@@ -82,7 +82,7 @@ chai3d::cColorf lagrangianToColor(double lagrangian, double min_lagrangian, doub
 // simulation thread
 void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim);
 
-
+const int N_ROBOTS = 1;
 
 int main() {
 	static const string toro_file = "./resources/model/HRP4c.urdf";
@@ -116,7 +116,13 @@ int main() {
 	std::cout<<toro->dof()<<std::endl;
 	std::cout << "Robot DOF: " << toro->dof() << std::endl;
 
-	q_desired << 0, 0, 0, 0, 0, 0, 0, -0.1, -0.25, 0.5, -0.25, 0.1, 0, 0.1, -0.25, 0.5, -0.25, -0.1, 0, 0, -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 0, 0;
+	q_desired << 0, 0, 0, 0, 0, 0, 
+					0, -0.1, -0.25, 0.5, -0.25, 0.1, 
+					0, 0.1, -0.25, 0.5, -0.25, -0.1, 
+					0, 0,
+					-0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, 
+					-0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 
+					0, 0;
     joint_task->setGoalPosition(q_desired);
 	std::cout << "Initial q_desired: " << q_desired.transpose() << std::endl;
 
@@ -144,7 +150,7 @@ int main() {
 	sim->setJointVelocities(toro_name, toro->dq());
 	sim->setJointPositions(toro_name, q_desired);
 	// Update one robot graphics per iteration
-	for (int robot_index = 0; robot_index < 10; ++robot_index) {
+	for (int robot_index = 0; robot_index < N_ROBOTS; ++robot_index) {
     	sim->setJointPositions("HRP4C" + std::to_string(robot_index), q_desired);
 	}
 
@@ -200,25 +206,25 @@ int main() {
 		timer.waitForNextLoop();
         const double time = timer.elapsedSimTime();
 
-		// TESTER
-		Eigen::Matrix3d test_orientation;   // 3x3 rotation matrix
-		Eigen::Vector3d test_position;      // 3D position vector
+		// // TESTER
+		// Eigen::Matrix3d test_orientation;   // 3x3 rotation matrix
+		// Eigen::Vector3d test_position;      // 3D position vector
 
-		// Retrieve the orientation and position from Redis
-		test_orientation = redis_client.getEigen(TEST_ORI);  // Retrieves 3x3 orientation matrix
-		test_position = redis_client.getEigen(TEST_POS);     // Retrieves 3x1 position vector
+		// // Retrieve the orientation and position from Redis
+		// test_orientation = redis_client.getEigen(TEST_ORI);  // Retrieves 3x3 orientation matrix
+		// test_position = redis_client.getEigen(TEST_POS);     // Retrieves 3x1 position vector
 
-		// Create an Affine3d object for the pose
-		Eigen::Affine3d test_pose;
-		test_pose.linear() = test_orientation;  // Set the rotation part
-		test_pose.translation() = test_position;  // Set the translation part
-		//Quaterniond quat(test_orientation);
+		// // Create an Affine3d object for the pose
+		// Eigen::Affine3d test_pose;
+		// test_pose.linear() = test_orientation;  // Set the rotation part
+		// test_pose.translation() = test_position;  // Set the translation part
+		// //Quaterniond quat(test_orientation);
 
-		// Now update the graphics for the object named "tester"
-		graphics->updateObjectGraphics("tester", test_pose);
+		// // Now update the graphics for the object named "tester"
+		// graphics->updateObjectGraphics("tester", test_pose);
 
 		// Optionally, show the frame for the object to visualize its orientation
-		graphics->showObjectLinkFrame(true, "tester", 0.05);
+		// graphics->showObjectLinkFrame(true, "tester", 0.05);
 
 		// Get the Lagrangian value from Redis
 
@@ -238,7 +244,7 @@ int main() {
         // std::string name = "HRP4C" + std::to_string(robot_index);
         // graphics->updateRobotGraphics(name, redis_client.getEigen(TORO_JOINT_ANGLES_KEY));
         int index = (index + 1) % total_robots;
-		for (int robot_index = 0; robot_index < 10; ++robot_index) {
+		for (int robot_index = 0; robot_index < N_ROBOTS; ++robot_index) {
 			graphics->updateRobotGraphics("HRP4C" + std::to_string(robot_index), redis_client.getEigen(TORO_JOINT_ANGLES_KEY));
 		}
 
@@ -246,11 +252,11 @@ int main() {
 			changed_recently = false; // better logic for this
 		}
 		
-		Eigen::Vector3d ra_end_effector_pos = redis_client.getEigen("1::11::pos");
-		Eigen::Vector3d la_end_effector_pos = redis_client.getEigen("1::23::pos");
+		// Eigen::Vector3d ra_end_effector_pos = redis_client.getEigen("1::11::pos");
+		// Eigen::Vector3d la_end_effector_pos = redis_client.getEigen("1::23::pos");
 
 		// Calculate the L2 norm of the difference between the end effectors
-		double l2_norm = (ra_end_effector_pos - la_end_effector_pos).norm();
+		// double l2_norm = (ra_end_effector_pos - la_end_effector_pos).norm();
 
 		double last_background_change_time = 0.0; // Initialize the last background change time
 
@@ -286,23 +292,23 @@ int main() {
 		// 	}
 		// }
 
-		if (l2_norm < CLAP_THRESHOLD) {
+		// if (l2_norm < CLAP_THRESHOLD) {
 			//graphics->setBackgroundColor(1.0, 1.0, 1.0);  // White RGB
-		}
+		// }
 
 		// Retrieve the head position
-		Eigen::Vector3d head_pos = redis_client.getEigen("sai2::sim::toro::head_pos");
+		// Eigen::Vector3d head_pos = redis_client.getEigen("sai2::sim::toro::head_pos");
 
 		// Check if both hands are above the head
-		bool hands_above_head = (head_pos.z() - ra_end_effector_pos.z() < HANDS_ABOVE_HEAD_THRESHOLD ||
-								head_pos.z() - la_end_effector_pos.z() < HANDS_ABOVE_HEAD_THRESHOLD);
-		redis_client.setBool(HANDS_ABOVE_HEAD_KEY, hands_above_head);
+		// bool hands_above_head = (head_pos.z() - ra_end_effector_pos.z() < HANDS_ABOVE_HEAD_THRESHOLD ||
+								// head_pos.z() - la_end_effector_pos.z() < HANDS_ABOVE_HEAD_THRESHOLD);
+		// redis_client.setBool(HANDS_ABOVE_HEAD_KEY, hands_above_head);
 
-		if (hands_above_head) {
+		// if (hands_above_head) {
 			//graphics->setBackgroundColor(0.0, 0.0, 0.0);  // Black RGB
-		}
+		// }
 
-		double hands_above = head_pos.z() - ra_end_effector_pos.z();
+		// double hands_above = head_pos.z() - ra_end_effector_pos.z();
 		//std::cout << hands_above << std::endl;
 		
 		//std::cout << head_pos.z() - ra_end_effector_pos.z() << std::endl;
@@ -450,7 +456,7 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim) {
         VectorXd toro_control_torques = redis_client.getEigen(TORO_JOINT_TORQUES_COMMANDED_KEY);
         {
             lock_guard<mutex> lock(mutex_torques);
-            sim->setJointTorques(toro_name, toro_control_torques + toro_ui_torques);
+            sim->setJointTorques(toro_name, toro_control_torques + toro_ui_torques - 0 * toro->dq());
         }
         sim->integrate();
 
@@ -460,18 +466,24 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim) {
         //robot_dq = 0.1 * VectorXd::Ones(robot_dq.size()) * sin(time);
 
         // Get the mass matrix
+		toro->setQ(robot_q);
+		toro->setDq(robot_dq);
 		toro->updateModel();
         MatrixXd robot_M = toro->M();
         VectorXd g = toro->jointGravityVector();
         double kinetic_energy = 0.5 * robot_dq.transpose() * robot_M * robot_dq;
-		// Eigen::Vector3d comPosition = toro->comPosition();
+		Eigen::Vector3d comPosition = toro->comPosition();
 		// Eigen::Affine3d toro_base_transform_in_world = toro->transformInWorld("RL_KOSY_L1");
 		// Eigen::Vector3d comPositionInWorld = toro_base_transform_in_world.linear() * comPosition + toro_base_transform_in_world.translation();
-		Eigen::Vector3d ground = redis_client.getEigen("1::2::pos");
+		// Eigen::Vector3d ground = redis_client.getEigen("1::2::pos");
 		// double potential_energy = 90 * (robot_q(2)+ground_threshold.z()) * 9.8;
-		double potential_energy = 90 * (ground[1]) * 9.8;
+		// Vector3d ground = Vector3d::Zero();
+		// double potential_energy = 90 * (ground[1]) * 9.8;
+		// double potential_energy = robot_q(2) * 9.81;
+		double potential_energy = 80 * comPosition(2) * 9.81;
 		
-		std::cout<<"see me: "<< robot_q.head(3).transpose()<<std::endl;
+		// std::cout<<"see me: "<< robot_q.head(3).transpose()<<std::endl;
+		// std::cout << potential_energy << "\n";
         double lagrangian = kinetic_energy - potential_energy;
         
 		redis_client.set(KINETIC, std::to_string(kinetic_energy));

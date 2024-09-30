@@ -56,8 +56,8 @@ std::vector<Affine3d> Human::relativePose(const std::vector<std::string> link_na
     std::vector<Affine3d> relative_pose;
     for (int i = 0; i < link_names.size(); ++i) {
         std::string name = link_names[i];
-        std::cout << "Optitrack zero pose: \n" << m_initial_poses[name].linear() << "\n";
-        std::cout << "Rotation: \n" << m_rotations[name] << "\n";
+        // std::cout << "Optitrack zero pose: \n" << m_initial_poses[name].linear() << "\n";
+        // std::cout << "Rotation: \n" << m_rotations[name] << "\n";
         Affine3d transform_diff = Affine3d::Identity();
         transform_diff.linear() = current_poses[i].linear() * m_initial_poses[name].linear().transpose();  // rotate from current to goal orientation
         // apply similarity transform to relative rotation motion 

@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller"
-  "/Users/rheamalhotra/Desktop/robotics/optitrack_dance_demo/bin/optitrack/toro_controller.pdb"
+  "/Users/william/sai2/apps/optitrack_dance_demo/bin/optitrack/toro_controller"
+  "/Users/william/sai2/apps/optitrack_dance_demo/bin/optitrack/toro_controller.pdb"
   "CMakeFiles/toro_controller.dir/toro_controller.cpp.o"
   "CMakeFiles/toro_controller.dir/toro_controller.cpp.o.d"
 )

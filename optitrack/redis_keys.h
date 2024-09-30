@@ -8,6 +8,9 @@
  * @copyright Copyright (c) 2022
  * 
  */
+
+#pragma once 
+
 // one CONTROLLER keys
 const std::string TORO_JOINT_ANGLES_KEY = "sai2::sim::toro::sensors::q";
 const std::string TORO_JOINT_VELOCITIES_KEY = "sai2::sim::toro::sensors::dq";
@@ -56,3 +59,6 @@ const std::string TRACY_POTENTIAL = "sai2::sim::toro::potential";
 
 const std::string TEST_POS = "test::pos";
 const std::string TEST_ORI = "test::ori";
+
+const std::string Z_VIEWING_ANGLE = "sai2::sim::viewing_angle";
+const std::string RESET_ROBOT_KEY = "sai2::sim::reset";

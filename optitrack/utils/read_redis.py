@@ -6,10 +6,10 @@ from datetime import datetime
 # Redis configuration
 REDIS_HOST = '127.0.0.1'
 REDIS_PORT = 6379
-OUTPUT_FILE = '/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack/recordings/NEW_full_rehearsal2.txt'
+OUTPUT_FILE = '../recordings/NEW_full_rehearsal2.txt'
 
 # List of specific IDs to monitor
-IDS_TO_MONITOR = [5, 23, 2, 47, 11, 27, 49, 8, 45, 50]
+IDS_TO_MONITOR = [5, 23, 2, 47, 11, 27, 49, 8, 45, 50, 32]
 
 # Generate keys for both position and orientation
 ALL_KEYS = [f"1::{id_num}::pos" for id_num in IDS_TO_MONITOR] + [f"1::{id_num}::ori" for id_num in IDS_TO_MONITOR]

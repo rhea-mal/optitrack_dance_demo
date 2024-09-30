@@ -23,14 +23,15 @@ fig, ax = plt.subplots(figsize=(10, 6))
 bars = ax.bar(labels, values, color=['blue', 'green', 'red', 'purple'])
 
 # Set constant y-axis limits
-ax.set_ylim(-30, 1500)
+ax.set_ylim(-600, 1500)
 
 # Function to update the bar graph
 def update(frame):
     # Read values from Redis
     lagrangian_value = float(r.get(LAGRANGIAN) or 0)
     kinetic_value = float(r.get(KINETIC) or 0)
-    potential_value = float(r.get(POTENTIAL) or 0)
+    # potential_value = float(r.get(POTENTIAL) or 0)
+    potential_value = float(r.get(POTENTIAL))
 
     # Calculate human energy consumption as Lagrangian minus a random value between 0 and 50
     human_energy_value = random.uniform(50, 150)

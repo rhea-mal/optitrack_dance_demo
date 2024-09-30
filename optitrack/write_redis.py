@@ -7,8 +7,10 @@ from datetime import datetime
 # Redis configuration
 REDIS_HOST = '127.0.0.1'
 REDIS_PORT = 6379
-INPUT_FILE = '/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack/recordings/jump.txt'  # Input file with the data
-#INPUT_FILE = '/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack/recordings/jump.txt'  # Input file with the data
+# INPUT_FILE = '/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack/recordings/jump.txt'  # Input file with the data
+# INPUT_FILE = '/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack/recordings/jump.txt'  # Input file with the data
+INPUT_FILE = './recordings/jump.txt'  # Input file with the data
+USER_READY_KEY = "sai2::optitrack::user_ready"
 
 # Connect to Redis
 redis_client = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
@@ -44,6 +46,19 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Redis Data Publisher')
     parser.add_argument('--loop', action='store_true', help='Run the script in a loop')
     args = parser.parse_args()
-
+    
+    # reset user ready key 
+    redis_client.set(USER_READY_KEY, 0)
+    
+    # parse data 
     data = read_data(INPUT_FILE)
+    
+    # publish first frame 
+    for key, value in data[0].items():
+        redis_client.set(key, value)
+    
+    # set user ready key 
+    redis_client.set(USER_READY_KEY, 1)
+    
+    # publish rest of data when user is ready 
     publish_to_redis(data, rate_hz=120, loop=args.loop)

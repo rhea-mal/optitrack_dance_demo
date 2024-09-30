@@ -5,8 +5,8 @@ if (${CMAKE_SYSTEM_NAME} MATCHES Linux)
 elseif (${CMAKE_SYSTEM_NAME} MATCHES Darwin)
 	SET(CMAKE_CXX_FLAGS "-std=c++17 -I/usr/include -I/usr/local/include -I/opt/homebrew/include -w -O3")
 endif()
-SET(CMAKE_BUILD_TYPE "Debug")  
-# SET(CMAKE_BUILD_TYPE "Release")  
+# SET(CMAKE_BUILD_TYPE "Debug")  
+SET(CMAKE_BUILD_TYPE "Release")  
 
 # set common dependencies
 # - eigen3
@@ -68,6 +68,10 @@ add_definitions(${SAI2-INTERFACES_DEFINITIONS})
 # - hiredis
 find_library(HIREDIS_LIBRARY hiredis)
 
+# - yaml 
+# find yaml-cpp
+find_package(yaml-cpp REQUIRED)
+
 # - library
 add_library(center-demo STATIC ${PROJECT_SOURCE_DIR}/include/Human.cpp)
 
@@ -84,6 +88,7 @@ set(CENTER_DEMO_COMMON_LIBRARIES
     ${SAI2-PRIMITIVES_LIBRARIES}
     ${GLFW_LIBRARY}
     center-demo
+    yaml-cpp::yaml-cpp
 	)
 
 set (CENTER_DEMO_BINARY_DIR ${PROJECT_SOURCE_DIR}/bin)
