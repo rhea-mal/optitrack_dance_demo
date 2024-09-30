@@ -240,13 +240,18 @@ void control(std::shared_ptr<Optitrack::Human> human,
         
         tasks[controller_data.control_links[i]]->disableInternalOtg();
         tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-        tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);
+        // tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);
+        tasks[controller_data.control_links[i]]->disableSingularityHandling();
         if (controller_data.control_links[i] == "trunk_rz" 
                 || controller_data.control_links[i] == "neck_link2"
                 || controller_data.control_links[i] == "ra_link4" 
                 || controller_data.control_links[i] == "la_link4") {
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
         }
+        if (controller_data.control_links[i] == "ra_end_effector" || controller_data.control_links[i] == "la_end_effector") {
+            tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(3e-3, 3e-2);
+        }
+        // tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(1e-3, 1e-2);
         tasks[controller_data.control_links[i]]->setPosControlGains(400, 40, 0);
         tasks[controller_data.control_links[i]]->setOriControlGains(400, 40, 0);
     }
@@ -473,22 +478,34 @@ void control(std::shared_ptr<Optitrack::Human> human,
             // end 
 
         } else if (state == TEST) {
-             // want to measure relative motion in optitrack frame
+            // want to measure relative motion in optitrack frame
             robot_controller->updateControllerTaskModels();
 
-            // manually set type 1 posture for all tasks to be the starting posture 
-            for (auto it = tasks.begin(); it != tasks.end(); ++it) {
-                it->second->setType1Posture(q_init);
-            }
+            // // manual method
+            // N_prec.setIdentity();
+            // for (auto name : controller_data.control_links) {
+            //     tasks[name]->updateTaskModel(N_prec);
+            //     N_prec = tasks[name]->getTaskAndPreviousNullspace();
+            // }
+
+            // // manually set type 1 posture for all tasks to be the starting posture 
+            // for (auto it = tasks.begin(); it != tasks.end(); ++it) {
+            //     it->second->setType1Posture(q_init);
+            // }
         
              // -------- set task goals and compute control torques
             robot_control_torques.setZero();
 
-            // manual control torque computation
-            for (auto it = tasks.begin(); it != tasks.end(); ++it) {
-                robot_control_torques += it->second->computeTorques();
-                std::cout << robot_control_torques.transpose() << "\n";                
-            }
+            // task motion
+            tasks["RL_foot"]->setGoalPosition(sim_body_data.starting_pose["RL_foot"].translation() + 0.1 * Vector3d(sin(2 * M_PI * time), sin(2 * M_PI * time), sin(2 * M_PI * time)));
+            tasks["LL_foot"]->setGoalPosition(sim_body_data.starting_pose["LL_foot"].translation() + 0.1 * Vector3d(sin(2 * M_PI * time), sin(2 * M_PI * time), sin(2 * M_PI * time)));
+
+            tasks["ra_end_effector"]->setGoalPosition(sim_body_data.starting_pose["ra_end_effector"].translation() + 0.1 * Vector3d(sin(2 * M_PI * time), sin(2 * M_PI * time), sin(2 * M_PI * time)));
+            tasks["la_end_effector"]->setGoalPosition(sim_body_data.starting_pose["la_end_effector"].translation() + 0.1 * Vector3d(sin(2 * M_PI * time), sin(2 * M_PI * time), sin(2 * M_PI * time)));
+
+            // for (auto name : controller_data.control_links) {
+                // robot_control_torques += tasks[name]->computeTorques();
+            // }
 
             robot_control_torques = robot_controller->computeControlTorques() + robot->coriolisForce();
             // std::cout << robot_control_torques.transpose() << "\n";

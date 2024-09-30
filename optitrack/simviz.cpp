@@ -80,7 +80,9 @@ chai3d::cColorf lagrangianToColor(double lagrangian, double min_lagrangian, doub
 
 
 // simulation thread
-void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim);
+void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
+				const std::vector<double>& lower_limit,
+				const std::vector<double>& upper_limit);
 
 const int N_ROBOTS = 1;
 
@@ -154,6 +156,13 @@ int main() {
     	sim->setJointPositions("HRP4C" + std::to_string(robot_index), q_desired);
 	}
 
+	// parse joint limits 
+	std::vector<double> lower_joint_limits, upper_joint_limits;
+	auto joint_limits = toro->jointLimits();
+	for (auto limit : joint_limits) {
+		lower_joint_limits.push_back(limit.position_lower);
+		upper_joint_limits.push_back(limit.position_upper);
+	}
 
     // set co-efficient of restition to zero for force control
     sim->setCollisionRestitution(1.0);
@@ -189,7 +198,7 @@ int main() {
 	bool LAGRANGIAN_BACKGROUND_MODE = true;
 	bool IMAGE_BACKGROUND_MODE = false;
 	// start simulation thread
-	thread sim_thread(simulation, sim);
+	thread sim_thread(simulation, sim, lower_joint_limits, upper_joint_limits);
 	
 	int robot_index = 0; // index to track which robot to update next
     int total_robots = 10; // total number of robots to update
@@ -433,7 +442,9 @@ int main() {
 }
 
 //------------------------------------------------------------------------------
-void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim) {
+void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
+				const std::vector<double>& lower_limit,
+				const std::vector<double>& upper_limit) {
     // fSimulationRunning = true;
 
     // create redis client
@@ -447,7 +458,8 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim) {
     sim->setTimestep(1.0 / sim_freq);
     sim->enableGravityCompensation(true);
 
-    sim->enableJointLimits(toro_name);
+    // sim->enableJointLimits(toro_name);
+	sim->disableJointLimits(toro_name);
 
     while (fSimulationRunning) {
         timer.waitForNextLoop();
@@ -464,6 +476,15 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim) {
     	VectorXd robot_dq = sim->getJointVelocities(toro_name);
 
         //robot_dq = 0.1 * VectorXd::Ones(robot_dq.size()) * sin(time);
+
+		// apply simulation-based joint limits instead of collision-based
+		for (int i = 0; i < robot_q.size(); ++i) {
+			if (robot_q(i) > upper_limit[i]) {
+				robot_q(i) = upper_limit[i];
+			} else if (robot_q(i) < lower_limit[i]) {
+				robot_q(i) = lower_limit[i];
+			}
+		}
 
         // Get the mass matrix
 		toro->setQ(robot_q);

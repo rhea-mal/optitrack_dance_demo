@@ -2,7 +2,7 @@
 
 
 <!-- <world name="demo_world" gravity="0.0 0.0 -3.0"> -->
-<world name="demo_world" gravity="0.0 0.0 -1.0">
+<world name="demo_world" gravity="0.0 0.0 0.0">
 
 	<!-- <robot name="HRP4C">
 		<model dir="./resources" path="model/HRP4C.urdf" name="HRP4C" /> 

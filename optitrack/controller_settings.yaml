@@ -7,5 +7,5 @@ optitrack:
 controller:
   # links: ["hip_base", "LL_foot", "RL_foot", "la_end_effector", "ra_end_effector", "neck_link2", "trunk_rz", "ra_link4", "la_link4"]  # must match the body part names 
   # points: [0, 0, 0, 0, 0, 0, 0, 0.11, 0.15, 0, 0]
-  links: ["hip_base", "LL_foot", "RL_foot", "trunk_rz", "la_end_effector", "ra_end_effector", "ra_link4", "la_link4"]  # must match the body part names 
-  points: [0, 0, 0, 0.15, 0, 0, 0, 0]
+  links: ["hip_base", "LL_foot", "RL_foot", "neck_link2", "trunk_rz", "la_end_effector", "ra_end_effector", "ra_link4", "la_link4"]  # must match the body part names 
+  points: [0, 0, 0, 0.11, 0.15, 0, 0, 0, 0]
