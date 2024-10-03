@@ -477,13 +477,26 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 
         //robot_dq = 0.1 * VectorXd::Ones(robot_dq.size()) * sin(time);
 
-		// apply simulation-based joint limits instead of collision-based
-		for (int i = 0; i < robot_q.size(); ++i) {
-			if (robot_q(i) > upper_limit[i]) {
-				robot_q(i) = upper_limit[i];
-			} else if (robot_q(i) < lower_limit[i]) {
-				robot_q(i) = lower_limit[i];
-			}
+		// // apply simulation-based joint limits instead of collision-based
+		// for (int i = 0; i < robot_q.size(); ++i) {
+		// 	if (robot_q(i) > upper_limit[i]) {
+		// 		robot_q(i) = upper_limit[i];
+		// 	} else if (robot_q(i) < lower_limit[i]) {
+		// 		robot_q(i) = lower_limit[i];
+		// 	}
+		// }
+
+		// graphical joint limits applied 
+		if (robot_q(23) > upper_limit[23]) {
+			robot_q(23) = upper_limit[23];
+		} else if (robot_q(23) < lower_limit[23]) {
+			robot_q(23) = lower_limit[23];
+		}
+
+		if (robot_q(30) > upper_limit[30]) {
+			robot_q(30) = upper_limit[30];
+		} else if (robot_q(30) < lower_limit[30]) {
+			robot_q(30) = lower_limit[30];
 		}
 
         // Get the mass matrix

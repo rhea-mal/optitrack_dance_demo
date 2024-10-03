@@ -249,11 +249,11 @@ void control(std::shared_ptr<Optitrack::Human> human,
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
         }
         if (controller_data.control_links[i] == "ra_end_effector" || controller_data.control_links[i] == "la_end_effector") {
-            tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(3e-3, 3e-2);
+            tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(5e-3, 5e-2);  // might need to change based on the control link (to test)
         }
         // tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(1e-3, 1e-2);
-        tasks[controller_data.control_links[i]]->setPosControlGains(400, 40, 0);
-        tasks[controller_data.control_links[i]]->setOriControlGains(400, 40, 0);
+        tasks[controller_data.control_links[i]]->setPosControlGains(100, 20, 0);
+        tasks[controller_data.control_links[i]]->setOriControlGains(100, 20, 0);
     }
 
     auto joint_task = std::make_shared<Sai2Primitives::JointTask>(robot);
@@ -278,6 +278,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
     const int n_calibration_samples = 1 * 1000;  // N second of samples
     int n_samples = 0;
     VectorXd robot_control_torques = VectorXd::Zero(dof);
+    VectorXd prev_control_torques = VectorXd::Zero(dof);
 
 	// create a loop timer
     runloop = true;
@@ -383,8 +384,8 @@ void control(std::shared_ptr<Optitrack::Human> human,
                 }
 
                 if (n_samples > n_calibration_samples) {
-                    // state = TRACKING;
-                    state = TEST;
+                    state = TRACKING;
+                    // state = TEST;
                     n_samples = 0;
 
                     // publish the starting poses in optitrack frame
@@ -497,6 +498,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             robot_control_torques.setZero();
 
             // task motion
+            tasks["hip_base"]->setGoalPosition(sim_body_data.starting_pose["hip_base"].translation() + 0.1 * Vector3d(sin(2 * M_PI * time), sin(2 * M_PI * time), sin(2 * M_PI * time)));
             tasks["RL_foot"]->setGoalPosition(sim_body_data.starting_pose["RL_foot"].translation() + 0.1 * Vector3d(sin(2 * M_PI * time), sin(2 * M_PI * time), sin(2 * M_PI * time)));
             tasks["LL_foot"]->setGoalPosition(sim_body_data.starting_pose["LL_foot"].translation() + 0.1 * Vector3d(sin(2 * M_PI * time), sin(2 * M_PI * time), sin(2 * M_PI * time)));
 
@@ -520,8 +522,12 @@ void control(std::shared_ptr<Optitrack::Human> human,
 		}
 
         if (isnan(control_torques(0))) {
-            throw runtime_error("nan torques");
+            // throw runtime_error("nan torques");
+            std::cout << "nan torques: setting to previous torque\n";
+            control_torques = prev_control_torques;
         }
+
+        prev_control_torques = control_torques;
 
         redis_client.setEigen(TORO_JOINT_TORQUES_COMMANDED_KEY, control_torques);
 

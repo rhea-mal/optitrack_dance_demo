@@ -77,42 +77,42 @@
         <child link="floating_virtual1"/>
         <origin xyz="0.000000 0.000000 0.00000" rpy="0.000000 0.000000 0.000000" />
         <axis xyz="1 0 0"/>
-        <limit lower="-5.00" upper="5.00" effort="4000" velocity="1000" />
+        <limit lower="-100.00" upper="100.00" effort="4000" velocity="1000" />
     </joint>
     <joint name="floating_base_p2" type="prismatic">
         <parent link="floating_virtual1"/>
         <child link="floating_virtual2"/>
         <origin xyz="0.000000 0.000000 0.00000" rpy="0.000000 0.000000 0.000000" />
         <axis xyz="0 1 0"/>
-        <limit lower="-5.00" upper="5.00" effort="4000" velocity="1000" />
+        <limit lower="-100.00" upper="100.00" effort="4000" velocity="1000" />
     </joint>
     <joint name="floating_base_p3" type="prismatic">
         <parent link="floating_virtual2"/>
         <child link="floating_virtual3"/>
         <origin xyz="0.000000 0.000000 0.00000" rpy="0.000000 0.000000 0.000000" />
         <axis xyz="0 0 1"/>
-        <limit lower="-5.00" upper="5.00" effort="4000" velocity="1000" />
+        <limit lower="-100.00" upper="100.00" effort="4000" velocity="1000" />
     </joint>
     <joint name="floating_base_r1" type="revolute">
         <parent link="floating_virtual3"/>
         <child link="floating_virtual4"/>
         <origin xyz="0.000000 0.000000 0.00000" rpy="0.000000 0.000000 0.000000" />
         <axis xyz="1 0 0"/>
-        <limit lower="-1000.00" upper="1000.00" effort="4000" velocity="1000" />
+        <limit lower="-1000000.00" upper="1000000.00" effort="4000" velocity="1000" />
     </joint>
     <joint name="floating_base_r2" type="revolute">
         <parent link="floating_virtual4"/>
         <child link="floating_virtual5"/>
         <origin xyz="0.000000 0.000000 0.00000" rpy="0.000000 0.000000 0.000000" />
         <axis xyz="0 1 0"/>
-        <limit lower="-1000.00" upper="1000.00" effort="4000" velocity="1000" />
+        <limit lower="-1000000.00" upper="1000000.00" effort="4000" velocity="1000" />
     </joint>
     <joint name="floating_base_r3" type="revolute">
         <parent link="floating_virtual5"/>
         <child link="hip_base"/>
         <origin xyz="0.000000 0.000000 0.00000" rpy="0.000000 0.000000 0.000000" />
         <axis xyz="0 0 1"/>
-        <limit lower="-1000.00" upper="1000.00" effort="4000" velocity="1000" />
+        <limit lower="-1000000.00" upper="1000000.00" effort="4000" velocity="1000" />
     </joint>
 
     <!-- Right Leg -->
