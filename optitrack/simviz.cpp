@@ -132,15 +132,15 @@ int main() {
 	// --- Visualization Code for hip_base ---
    	//std::string hip_base_name = "hip_base"; // Name of the hip base link
     // Iterate through the children of the graphics world and enable frame display for hip_base
-    for (unsigned int i = 0; i < graphics->_world->getNumChildren(); ++i) {
-        auto child_name = graphics->_world->getChild(i)->m_name;
-        // if (child_name == hip_base_name) {
-		if (true) {
-            graphics->_world->getChild(i)->setShowFrame(true); // Show the frame for hip_base
-            std::cout << "Displaying frame for: " << child_name << std::endl;
-        }
-    }
-	graphics->showLinkFrame(true, toro_name, "neck_link2");
+    // for (unsigned int i = 0; i < graphics->_world->getNumChildren(); ++i) {
+    //     auto child_name = graphics->_world->getChild(i)->m_name;
+    //     // if (child_name == hip_base_name) {
+	// 	if (true) {
+    //         graphics->_world->getChild(i)->setShowFrame(true); // Show the frame for hip_base
+    //         std::cout << "Displaying frame for: " << child_name << std::endl;
+    //     }
+    // }
+	// graphics->showLinkFrame(true, toro_name, "neck_link2");
 
 	// graphics->showLinkFrame(true, toro_name, "neck_link2");
 	// graphics->showLinkFrame(true, toro_name, "LL_foot");
@@ -474,6 +474,7 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 
 		VectorXd robot_q = sim->getJointPositions(toro_name);
     	VectorXd robot_dq = sim->getJointVelocities(toro_name);
+		// std::cout << "Simulation q: \n" << robot_q.transpose() << "\n";
 
         //robot_dq = 0.1 * VectorXd::Ones(robot_dq.size()) * sin(time);
 
@@ -486,18 +487,18 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 		// 	}
 		// }
 
-		// graphical joint limits applied 
-		if (robot_q(23) > upper_limit[23]) {
-			robot_q(23) = upper_limit[23];
-		} else if (robot_q(23) < lower_limit[23]) {
-			robot_q(23) = lower_limit[23];
-		}
+		// // graphical joint limits applied 
+		// if (robot_q(23) > upper_limit[23]) {
+		// 	robot_q(23) = upper_limit[23];
+		// } else if (robot_q(23) < lower_limit[23]) {
+		// 	robot_q(23) = lower_limit[23];
+		// }
 
-		if (robot_q(30) > upper_limit[30]) {
-			robot_q(30) = upper_limit[30];
-		} else if (robot_q(30) < lower_limit[30]) {
-			robot_q(30) = lower_limit[30];
-		}
+		// if (robot_q(30) > upper_limit[30]) {
+		// 	robot_q(30) = upper_limit[30];
+		// } else if (robot_q(30) < lower_limit[30]) {
+		// 	robot_q(30) = lower_limit[30];
+		// }
 
         // Get the mass matrix
 		toro->setQ(robot_q);

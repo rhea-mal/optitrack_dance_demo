@@ -49,7 +49,7 @@ using namespace Optitrack;
 const string robot_file = "./resources/model/HRP4c.urdf";
 const string robot_name = "HRP4C0";
 const string camera_name = "camera_fixed";
-const std::string yaml_fname = "./resources/controller_settings.yaml";
+const std::string yaml_fname = "./resources/controller_settings_1_dancer.yaml";
 
 // globals
 VectorXd nominal_posture;
@@ -79,10 +79,11 @@ const double MOTION_SF = 1.0;
 const double MAX_RADIUS_ARM = 0.5;  // saturate arms within a sphere distance of the pelvis 
 
 enum State {
-    RESET = 0,
+    INIT = 0,
     CALIBRATION,
     TRACKING,
-    TEST
+    TEST,
+    RESET
 };
 
 // this is OT R transpose only
@@ -190,7 +191,6 @@ int main(int argc, char** argv) {
     // R_optitrack_to_sai *= AngleAxisd(90 * M_PI / 180, Vector3d::UnitZ()).toRotationMatrix();
 
     auto robot = make_shared<Sai2Model::Sai2Model>(robot_file, false);
-    nominal_posture = robot->q();
     robot->updateModel();
 
     // create human class for tracking 
@@ -218,7 +218,8 @@ void control(std::shared_ptr<Optitrack::Human> human,
     redis_client.connect();
 
     // reset user ready key 
-    redis_client.set(USER_READY_KEY, "0");
+    redis_client.setInt(USER_READY_KEY, 0);
+    redis_client.setInt(RESET_ROBOT_KEY, 0);
 
 	// update robot model and initialize control vectors
     robot->setQ(redis_client.getEigen(TORO_JOINT_ANGLES_KEY));
@@ -249,19 +250,27 @@ void control(std::shared_ptr<Optitrack::Human> human,
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
         }
         if (controller_data.control_links[i] == "ra_end_effector" || controller_data.control_links[i] == "la_end_effector") {
-            tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(5e-3, 5e-2);  // might need to change based on the control link (to test)
+            tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(1e-3, 1e-2);  // might need to change based on the control link (to test)
         }
         // tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(1e-3, 1e-2);
-        tasks[controller_data.control_links[i]]->setPosControlGains(100, 20, 0);
-        tasks[controller_data.control_links[i]]->setOriControlGains(100, 20, 0);
+        tasks[controller_data.control_links[i]]->setPosControlGains(400, 40, 0);
+        tasks[controller_data.control_links[i]]->setOriControlGains(400, 40, 0);
     }
 
     auto joint_task = std::make_shared<Sai2Primitives::JointTask>(robot);
     joint_task->disableInternalOtg();
-	VectorXd q_desired = robot->q();
-	joint_task->setGains(100, 20, 0);
+    VectorXd q_desired = robot->q();
+    q_desired << 0, 0, 0, 0, 0, 0, 
+                0, -0.1, -0.25, 0.5, -0.25, 0.1, 
+                0, 0.1, -0.25, 0.5, -0.25, -0.1, 
+                0, 0,
+                -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, 
+                -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 
+                0, 0;
+	joint_task->setGains(400, 40, 0);
     joint_task->setDynamicDecouplingType(Sai2Primitives::DynamicDecouplingType::FULL_DYNAMIC_DECOUPLING);
 	joint_task->setGoalPosition(q_desired);  
+    nominal_posture = q_desired;
 
     // create robot controller
     std::vector<shared_ptr<Sai2Primitives::TemplateTask>> task_list;
@@ -272,7 +281,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
 	auto robot_controller = std::make_unique<Sai2Primitives::RobotController>(robot, task_list);
 
     // initialize
-    int state = CALIBRATION;
+    int state = INIT;
 
     bool first_loop = true;
     const int n_calibration_samples = 1 * 1000;  // N second of samples
@@ -293,6 +302,13 @@ void control(std::shared_ptr<Optitrack::Human> human,
         robot->setQ(redis_client.getEigen(TORO_JOINT_ANGLES_KEY));
         robot->setDq(redis_client.getEigen(TORO_JOINT_VELOCITIES_KEY));
         robot->updateModel();
+
+        // read the reset state 
+        int reset_robot = redis_client.getInt(RESET_ROBOT_KEY);
+        if (reset_robot) {
+            state = RESET;
+            redis_client.setInt(RESET_ROBOT_KEY, 0);
+        }
 
         // read optitrack input and store in optitrack struct 
         if (state == CALIBRATION || state == TRACKING) {
@@ -338,7 +354,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
         // }
         // perform robustness checks with the optitrack input 
 
-        if (state == RESET) {
+        if (state == INIT) {
             // start robot at default configuration and hold the posture
             joint_task->setGoalPosition(nominal_posture);
             N_prec.setIdentity();
@@ -347,8 +363,8 @@ void control(std::shared_ptr<Optitrack::Human> human,
 
             if (joint_task->goalPositionReached(1e-2)) {
                 if (redis_client.getInt(USER_READY_KEY) == 1) {
-                    state = CALIBRATION;
-                    // state = TEST;
+                    // state = CALIBRATION;
+                    state = TEST;
                     first_loop = true;
                     n_samples = 0;
                     continue;
@@ -356,7 +372,14 @@ void control(std::shared_ptr<Optitrack::Human> human,
 
                 for (auto it = tasks.begin(); it != tasks.end(); ++it) {
                     it->second->reInitializeTask();
-                }            
+                }   
+
+                // populate the initial starting pose in SAI 
+                for (int i = 0; i < controller_data.control_links.size(); ++i) {
+                    std::string control_link_name = controller_data.control_links[i];
+                    sim_body_data.starting_pose[control_link_name].translation() = robot->positionInWorld(control_link_name, controller_data.control_points[i]);
+                    sim_body_data.starting_pose[control_link_name].linear() = robot->rotationInWorld(control_link_name);
+                }         
 
             }
         } else if (state == CALIBRATION) {
@@ -479,6 +502,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             // end 
 
         } else if (state == TEST) {
+            std::cout << "Test\n";
             // want to measure relative motion in optitrack frame
             robot_controller->updateControllerTaskModels();
 
@@ -513,23 +537,28 @@ void control(std::shared_ptr<Optitrack::Human> human,
             // std::cout << robot_control_torques.transpose() << "\n";
             // robot_control_torques.segment(6, 12).setZero();
             // robot_control_torques.segment(20, ).setZero();
+        } else if (state == RESET) {
+            // reset initializers for variables if needed
+
+            state = INIT;
+            continue;
         }
 
-		//------ compute the final torques
-		{
-			lock_guard<mutex> lock(mutex_torques);
-			control_torques = robot_control_torques;
-		}
+		// //------ compute the final torques
+		// {
+		// 	lock_guard<mutex> lock(mutex_torques);
+		// 	control_torques = robot_control_torques;
+		// }
 
-        if (isnan(control_torques(0))) {
+        if (isnan(robot_control_torques(0))) {
             // throw runtime_error("nan torques");
             std::cout << "nan torques: setting to previous torque\n";
-            control_torques = prev_control_torques;
+            robot_control_torques = prev_control_torques;
         }
 
-        prev_control_torques = control_torques;
+        prev_control_torques = robot_control_torques;
 
-        redis_client.setEigen(TORO_JOINT_TORQUES_COMMANDED_KEY, control_torques);
+        redis_client.setEigen(TORO_JOINT_TORQUES_COMMANDED_KEY, robot_control_torques);
 
         // Add camera tracking
         string link_name = "neck_link2"; // head link

@@ -140,10 +140,10 @@ int main() {
     
     graphics->getCamera(camera_name)->setClippingPlanes(0.1, 2000);  // set the near and far clipping planes 
 
-    // show object link frames
-    for (auto name : object_names) {
-        graphics->showObjectLinkFrame(true, name, 0.15);
-    }
+    // // show object link frames
+    // for (auto name : object_names) {
+    //     graphics->showObjectLinkFrame(true, name, 0.15);
+    // }
 
     // setup object frames
     std::vector<Affine3d> current_object_poses;
