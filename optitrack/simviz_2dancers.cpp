@@ -33,12 +33,10 @@ std::shared_ptr<Sai2Model::Sai2Model> hannah;
 std::shared_ptr<Sai2Model::Sai2Model> tracy;
 std::shared_ptr<Sai2Graphics::Sai2Graphics> graphics;
 
-
 #include "redis_keys.h"
 
 using namespace Eigen;
 using namespace std;
-
 
 // mutex and globals
 VectorXd hannah_ui_torques;
@@ -85,8 +83,6 @@ chai3d::cColorf lagrangianToColor(double lagrangian, double min_lagrangian, doub
 // simulation thread
 void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim);
 
-
-
 int main() {
 	static const string toro_file = "./resources/model/HRP4c.urdf";
     //static const string world_file = "./resources/world/world_basic_10.urdf";
@@ -112,9 +108,11 @@ int main() {
 
     // load robots
     hannah = std::make_shared<Sai2Model::Sai2Model>(toro_file, false);
-	tracy = std::make_shared<Sai2Model::Sai2Model>(toro_file, false);
     hannah->updateModel();
+
+	tracy = std::make_shared<Sai2Model::Sai2Model>(toro_file, false);
 	tracy->updateModel();
+
     hannah_ui_torques = VectorXd::Zero(hannah->dof());
 	tracy_ui_torques = VectorXd::Zero(tracy->dof());
 	// SET the initial q -- define manual here to stand
@@ -174,7 +172,6 @@ int main() {
 	redis_client.setEigen(TRACY_TORO_JOINT_ANGLES_KEY, tracy->q()); 
 	redis_client.setEigen(TRACY_TORO_JOINT_VELOCITIES_KEY, tracy->dq()); 
 	redis_client.setEigen(TRACY_TORO_JOINT_TORQUES_COMMANDED_KEY, 0 * tracy->q());
-
 
 	string link_name = "neck_link2"; // head link
 	Eigen::Affine3d transform = hannah->transformInWorld(link_name); // p_base = T * p_link
@@ -432,7 +429,7 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim) {
     Sai2Common::LoopTimer timer(sim_freq);
 
     sim->setTimestep(1.0 / sim_freq);
-    sim->enableGravityCompensation(true);
+    sim->enableGravityCompensation(false);
 
     sim->enableJointLimits(hannah_name);
 	sim->enableJointLimits(tracy_name);
@@ -449,8 +446,8 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim) {
 
         {
             lock_guard<mutex> lock(mutex_torques);
-            sim->setJointTorques(hannah_name, hannah_control_torques + hannah_ui_torques);
-			sim->setJointTorques(tracy_name, tracy_control_torques + tracy_ui_torques);
+            sim->setJointTorques(hannah_name, hannah_control_torques + 0 * hannah_ui_torques);
+			sim->setJointTorques(tracy_name, tracy_control_torques + 0 * tracy_ui_torques);
         }
         sim->integrate();
 

@@ -125,7 +125,7 @@ Matrix3d R_mirror;
 Matrix3d R_optitrack_to_sai = (AngleAxisd(M_PI / 2, Vector3d::UnitZ()) * AngleAxisd(0 * M_PI / 2, Vector3d::UnitX())).toRotationMatrix();
 
 int main(int argc, char** argv) {
-
+    
     signal(SIGABRT, &sighandler);
     signal(SIGTERM, &sighandler);
     signal(SIGINT, &sighandler);
@@ -241,8 +241,8 @@ void control(std::shared_ptr<Optitrack::Human> human,
         
         tasks[controller_data.control_links[i]]->disableInternalOtg();
         tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-        // tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);
-        tasks[controller_data.control_links[i]]->disableSingularityHandling();
+        tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);
+        // tasks[controller_data.control_links[i]]->disableSingularityHandling();
         if (controller_data.control_links[i] == "trunk_rz" 
                 || controller_data.control_links[i] == "neck_link2"
                 || controller_data.control_links[i] == "ra_link4" 
@@ -250,24 +250,25 @@ void control(std::shared_ptr<Optitrack::Human> human,
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
         }
         if (controller_data.control_links[i] == "ra_end_effector" || controller_data.control_links[i] == "la_end_effector") {
-            tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(1e-3, 1e-2);  // might need to change based on the control link (to test)
+            tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(8e-2, 8e-1);  // might need to change based on the control link (to test)
+            tasks[controller_data.control_links[i]]->disableSingularityHandling();
         }
         // tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(1e-3, 1e-2);
-        tasks[controller_data.control_links[i]]->setPosControlGains(400, 40, 0);
-        tasks[controller_data.control_links[i]]->setOriControlGains(400, 40, 0);
+        tasks[controller_data.control_links[i]]->setPosControlGains(100, 20, 0);
+        tasks[controller_data.control_links[i]]->setOriControlGains(100, 20, 0);
     }
 
     auto joint_task = std::make_shared<Sai2Primitives::JointTask>(robot);
     joint_task->disableInternalOtg();
     VectorXd q_desired = robot->q();
-    q_desired << 0, 0, 0, 0, 0, 0, 
-                0, -0.1, -0.25, 0.5, -0.25, 0.1, 
-                0, 0.1, -0.25, 0.5, -0.25, -0.1, 
-                0, 0,
-                -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, 
-                -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 
-                0, 0;
-	joint_task->setGains(400, 40, 0);
+    // q_desired << 0, 0, 0, 0, 0, 0, 
+    //             0, -0.1, -0.25, 0.5, -0.25, 0.1, 
+    //             0, 0.1, -0.25, 0.5, -0.25, -0.1, 
+    //             0, 0,
+    //             -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, 
+    //             -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 
+    //             0, 0;
+	joint_task->setGains(100, 20, 0);
     joint_task->setDynamicDecouplingType(Sai2Primitives::DynamicDecouplingType::FULL_DYNAMIC_DECOUPLING);
 	joint_task->setGoalPosition(q_desired);  
     nominal_posture = q_desired;
@@ -363,8 +364,8 @@ void control(std::shared_ptr<Optitrack::Human> human,
 
             if (joint_task->goalPositionReached(1e-2)) {
                 if (redis_client.getInt(USER_READY_KEY) == 1) {
-                    // state = CALIBRATION;
-                    state = TEST;
+                    state = CALIBRATION;
+                    // state = TEST;
                     first_loop = true;
                     n_samples = 0;
                     continue;
@@ -463,7 +464,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
 
             // manually set type 1 posture for all tasks to be the starting posture 
             for (auto it = tasks.begin(); it != tasks.end(); ++it) {
-                it->second->setType1Posture(q_init);
+                it->second->setType1Posture(nominal_posture);
             }
 
             // update simulation current pose 

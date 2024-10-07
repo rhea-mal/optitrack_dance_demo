@@ -6,13 +6,15 @@ from datetime import datetime
 # Redis configuration
 REDIS_HOST = '127.0.0.1'
 REDIS_PORT = 6379
-OUTPUT_FILE = '../recordings/NEW_full_rehearsal2.txt'
+OUTPUT_FILE = '../recordings/tracy_oct_6_24_in_place.txt'
 
 # List of specific IDs to monitor
-IDS_TO_MONITOR = [5, 23, 2, 47, 11, 27, 49, 8, 45, 50, 32]
+IDS_TO_MONITOR = [5, 3, 2, 47, 50, 23, 32, 8, 27]
+
+opti_id = 0
 
 # Generate keys for both position and orientation
-ALL_KEYS = [f"1::{id_num}::pos" for id_num in IDS_TO_MONITOR] + [f"1::{id_num}::ori" for id_num in IDS_TO_MONITOR]
+ALL_KEYS = [f"0::{id_num}::pos" for id_num in IDS_TO_MONITOR] + [f"0::{id_num}::ori" for id_num in IDS_TO_MONITOR]
 
 # Connect to Redis
 redis_client = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)

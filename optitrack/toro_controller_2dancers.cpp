@@ -170,8 +170,10 @@ int main(int argc, char** argv) {
 
     optitrack_data.human_ids = human_ids;
 
+    auto second_optitrack_data = optitrack_data;
+
     optitrack_data_vectorized.push_back(optitrack_data);
-    optitrack_data_vectorized.push_back(optitrack_data);
+    optitrack_data_vectorized.push_back(second_optitrack_data);
 
     // controller settings 
     current_node = config["controller"];
@@ -211,8 +213,9 @@ int main(int argc, char** argv) {
         human[i]->setMultiRotationReference(controller_data.control_links, {controller_data.control_links.size(), R_optitrack_to_sai});
     }
 
+    auto second_controller_data = controller_data;
     controller_data_vectorized.push_back(controller_data);
-    controller_data_vectorized.push_back(controller_data);
+    controller_data_vectorized.push_back(second_controller_data);
 
     sim_body_data_vectorized.push_back(SimBodyData());
     sim_body_data_vectorized.push_back(SimBodyData());
@@ -344,7 +347,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
 
 	// create a loop timer
     runloop = true;
-	double control_freq = 1000;
+	double control_freq = 500;
 	Sai2Common::LoopTimer timer(control_freq, 1e6);
 
 	while (runloop) {
@@ -575,12 +578,13 @@ void control(std::shared_ptr<Optitrack::Human> human,
             robot_control_torques.setZero();
 
             // task motion
-            tasks["hip_base"]->setGoalPosition(sim_body_data.starting_pose["hip_base"].translation() + 0.1 * Vector3d(sin(2 * M_PI * time), sin(2 * M_PI * time), sin(2 * M_PI * time)));
-            tasks["RL_foot"]->setGoalPosition(sim_body_data.starting_pose["RL_foot"].translation() + 0.1 * Vector3d(sin(2 * M_PI * time), sin(2 * M_PI * time), sin(2 * M_PI * time)));
-            tasks["LL_foot"]->setGoalPosition(sim_body_data.starting_pose["LL_foot"].translation() + 0.1 * Vector3d(sin(2 * M_PI * time), sin(2 * M_PI * time), sin(2 * M_PI * time)));
+            tasks["hip_base"]->setGoalPosition(sim_body_data.starting_pose["hip_base"].translation() + Vector3d(0, 0, 0.1));
+            // tasks["hip_base"]->setGoalPosition(sim_body_data.starting_pose["hip_base"].translation() + 0.1 * Vector3d(sin(2 * M_PI * time), sin(2 * M_PI * time), sin(2 * M_PI * time)));
+            // tasks["RL_foot"]->setGoalPosition(sim_body_data.starting_pose["RL_foot"].translation() + 0.1 * Vector3d(sin(2 * M_PI * time), sin(2 * M_PI * time), sin(2 * M_PI * time)));
+            // tasks["LL_foot"]->setGoalPosition(sim_body_data.starting_pose["LL_foot"].translation() + 0.1 * Vector3d(sin(2 * M_PI * time), sin(2 * M_PI * time), sin(2 * M_PI * time)));
 
-            tasks["ra_end_effector"]->setGoalPosition(sim_body_data.starting_pose["ra_end_effector"].translation() + 0.1 * Vector3d(sin(2 * M_PI * time), sin(2 * M_PI * time), sin(2 * M_PI * time)));
-            tasks["la_end_effector"]->setGoalPosition(sim_body_data.starting_pose["la_end_effector"].translation() + 0.1 * Vector3d(sin(2 * M_PI * time), sin(2 * M_PI * time), sin(2 * M_PI * time)));
+            // tasks["ra_end_effector"]->setGoalPosition(sim_body_data.starting_pose["ra_end_effector"].translation() + 0.1 * Vector3d(sin(2 * M_PI * time), sin(2 * M_PI * time), sin(2 * M_PI * time)));
+            // tasks["la_end_effector"]->setGoalPosition(sim_body_data.starting_pose["la_end_effector"].translation() + 0.1 * Vector3d(sin(2 * M_PI * time), sin(2 * M_PI * time), sin(2 * M_PI * time)));
 
             // for (auto name : controller_data.control_links) {
                 // robot_control_torques += tasks[name]->computeTorques();
