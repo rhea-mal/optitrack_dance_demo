@@ -106,7 +106,7 @@ int main() {
     //setBackgroundImage(graphics, "../../optitrack/assets/space.jpg"); // Set background to space
     
     graphics->getCamera(camera_name)->setClippingPlanes(0.1, 2000);  // set the near and far clipping planes 
-	graphics->setMirrorHorizontal(camera_name, true);
+	// graphics->setMirrorHorizontal(camera_name, true);
 
     // load robots
     toro = std::make_shared<Sai2Model::Sai2Model>(toro_file, false);
@@ -479,29 +479,30 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 
         //robot_dq = 0.1 * VectorXd::Ones(robot_dq.size()) * sin(time);
 
-		// apply simulation-based joint limits instead of collision-based
-		for (int i = 0; i < robot_q.size(); ++i) {
-			if (robot_q(i) > upper_limit[i]) {
-				robot_q(i) = upper_limit[i];
-			} else if (robot_q(i) < lower_limit[i]) {
-				robot_q(i) = lower_limit[i];
-			}
-		}
+		// // apply simulation-based joint limits instead of collision-based
+		// for (int i = 0; i < robot_q.size(); ++i) {
+		// 	if (robot_q(i) > upper_limit[i]) {
+		// 		robot_q(i) = upper_limit[i];
+		// 	} else if (robot_q(i) < lower_limit[i]) {
+		// 		robot_q(i) = lower_limit[i];
+		// 	}
+		// }
 
 		// std::vector<int> limited_joints = {6, 7, 8, 12, 13, 14, 23, 30};
 		// std::vector<int> limited_joints = {6, 7, 8, 12, 13, 14};
-		std::vector<int> limited_joints;
-		for (int i = 0; i < robot_q.size(); ++i) {
-			limited_joints.push_back(i);
-		}
-
-		// for (auto id : limited_joints) {
-		// 	if (robot_q(id) > upper_limit[id]) {
-		// 		robot_q[id] = upper_limit[id];
-		// 	} else if (robot_q(id) < lower_limit[id]) {
-		// 		robot_q(id) = lower_limit[id];
-		// 	}
+		std::vector<int> limited_joints = {9, 15};
+		// std::vector<int> limited_joints;
+		// for (int i = 0; i < robot_q.size(); ++i) {
+		// 	limited_joints.push_back(i);
 		// }
+
+		for (auto id : limited_joints) {
+			if (robot_q(id) > upper_limit[id]) {
+				robot_q[id] = upper_limit[id];
+			} else if (robot_q(id) < lower_limit[id]) {
+				robot_q(id) = lower_limit[id];
+			}
+		}
 
         // Get the mass matrix
 		toro->setQ(robot_q);

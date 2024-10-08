@@ -101,7 +101,7 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> simulation);
 void control(std::shared_ptr<Human> human,
              std::shared_ptr<Sai2Model::Sai2Model> robot,
              OptitrackData& optitrack_data,
-             SimBodyData& sim_body_data,
+             SimBodyData& sim_body_datas,
              ControllerData& controller_data,
              const VectorXd& q_init,
              const int robot_id);
@@ -264,7 +264,7 @@ int main(int argc, char** argv) {
 void control(std::shared_ptr<Optitrack::Human> human,
              std::shared_ptr<Sai2Model::Sai2Model> robot,
              OptitrackData& optitrack_data,
-             SimBodyData& sim_body_data,
+             SimBodyData& sim_body_datas,
              ControllerData& controller_data,
              const VectorXd& q_init,
              const int robot_id) {
@@ -283,6 +283,8 @@ void control(std::shared_ptr<Optitrack::Human> human,
     robot->updateModel();
 	int dof = robot->dof();
 	MatrixXd N_prec = MatrixXd::Identity(dof, dof);
+
+    auto sim_body_data = SimBodyData();
 
     // create task mappings 
     std::map<std::string, std::shared_ptr<Sai2Primitives::MotionForceTask>> tasks;
@@ -614,6 +616,12 @@ void control(std::shared_ptr<Optitrack::Human> human,
         }
 
         prev_control_torques = robot_control_torques;
+        
+        // debug test 
+        // robot_control_torques.setZero();
+        // robot_control_torques(0) = 0.05;
+
+         // std::cout << robot->q().head(6).transpose() << "\n";
 
         redis_client.setEigen(MULTI_TORO_JOINT_TORQUES_COMMANDED_KEY[robot_id], robot_control_torques);
 

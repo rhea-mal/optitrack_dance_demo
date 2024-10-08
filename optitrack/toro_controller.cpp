@@ -75,7 +75,7 @@ struct ControllerData {
     std::vector<Vector3d> control_points;
 };
 
-const double MOTION_SF = 1.0;
+const double MOTION_SF = 0.8;
 const double MAX_RADIUS_ARM = 0.5;  // saturate arms within a sphere distance of the pelvis 
 
 enum State {
@@ -94,6 +94,12 @@ Eigen::Matrix3d quaternionToRotationMatrix(const VectorXd& quat) {
     q.z() = quat[2];
     q.w() = quat[3];
     return q.toRotationMatrix();
+}
+
+Eigen::Matrix3d reOrthogonalizeRotationMatrix(const Eigen::Matrix3d& mat) {
+    Eigen::JacobiSVD<Eigen::Matrix3d> svd(mat, Eigen::ComputeFullU | Eigen::ComputeFullV);
+    Eigen::Matrix3d correctedMat = svd.matrixU() * svd.matrixV().transpose();
+    return correctedMat;
 }
 
 void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> simulation);
@@ -231,36 +237,60 @@ void control(std::shared_ptr<Optitrack::Human> human,
     // create task mappings 
     std::map<std::string, std::shared_ptr<Sai2Primitives::MotionForceTask>> tasks;
 
+    std::vector<Vector3d> controlled_directions = {Vector3d::UnitX(), Vector3d::UnitY(), Vector3d::UnitZ()};
+    std::vector<Vector3d> uncontrolled_directions = {};
+
     for (int i = 0; i < controller_data.control_links.size(); ++i) {
         Affine3d compliant_frame = Affine3d::Identity();
         compliant_frame.translation() = controller_data.control_points[i];
-        tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
-                                                                                                    controller_data.control_links[i],
-                                                                                                    compliant_frame,
-                                                                                                    controller_data.control_links[i]);
+        if (controller_data.control_links[i] == "ra_end_effector" || controller_data.control_links[i] == "la_end_effector") {
+            // compliant_frame.translation() += Vector3d(0.05, 0.05, 0);
+        }
+        // tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
+        //                                                                                             controller_data.control_links[i],
+        //                                                                                             compliant_frame,
+        //                                                                                             controller_data.control_links[i]);
+
+        if (controller_data.control_links[i] == "trunk_rz" || controller_data.control_links[i] == "ra_link4" || controller_data.control_links[i] == "la_link4" || controller_data.control_links[i] == "neck_link2") {
+            tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
+                                                                                                        controller_data.control_links[i],
+                                                                                                        uncontrolled_directions,
+                                                                                                        controlled_directions,
+                                                                                                        compliant_frame,
+                                                                                                        controller_data.control_links[i]);
+        } else {
+            tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
+                                                                                                        controller_data.control_links[i],
+                                                                                                        compliant_frame,
+                                                                                                        controller_data.control_links[i]);
+        }
         
         tasks[controller_data.control_links[i]]->disableInternalOtg();
         tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-        tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);
+        // tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);
         // tasks[controller_data.control_links[i]]->disableSingularityHandling();
         if (controller_data.control_links[i] == "trunk_rz" 
                 || controller_data.control_links[i] == "neck_link2"
                 || controller_data.control_links[i] == "ra_link4" 
                 || controller_data.control_links[i] == "la_link4") {
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
+            // tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(1e10, 1e11);
         }
+
         if (controller_data.control_links[i] == "ra_end_effector" || controller_data.control_links[i] == "la_end_effector") {
-            tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(8e-2, 8e-1);  // might need to change based on the control link (to test)
+            // tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(1e-10, 1e-9);  // might need to change based on the control link (to test)
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
         }
-        // tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(1e-3, 1e-2);
-        tasks[controller_data.control_links[i]]->setPosControlGains(100, 20, 0);
-        tasks[controller_data.control_links[i]]->setOriControlGains(100, 20, 0);
+        // tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(1e-6, 1e-5);
+        tasks[controller_data.control_links[i]]->setPosControlGains(50, 14, 0);
+        tasks[controller_data.control_links[i]]->setOriControlGains(50, 14, 0);
     }
 
     auto joint_task = std::make_shared<Sai2Primitives::JointTask>(robot);
     joint_task->disableInternalOtg();
     VectorXd q_desired = robot->q();
+    // q_desired(9) = 2.0;
+    // q_desired(15) = 2.0;
     // q_desired << 0, 0, 0, 0, 0, 0, 
     //             0, -0.1, -0.25, 0.5, -0.25, 0.1, 
     //             0, 0.1, -0.25, 0.5, -0.25, -0.1, 
@@ -340,7 +370,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
                 optitrack_data.current_pose[body_part_name] = current_pose;
 
             }
-            // // If needed, store in other vectors as well
+            // // If needed, store in other vectors as   well
             //     if (i <= 3) {
             //         current_primary_poses.push_back(current_pose);
             //     } else {
@@ -368,6 +398,10 @@ void control(std::shared_ptr<Optitrack::Human> human,
                     // state = TEST;
                     first_loop = true;
                     n_samples = 0;
+
+                    nominal_posture(9) = 2.0;
+                    nominal_posture(15) = 2.0;
+                    joint_task->setGoalPosition(nominal_posture);
                     continue;
                 }
 
@@ -459,12 +493,12 @@ void control(std::shared_ptr<Optitrack::Human> human,
             // OT_X_rel, OT_R_rel = human->relativePose;
 
         } else if (state == TRACKING) {
-            // want to measure relative motion in optitrack frame
+            // want to measure relative motion in optitrack frameR
             robot_controller->updateControllerTaskModels();
 
             // manually set type 1 posture for all tasks to be the starting posture 
             for (auto it = tasks.begin(); it != tasks.end(); ++it) {
-                it->second->setType1Posture(nominal_posture);
+                // it->second->setType1Posture(nominal_posture);
             }
 
             // update simulation current pose 
@@ -492,6 +526,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
 
                 Vector3d desired_position = sim_body_data.starting_pose[name].translation() + MOTION_SF * relative_poses[i].translation();
                 Matrix3d desired_orientation = relative_poses[i].linear() * sim_body_data.starting_pose[name].linear();
+                desired_orientation = reOrthogonalizeRotationMatrix(desired_orientation);
 
                 tasks[name]->setGoalPosition(desired_position);
                 tasks[name]->setGoalOrientation(desired_orientation);
@@ -555,6 +590,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             // throw runtime_error("nan torques");
             std::cout << "nan torques: setting to previous torque\n";
             robot_control_torques = prev_control_torques;
+            throw runtime_error("nan torques");
         }
 
         prev_control_torques = robot_control_torques;
