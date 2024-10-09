@@ -627,6 +627,12 @@
                 <mesh filename="meshes/obj/va_right_lower_arm.stl.obj"/>
             </geometry>
         </collision> -->
+        <!-- <visual>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry>
+        </visual> -->
     </link>
 
     <joint name="j19" type="revolute">
@@ -702,12 +708,12 @@
                 <box size="0.1 0.1 0.01"/>
             </geometry>
         </collision> -->
-        <visual>
+        <!-- <visual>
             <origin xyz="0.1 0.0 0.0" rpy="0.0 0.0 0.0"/>
             <geometry>
                 <sphere radius="0.05"/>
             </geometry>
-        </visual>
+        </visual> -->
     </link>
 
     <!-- <joint name="j_rhand_fixed" type="fixed">
@@ -891,6 +897,12 @@
                 <mesh filename="meshes/obj/va_left_lower_arm.stl.obj"/>
             </geometry>
         </collision> -->
+        <!-- <visual>
+            <origin xyz="0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry>
+        </visual> -->
       </link>
 
     <joint name="j25" type="revolute">
@@ -966,12 +978,12 @@
                 <box size="0.1 0.1 0.01"/>
             </geometry>
         </collision> -->
-        <visual>
+        <!-- <visual>
             <origin xyz="0.1 0.0 0.0" rpy="0.0 0.0 0.0"/>
             <geometry>
                 <sphere radius="0.05"/>
             </geometry>
-        </visual>
+        </visual> -->
     </link>
 
     <!-- <joint name="j_lhand_fixed" type="fixed">

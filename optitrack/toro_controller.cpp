@@ -276,7 +276,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             //                                                                                             controller_data.control_links[i]);
 
             // decouple position and orientation control in the order of orientation -> position 
-            compliant_frame.translation() = Vector3d(0.01, 0, 0);
+            // compliant_frame.translation() = Vector3d(0.01, 0, 0);
             tasks[controller_data.control_links[i] + "_ori"] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
                                                                                                                  controller_data.control_links[i],
                                                                                                                  uncontrolled_directions,
@@ -309,8 +309,8 @@ void control(std::shared_ptr<Optitrack::Human> human,
 
             tasks[controller_data.control_links[i] + "_ori"]->disableSingularityHandling();
             // tasks[controller_data.control_links[i] + "_ori"]->setSingularityHandlingBounds(1e0, 1e1);
-            // tasks[controller_data.control_links[i] + "_ori"]->setSingularityHandlingBounds(1e-1, 1e0);
-            // tasks[controller_data.control_links[i] + "_ori"]->handleAllSingularitiesAsType1(true);
+            // tasks[controller_data.control_links[i] + "_ori"]->setSingularityHandlingBounds(1e-2, 1e-1);
+            tasks[controller_data.control_links[i] + "_ori"]->handleAllSingularitiesAsType1(true);
             // tasks[controller_data.control_links[i] + "_ori"]->enableVelocitySaturation();
             tasks[controller_data.control_links[i] + "_ori"]->disableInternalOtg();
             tasks[controller_data.control_links[i] + "_ori"]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
@@ -472,6 +472,8 @@ void control(std::shared_ptr<Optitrack::Human> human,
 
                     nominal_posture(9) = 2.0;
                     nominal_posture(15) = 2.0;
+                    nominal_posture(23) = -1.5;
+                    nominal_posture(30) = -1.5;  // elbows
                     joint_task->setGoalPosition(nominal_posture);
                     continue;
                 }

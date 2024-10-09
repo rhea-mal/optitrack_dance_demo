@@ -106,7 +106,7 @@ int main() {
     //setBackgroundImage(graphics, "../../optitrack/assets/space.jpg"); // Set background to space
     
     graphics->getCamera(camera_name)->setClippingPlanes(0.1, 2000);  // set the near and far clipping planes 
-	// graphics->setMirrorHorizontal(camera_name, true);
+	graphics->setMirrorHorizontal(camera_name, true);
 
     // load robots
     toro = std::make_shared<Sai2Model::Sai2Model>(toro_file, false);
@@ -196,7 +196,7 @@ int main() {
 	redis_client.setEigen(HEAD_LOOK_AT, lookat + pos);
 
 	bool conmove = true;
-	bool LAGRANGIAN_BACKGROUND_MODE = false;
+	bool LAGRANGIAN_BACKGROUND_MODE = true;
 	bool IMAGE_BACKGROUND_MODE = false;
 	// start simulation thread
 	thread sim_thread(simulation, sim, lower_joint_limits, upper_joint_limits);
@@ -490,7 +490,11 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 
 		// std::vector<int> limited_joints = {6, 7, 8, 12, 13, 14, 23, 30};
 		// std::vector<int> limited_joints = {6, 7, 8, 9, 12, 13, 14, 15};
-		std::vector<int> limited_joints = {9, 15};
+		std::vector<int> limited_joints = {9, 15, 6, 7, 9, 10, 11, 12, 13, 16, 17};
+		// limited_joints.push_back(20);
+		// limited_joints.push_back(21);
+		// limited_joints.push_back(27);
+		// limited_joints.push_back(28);
 		// std::vector<int> limited_joints;
 		// for (int i = 0; i < robot_q.size(); ++i) {
 		// 	limited_joints.push_back(i);
