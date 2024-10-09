@@ -196,7 +196,7 @@ int main() {
 	redis_client.setEigen(HEAD_LOOK_AT, lookat + pos);
 
 	bool conmove = true;
-	bool LAGRANGIAN_BACKGROUND_MODE = true;
+	bool LAGRANGIAN_BACKGROUND_MODE = false;
 	bool IMAGE_BACKGROUND_MODE = false;
 	// start simulation thread
 	thread sim_thread(simulation, sim, lower_joint_limits, upper_joint_limits);
@@ -489,7 +489,7 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 		// }
 
 		// std::vector<int> limited_joints = {6, 7, 8, 12, 13, 14, 23, 30};
-		// std::vector<int> limited_joints = {6, 7, 8, 12, 13, 14};
+		// std::vector<int> limited_joints = {6, 7, 8, 9, 12, 13, 14, 15};
 		std::vector<int> limited_joints = {9, 15};
 		// std::vector<int> limited_joints;
 		// for (int i = 0; i < robot_q.size(); ++i) {

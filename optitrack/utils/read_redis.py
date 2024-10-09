@@ -6,7 +6,7 @@ from datetime import datetime
 # Redis configuration
 REDIS_HOST = '127.0.0.1'
 REDIS_PORT = 6379
-OUTPUT_FILE = '../recordings/tracy_oct_6_24_in_place.txt'
+# OUTPUT_FILE = '../recordings/tracy_oct_6_24_in_place.txt'
 
 # List of specific IDs to monitor
 IDS_TO_MONITOR = [5, 3, 2, 47, 50, 23, 32, 8, 27]

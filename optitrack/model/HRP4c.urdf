@@ -598,7 +598,7 @@
         <origin xyz="0.0000  0.0 -0.285" rpy="0.0000000000 0.0000000000 0.0000000000" />
         <parent link="ra_link3"/>
         <child link="ra_link4"/>
-        <limit lower="-3.1415" upper="-0.1" effort="40" velocity="2.0944" />
+        <limit lower="-3.1415" upper="-0.5" effort="40" velocity="2.0944" />
         <!-- <axis xyz="0 -1 0"/> -->
         <axis xyz="0 1 0"/>
     </joint>
@@ -702,6 +702,12 @@
                 <box size="0.1 0.1 0.01"/>
             </geometry>
         </collision> -->
+        <visual>
+            <origin xyz="0.1 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry>
+        </visual>
     </link>
 
     <!-- <joint name="j_rhand_fixed" type="fixed">
@@ -857,7 +863,7 @@
         <origin xyz="0.00000 0.000 -0.2850" rpy="0.0000000000 0.0000000000 0.0000000000" />
         <parent link="la_link3"/>
         <child link="la_link4"/>
-        <limit lower="-3.1415" upper="-0.1" effort="40" velocity="2.0944" />
+        <limit lower="-3.1415" upper="-0.5" effort="40" velocity="2.0944" />
          <axis xyz="0 1 0"/>
     </joint>
 
@@ -960,6 +966,12 @@
                 <box size="0.1 0.1 0.01"/>
             </geometry>
         </collision> -->
+        <visual>
+            <origin xyz="0.1 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry>
+        </visual>
     </link>
 
     <!-- <joint name="j_lhand_fixed" type="fixed">

@@ -29,5 +29,11 @@ controller:
   # links: ["hip_base", "LL_foot", "RL_foot", "trunk_rz", "ra_end_effector"]  # must match the body part names 
   # points: [0, 0, 0, 0.05, 0.15]
 
+  # links: ["hip_base", "LL_foot", "RL_foot", "trunk_rz", "ra_end_effector", "la_end_effector", "ra_link4", "la_link4"]  # must match the body part names 
+  # points: [0, 0.05, 0.05, 0.05, 0.05, 0.05, 0, 0]
+
   links: ["hip_base", "LL_foot", "RL_foot", "trunk_rz", "ra_end_effector", "la_end_effector", "ra_link4", "la_link4"]  # must match the body part names 
   points: [0, 0.05, 0.05, 0.05, 0.05, 0.05, 0, 0]
+
+  # links: ["hip_base", "LL_foot", "RL_foot", "trunk_rz", "ra_end_effector", "la_end_effector"]  # must match the body part names 
+  # points: [0, 0.05, 0.05, 0.05, 0.05, 0.05, 0, 0]
