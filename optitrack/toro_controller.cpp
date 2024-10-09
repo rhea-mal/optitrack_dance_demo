@@ -307,9 +307,9 @@ void control(std::shared_ptr<Optitrack::Human> human,
                                                                                                                     controller_data.control_links[i] + "_pos");
             }
 
-            tasks[controller_data.control_links[i] + "_ori"]->disableSingularityHandling();
+            // tasks[controller_data.control_links[i] + "_ori"]->disableSingularityHandling();
             // tasks[controller_data.control_links[i] + "_ori"]->setSingularityHandlingBounds(1e0, 1e1);
-            // tasks[controller_data.control_links[i] + "_ori"]->setSingularityHandlingBounds(1e-2, 1e-1);
+            tasks[controller_data.control_links[i] + "_ori"]->setSingularityHandlingBounds(1e-2, 1e-1);
             tasks[controller_data.control_links[i] + "_ori"]->handleAllSingularitiesAsType1(true);
             // tasks[controller_data.control_links[i] + "_ori"]->enableVelocitySaturation();
             tasks[controller_data.control_links[i] + "_ori"]->disableInternalOtg();
