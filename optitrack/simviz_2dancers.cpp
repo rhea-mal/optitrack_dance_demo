@@ -79,9 +79,10 @@ chai3d::cColorf lagrangianToColor(double lagrangian, double min_lagrangian, doub
     return chai3d::cColorf(red, green, blue);
 }
 
-
 // simulation thread
-void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim);
+void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
+				const std::vector<double>& lower_limit,
+				const std::vector<double>& upper_limit);
 
 int main() {
 	static const string toro_file = "./resources/model/HRP4c.urdf";
@@ -101,7 +102,6 @@ int main() {
     // load graphics scene
     graphics = std::make_shared<Sai2Graphics::Sai2Graphics>(world_file, camera_name, false);
     //setBackgroundImage(graphics, "../../optitrack/assets/space.jpg"); // Set background to space
-    
     graphics->getCamera(camera_name)->setClippingPlanes(0.1, 2000);  // set the near and far clipping planes 
 
 	int total_robots = 2; // total number of robots to update (BEFORE WAS 10)
@@ -119,20 +119,22 @@ int main() {
 	VectorXd hannah_q_desired(hannah->dof());
 	VectorXd tracy_q_desired(tracy->dof());
 
-	hannah_q_desired << 0, 0, 0, 0, 0, 0, 0, -0.1, -0.25, 0.5, -0.25, 0.1, 0, 0.1, -0.25, 0.5, -0.25, -0.1, 0, 0, -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 0, 0;
-    tracy_q_desired << 0, -1.5, 0, 0, 0, 0, 0, -0.1, -0.25, 0.5, -0.25, 0.1, 0, 0.1, -0.25, 0.5, -0.25, -0.1, 0, 0, -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 0, 0;
+	hannah_q_desired << 0, 0.75, 0, 0, 0, 0, 0, -0.1, -0.25, 0.5, -0.25, 0.1, 0, 0.1, -0.25, 0.5, -0.25, -0.1, 0, 0, -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 0, 0;
+    tracy_q_desired << 0, -0.75, 0, 0, 0, 0, 0, -0.1, -0.25, 0.5, -0.25, 0.1, 0, 0.1, -0.25, 0.5, -0.25, -0.1, 0, 0, -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 0, 0;
 
 	hannah->setQ(hannah_q_desired);
-	tracy->setQ(tracy_q_desired);
 	hannah->updateModel();
+
+	tracy->setQ(tracy_q_desired);	
 	tracy->updateModel();
     
 	// hannah_joint_task->setGoalPosition(hannah_q_desired);
 	// tracy_joint_task->setGoalPosition(tracy_q_desired);
-	//graphics->addUIForceInteraction(toro_name);
+	// graphics->addUIForceInteraction(toro_name);
 
 	// load simulation world
 	auto sim = std::make_shared<Sai2Simulation::Sai2Simulation>(world_file, false);
+	
 	sim->setJointPositions(hannah_name, hannah->q());
 	sim->setJointVelocities(hannah_name, hannah->dq());
 
@@ -156,15 +158,22 @@ int main() {
 	// }
 
     // set co-efficient of restition to zero for force control
-    sim->setCollisionRestitution(1.0);
+    sim->setCollisionRestitution(0.0);
 
     // set co-efficient of friction
     sim->setCoeffFrictionStatic(0.0);
     sim->setCoeffFrictionDynamic(0.0);
 
+	// parse joint limits 
+	std::vector<double> lower_joint_limits, upper_joint_limits;
+	auto joint_limits = hannah->jointLimits();
+	for (auto limit : joint_limits) {
+		lower_joint_limits.push_back(limit.position_lower);
+		upper_joint_limits.push_back(limit.position_upper);
+	}
+
 	/*------- Set up visualization -------*/
 	// init redis client values 
-
 	redis_client.setEigen(HANNAH_TORO_JOINT_ANGLES_KEY, hannah->q()); 
 	redis_client.setEigen(HANNAH_TORO_JOINT_VELOCITIES_KEY, hannah->dq()); 
 	redis_client.setEigen(HANNAH_TORO_JOINT_TORQUES_COMMANDED_KEY, 0 * hannah->q());
@@ -192,11 +201,11 @@ int main() {
 	bool LAGRANGIAN_BACKGROUND_MODE = true;
 	bool IMAGE_BACKGROUND_MODE = false;
 	// start simulation thread
-	thread sim_thread(simulation, sim);
+	thread sim_thread(simulation, sim, lower_joint_limits, upper_joint_limits);
 	
 	int robot_index = 0; // index to track which robot to update next
 
-    Sai2Common::LoopTimer timer(30, 1e6);
+    Sai2Common::LoopTimer timer(120, 1e6);
     timer.reinitializeTimer(1e9);
 
 	bool changed_recently = false;
@@ -228,9 +237,12 @@ int main() {
 		// for (int robot_index = 0; robot_index < 10; ++robot_index) {
 		// 	graphics->updateRobotGraphics("HRP4C" + std::to_string(robot_index), redis_client.getEigen(TORO_JOINT_ANGLES_KEY));
 		// }
-		for (int robot_index = 0; robot_index < total_robots; ++robot_index) {
-			graphics->updateRobotGraphics("HRP4C" + std::to_string(robot_index), redis_client.getEigen(MULTI_TORO_JOINT_ANGLES_KEY[robot_index]));
-		}
+		// for (int robot_index = 0; robot_index < total_robots; ++robot_index) {
+		// 	graphics->updateRobotGraphics("HRP4C" + std::to_string(robot_index), redis_client.getEigen(MULTI_TORO_JOINT_ANGLES_KEY[robot_index]));
+		// }
+
+		graphics->updateRobotGraphics("HRP4C0", redis_client.getEigen(MULTI_TORO_JOINT_ANGLES_KEY[0]));
+		graphics->updateRobotGraphics("HRP4C1", redis_client.getEigen(MULTI_TORO_JOINT_ANGLES_KEY[1]));
 
 		if (index == 8) {
 			changed_recently = false; // better logic for this
@@ -399,14 +411,13 @@ int main() {
 		// 	conmove = true;
 		// }
 
-		
 		graphics->renderGraphicsWorld();
-		{
-			lock_guard<mutex> lock(mutex_torques);
+		// {
+		// 	lock_guard<mutex> lock(mutex_torques);
 			
-			hannah_ui_torques = graphics->getUITorques(hannah_name);
-			tracy_ui_torques = graphics->getUITorques(tracy_name);
-		}
+		// 	hannah_ui_torques = graphics->getUITorques(hannah_name);
+		// 	tracy_ui_torques = graphics->getUITorques(tracy_name);
+		// }
 	}
 
     // stop simulation
@@ -417,7 +428,9 @@ int main() {
 }
 
 //------------------------------------------------------------------------------
-void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim) {
+void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
+				const std::vector<double>& lower_limit,
+				const std::vector<double>& upper_limit) {
     // fSimulationRunning = true;
 
     // create redis client
@@ -425,14 +438,14 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim) {
     redis_client.connect();
 
     // create a timer
-    double sim_freq = 1000;
+    double sim_freq = 2000;
     Sai2Common::LoopTimer timer(sim_freq);
 
     sim->setTimestep(1.0 / sim_freq);
-    sim->enableGravityCompensation(false);
+    sim->enableGravityCompensation(true);
 
-    sim->enableJointLimits(hannah_name);
-	sim->enableJointLimits(tracy_name);
+    sim->disableJointLimits(hannah_name);
+	sim->disableJointLimits(tracy_name);
 
     while (fSimulationRunning) {
         timer.waitForNextLoop();
@@ -440,31 +453,75 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim) {
 
         VectorXd hannah_control_torques = redis_client.getEigen(HANNAH_TORO_JOINT_TORQUES_COMMANDED_KEY);
 		VectorXd tracy_control_torques = redis_client.getEigen(TRACY_TORO_JOINT_TORQUES_COMMANDED_KEY);
-
-		// std::cout << hannah_control_torques.transpose() << "\n";
-		// std::cout << tracy_control_torques.transpose() << "\n";
-
-        {
-            lock_guard<mutex> lock(mutex_torques);
+        // {
+            // lock_guard<mutex> lock(mutex_torques);
             sim->setJointTorques(hannah_name, hannah_control_torques + 0 * hannah_ui_torques);
 			sim->setJointTorques(tracy_name, tracy_control_torques + 0 * tracy_ui_torques);
-        }
+        // }
         sim->integrate();
 
 		VectorXd hannah_robot_q = sim->getJointPositions(hannah_name);
     	VectorXd hannah_robot_dq = sim->getJointVelocities(hannah_name);
 		VectorXd tracy_robot_q = sim->getJointPositions(tracy_name);
     	VectorXd tracy_robot_dq = sim->getJointVelocities(tracy_name);
+		
 		// hannah->setQ(hannah_robot_q);
 		// hannah->updateModel();
 		// tracy->setQ(tracy_robot_q);
 		// tracy->updateModel();
 
-		VectorXd robot_q = (hannah_robot_q + tracy_robot_q)/2;
-		VectorXd robot_dq = (hannah_robot_dq + tracy_robot_dq)/2;
+		std::vector<int> right_leg_joints = {6, 7, 8, 9, 10, 11};
+		std::vector<int> left_leg_joints = {12, 13, 14, 15, 16, 17};
+		std::vector<int> torso_joints = {18, 19};
+		std::vector<int> right_arm_joints = {20, 21, 22, 23, 24, 25, 26};
+		std::vector<int> left_arm_joints = {27, 28, 29, 30, 31, 32, 33};
+		std::vector<int> head_joints = {34, 35};
+
+		std::vector<int> limited_joints = {6, 7, 8, 9, 12, 13, 14, 15};
+
+		// std::vector<int> limited_joints = {6, 7, 8, 12, 13, 14, 23, 30};
+		// std::vector<int> limited_joints = {6, 7, 8, 9, 12, 13, 14, 15};
+		// std::vector<int> limited_joints = {9, 15, 6, 7, 9, 10, 11, 12, 13, 16, 17, 19};
+		// limited_joints.push_back(20);
+		// limited_joints.push_back(21);
+		// limited_joints.push_back(27);
+		// limited_joints.push_back(28);
+		// std::vector<int> limited_joints;
+		// for (int i = 0; i < robot_q.size(); ++i) {
+		// 	limited_joints.push_back(i);
+		// }
+
+		for (auto id : limited_joints) {
+			if (hannah_robot_q(id) > upper_limit[id]) {
+				hannah_robot_q[id] = upper_limit[id];
+			} else if (hannah_robot_q(id) < lower_limit[id]) {
+				hannah_robot_q(id) = lower_limit[id];
+			}
+		}
+
+		for (auto id : limited_joints) {
+			if (tracy_robot_q(id) > upper_limit[id]) {
+				tracy_robot_q[id] = upper_limit[id];
+			} else if (tracy_robot_q(id) < lower_limit[id]) {
+				tracy_robot_q(id) = lower_limit[id];
+			}
+		}
+
+		hannah->setQ(hannah_robot_q);
+		hannah->setDq(hannah_robot_dq);
+		hannah->updateModel();
+
+		tracy->setQ(tracy_robot_q);
+		tracy->setDq(tracy_robot_dq);
+		tracy->updateModel();
+
+		// VectorXd robot_q = (hannah_robot_q + tracy_robot_q)/2;
+		// VectorXd robot_dq = (hannah_robot_dq + tracy_robot_dq)/2;
 
 		redis_client.setEigen(MULTI_TORO_JOINT_ANGLES_KEY[0], hannah_robot_q);
+		redis_client.setEigen(MULTI_TORO_JOINT_VELOCITIES_KEY[0], hannah_robot_dq);
 		redis_client.setEigen(MULTI_TORO_JOINT_ANGLES_KEY[1], tracy_robot_q);
+		redis_client.setEigen(MULTI_TORO_JOINT_VELOCITIES_KEY[1], tracy_robot_dq);
 
         //robot_dq = 0.1 * VectorXd::Ones(robot_dq.size()) * sin(time);
 

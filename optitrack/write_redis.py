@@ -11,7 +11,7 @@ REDIS_PORT = 6379
 # INPUT_FILE = '/Users/rheamalhotra/Desktop/robotics/optitrack-robot-dance/optitrack/recordings/jump.txt'  # Input file with the data
 INPUT_FILE = './recordings/tracy_oct_6_24_conservative.txt'  # Input file with the data
 # INPUT_FILE = './recordings/tracy_oct_6_24_in_place.txt'  # Input file with the data
-USER_READY_KEY = "sai2::optitrack::user_ready"
+USER_READY_KEY = ["sai2::optitrack::user_ready", "sai2::optitrack::user_1_ready", "sai2::optitrack::user_2_ready"]
 
 # Connect to Redis
 redis_client = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
@@ -49,7 +49,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     # reset user ready key 
-    redis_client.set(USER_READY_KEY, 0)
+    for key in USER_READY_KEY:
+        redis_client.set(key, 0)
     
     # parse data 
     data = read_data(INPUT_FILE)
@@ -59,7 +60,8 @@ if __name__ == "__main__":
         redis_client.set(key, value)
     
     # set user ready key 
-    redis_client.set(USER_READY_KEY, 1)
+    for key in USER_READY_KEY:
+        redis_client.set(key, 1)
     
     # publish rest of data when user is ready 
     publish_to_redis(data, rate_hz=100, loop=args.loop)

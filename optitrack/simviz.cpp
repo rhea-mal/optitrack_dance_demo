@@ -166,7 +166,7 @@ int main() {
 	}
 
     // set co-efficient of restition to zero for force control
-    sim->setCollisionRestitution(1.0);
+    sim->setCollisionRestitution(0.0);
 
     // set co-efficient of friction
     sim->setCoeffFrictionStatic(0.0);
@@ -204,7 +204,7 @@ int main() {
 	int robot_index = 0; // index to track which robot to update next
     int total_robots = 10; // total number of robots to update
 
-    Sai2Common::LoopTimer timer(DELAY);
+    Sai2Common::LoopTimer timer(30, 1e6);
     timer.reinitializeTimer(1e9);
 
 	bool changed_recently = false;
@@ -374,10 +374,10 @@ int main() {
 		// 	graphics->showTransparency(true, "toro9", 1.0); 
 		// }
     
-        {
-			lock_guard<mutex> lock(mutex_update);
+        // {
+		// 	lock_guard<mutex> lock(mutex_update);
 			
-		}
+		// }
 
 		//if (redis_client.getBool(GLOBAL_CAM) && conmove) {
 		if (false) {

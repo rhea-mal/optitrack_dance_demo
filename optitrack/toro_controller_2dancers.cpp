@@ -96,8 +96,6 @@ Eigen::Matrix3d quaternionToRotationMatrix(const VectorXd& quat) {
     return q.toRotationMatrix();
 }
 
-void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> simulation);
-
 void control(std::shared_ptr<Human> human,
              std::shared_ptr<Sai2Model::Sai2Model> robot,
              OptitrackData& optitrack_data,

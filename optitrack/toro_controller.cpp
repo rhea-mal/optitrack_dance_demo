@@ -37,6 +37,7 @@
 #include "../include/Human.h"
 #include "redis_keys.h"
 #include <yaml-cpp/yaml.h>
+#include "../include/CLI11.hpp"
 
 bool runloop = false;
 void sighandler(int){runloop = false;}
@@ -47,9 +48,10 @@ using namespace Optitrack;
 
 // specify urdf and robots
 const string robot_file = "./resources/model/HRP4c.urdf";
-const string robot_name = "HRP4C0";
+string robot_name = "HRP4C";  // will be added with suffix of robot id 
 const string camera_name = "camera_fixed";
-const std::string yaml_fname = "./resources/controller_settings_1_dancer.yaml";
+// const std::string yaml_fname = "./resources/controller_settings_1_dancer.yaml";
+const std::string yaml_fname = "./resources/controller_settings_multi_dancers.yaml";
 
 // globals
 VectorXd nominal_posture;
@@ -102,8 +104,6 @@ Eigen::Matrix3d reOrthogonalizeRotationMatrix(const Eigen::Matrix3d& mat) {
     return correctedMat;
 }
 
-void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> simulation);
-
 void control(std::shared_ptr<Human> human,
              std::shared_ptr<Sai2Model::Sai2Model> robot,
              OptitrackData& optitrack_data,
@@ -130,7 +130,32 @@ Matrix3d R_camera_world = Matrix3d::Identity();
 Matrix3d R_mirror;
 Matrix3d R_optitrack_to_sai = (AngleAxisd(M_PI / 2, Vector3d::UnitZ()) * AngleAxisd(0 * M_PI / 2, Vector3d::UnitX())).toRotationMatrix();
 
+std::string NAME = "";
+int ROBOT_ID = 0;
+
 int main(int argc, char** argv) {
+
+    CLI::App app("Argument parser app");
+    argv = app.ensure_utf8(argv);
+
+    app.add_option("--name", NAME, "Name (Tracy or Hannah or User)")->required();
+
+    CLI11_PARSE(app, argc, argv);
+
+    // parse input 
+    if (NAME == "Hannah") {
+        ROBOT_ID = 0;
+    } else if (NAME == "Tracy") {
+        ROBOT_ID = 1;
+    } else if (NAME == "User") {
+        ROBOT_ID = 2;
+    }
+
+    if (NAME != "Hannah" && NAME != "Tracy" && NAME != "User") {
+        throw runtime_error("Must select either Hannah or Tracy or User");
+    }
+
+    robot_name += std::to_string(ROBOT_ID);
     
     signal(SIGABRT, &sighandler);
     signal(SIGTERM, &sighandler);
@@ -140,7 +165,7 @@ int main(int argc, char** argv) {
     redis_client.connect();
 
     // initialize redis 
-    redis_client.setInt(USER_READY_KEY, 0);
+    redis_client.setInt(MULTI_USER_READY_KEY[ROBOT_ID], 0);
 
     // setup struct 
     auto optitrack_data = OptitrackData();
@@ -224,12 +249,12 @@ void control(std::shared_ptr<Optitrack::Human> human,
     redis_client.connect();
 
     // reset user ready key 
-    redis_client.setInt(USER_READY_KEY, 0);
-    redis_client.setInt(RESET_ROBOT_KEY, 0);
+    redis_client.setInt(MULTI_USER_READY_KEY[ROBOT_ID], 0);
+    redis_client.setInt(MULTI_RESET_ROBOT_KEY[ROBOT_ID], 0);
 
 	// update robot model and initialize control vectors
-    robot->setQ(redis_client.getEigen(TORO_JOINT_ANGLES_KEY));
-    robot->setDq(redis_client.getEigen(TORO_JOINT_VELOCITIES_KEY));
+    robot->setQ(redis_client.getEigen(MULTI_TORO_JOINT_ANGLES_KEY[ROBOT_ID]));
+    robot->setDq(redis_client.getEigen(MULTI_TORO_JOINT_VELOCITIES_KEY[ROBOT_ID]));
     robot->updateModel();
 	int dof = robot->dof();
 	MatrixXd N_prec = MatrixXd::Identity(dof, dof);
@@ -260,6 +285,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
                                                                                                         controller_data.control_links[i]);
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
             tasks[controller_data.control_links[i]]->disableInternalOtg();
+            tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
         } else if (controller_data.control_links[i] == "ra_link4" || controller_data.control_links[i] == "la_link4") {
             tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
                                                                                                         controller_data.control_links[i],
@@ -269,6 +295,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
                                                                                                         controller_data.control_links[i]);
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
             tasks[controller_data.control_links[i]]->disableInternalOtg();
+            tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
         } else if (controller_data.control_links[i] == "ra_end_effector" || controller_data.control_links[i] == "la_end_effector") {
             // tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
             //                                                                                             controller_data.control_links[i],
@@ -307,19 +334,22 @@ void control(std::shared_ptr<Optitrack::Human> human,
                                                                                                                     controller_data.control_links[i] + "_pos");
             }
 
-            // tasks[controller_data.control_links[i] + "_ori"]->disableSingularityHandling();
-            // tasks[controller_data.control_links[i] + "_ori"]->setSingularityHandlingBounds(1e0, 1e1);
-            tasks[controller_data.control_links[i] + "_ori"]->setSingularityHandlingBounds(1e-2, 1e-1);
+            tasks[controller_data.control_links[i] + "_ori"]->disableSingularityHandling();
+            // tasks[controller_data.control_links[i] + "_ori"]->setSingularityHandlingBounds(1e-1, 5e-1);
+            tasks[controller_data.control_links[i] + "_ori"]->setSingularityHandlingBounds(8e-3, 8e-2);
             tasks[controller_data.control_links[i] + "_ori"]->handleAllSingularitiesAsType1(true);
             // tasks[controller_data.control_links[i] + "_ori"]->enableVelocitySaturation();
             tasks[controller_data.control_links[i] + "_ori"]->disableInternalOtg();
             tasks[controller_data.control_links[i] + "_ori"]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-            
+            tasks[controller_data.control_links[i] + "_ori"]->setOriControlGains(50, 14, 0);
+
             // tasks[controller_data.control_links[i] + "_pos"]->disableSingularityHandling();
             tasks[controller_data.control_links[i] + "_pos"]->setSingularityHandlingBounds(1e-2, 1e-1);
             tasks[controller_data.control_links[i] + "_pos"]->handleAllSingularitiesAsType1(true);
             tasks[controller_data.control_links[i] + "_pos"]->disableInternalOtg();
             tasks[controller_data.control_links[i] + "_pos"]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
+            tasks[controller_data.control_links[i] + "_pos"]->setOriControlGains(50, 14, 0);
+
         } else {
             tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
                                                                                                         controller_data.control_links[i],
@@ -327,6 +357,8 @@ void control(std::shared_ptr<Optitrack::Human> human,
                                                                                                         controller_data.control_links[i]);
             tasks[controller_data.control_links[i]]->disableInternalOtg();
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
+            tasks[controller_data.control_links[i]]->setPosControlGains(50, 14, 0);
+            tasks[controller_data.control_links[i]]->setOriControlGains(50, 14, 0);
             // tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);
             // tasks[controller_data.control_links[i]]->disableSingularityHandling();
         }
@@ -401,15 +433,15 @@ void control(std::shared_ptr<Optitrack::Human> human,
 		const double time = timer.elapsedSimTime();
 
         // update robot model
-        robot->setQ(redis_client.getEigen(TORO_JOINT_ANGLES_KEY));
-        robot->setDq(redis_client.getEigen(TORO_JOINT_VELOCITIES_KEY));
+        robot->setQ(redis_client.getEigen(MULTI_TORO_JOINT_ANGLES_KEY[ROBOT_ID]));
+        robot->setDq(redis_client.getEigen(MULTI_TORO_JOINT_VELOCITIES_KEY[ROBOT_ID]));
         robot->updateModel();
 
         // read the reset state 
-        int reset_robot = redis_client.getInt(RESET_ROBOT_KEY);
+        int reset_robot = redis_client.getInt(MULTI_RESET_ROBOT_KEY[ROBOT_ID]);
         if (reset_robot) {
             state = RESET;
-            redis_client.setInt(RESET_ROBOT_KEY, 0);
+            redis_client.setInt(MULTI_RESET_ROBOT_KEY[ROBOT_ID], 0);
         }
 
         // read optitrack input and store in optitrack struct 
@@ -419,8 +451,8 @@ void control(std::shared_ptr<Optitrack::Human> human,
 
                 std::string body_part_name = it->first;
                 int index = it->second;
-                Vector3d current_position = redis_client.getEigen(std::to_string(optitrack_data.human_ids[0]) + "::" + std::to_string(index) + "::pos");
-                MatrixXd quaternion_matrix = redis_client.getEigen(std::to_string(optitrack_data.human_ids[0]) + "::" + std::to_string(index) + "::ori");
+                Vector3d current_position = redis_client.getEigen(std::to_string(optitrack_data.human_ids[ROBOT_ID]) + "::" + std::to_string(index) + "::pos");
+                MatrixXd quaternion_matrix = redis_client.getEigen(std::to_string(optitrack_data.human_ids[ROBOT_ID]) + "::" + std::to_string(index) + "::ori");
 
                 if (quaternion_matrix.size() != 4) {
                     std::cerr << "Error: Quaternion retrieved from Redis does not have 4 elements." << std::endl;
@@ -464,7 +496,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             robot_control_torques = joint_task->computeTorques();
 
             if (joint_task->goalPositionReached(1e-2)) {
-                if (redis_client.getInt(USER_READY_KEY) == 1) {
+                if (redis_client.getInt(MULTI_USER_READY_KEY[ROBOT_ID]) == 1) {
                     state = CALIBRATION;
                     // state = TEST;
                     first_loop = true;
@@ -499,7 +531,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             //R transpose R is the delta
 
             // wait for user ready key input 
-            bool user_ready = redis_client.getBool(USER_READY_KEY);
+            bool user_ready = redis_client.getBool(MULTI_USER_READY_KEY[ROBOT_ID]);
 
             if (user_ready) {
                 // recalibrate 
@@ -673,7 +705,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
 
         prev_control_torques = robot_control_torques;
 
-        redis_client.setEigen(TORO_JOINT_TORQUES_COMMANDED_KEY, robot_control_torques);
+        redis_client.setEigen(MULTI_TORO_JOINT_TORQUES_COMMANDED_KEY[ROBOT_ID], robot_control_torques);
 
         // Add camera tracking
         string link_name = "neck_link2"; // head link
@@ -696,6 +728,6 @@ void control(std::shared_ptr<Optitrack::Human> human,
 	timer.stop();
 	cout << "\nControl loop timer stats:\n";
 	timer.printInfoPostRun();
-    redis_client.setEigen(TORO_JOINT_TORQUES_COMMANDED_KEY, 0 * control_torques);
+    redis_client.setEigen(MULTI_TORO_JOINT_TORQUES_COMMANDED_KEY[ROBOT_ID], 0 * control_torques);
 	
 }

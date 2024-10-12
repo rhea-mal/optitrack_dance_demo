@@ -26,9 +26,9 @@ const std::string TRACY_TORO_JOINT_ANGLES_KEY = "sai2::sim::tracy::toro::sensors
 const std::string TRACY_TORO_JOINT_VELOCITIES_KEY = "sai2::sim::tracy::toro::sensors::dq";
 const std::string TRACY_TORO_JOINT_TORQUES_COMMANDED_KEY = "sai2::sim::tracy::toro::actuators::fgc";
 
-const std::vector<std::string> MULTI_TORO_JOINT_ANGLES_KEY = {HANNAH_TORO_JOINT_ANGLES_KEY, TRACY_TORO_JOINT_ANGLES_KEY};
-const std::vector<std::string> MULTI_TORO_JOINT_VELOCITIES_KEY = {HANNAH_TORO_JOINT_VELOCITIES_KEY, TRACY_TORO_JOINT_VELOCITIES_KEY};
-const std::vector<std::string> MULTI_TORO_JOINT_TORQUES_COMMANDED_KEY = {HANNAH_TORO_JOINT_TORQUES_COMMANDED_KEY, TRACY_TORO_JOINT_TORQUES_COMMANDED_KEY};
+const std::vector<std::string> MULTI_TORO_JOINT_ANGLES_KEY = {HANNAH_TORO_JOINT_ANGLES_KEY, TRACY_TORO_JOINT_ANGLES_KEY, TORO_JOINT_ANGLES_KEY};
+const std::vector<std::string> MULTI_TORO_JOINT_VELOCITIES_KEY = {HANNAH_TORO_JOINT_VELOCITIES_KEY, TRACY_TORO_JOINT_VELOCITIES_KEY, TORO_JOINT_VELOCITIES_KEY};
+const std::vector<std::string> MULTI_TORO_JOINT_TORQUES_COMMANDED_KEY = {HANNAH_TORO_JOINT_TORQUES_COMMANDED_KEY, TRACY_TORO_JOINT_TORQUES_COMMANDED_KEY, TORO_JOINT_TORQUES_COMMANDED_KEY};
 
 //const std::string TORO_CONTROLLER_RUNNING_KEY = "sai2::sim::toro::controller";
 
@@ -39,7 +39,7 @@ const std::string OPTITRACK_POS_KEY = "sai2::optitrack::pos_rigid_bodies";
 const std::string OPTITRACK_ORI_KEY = "sai2::optitrack::ori_rigid_bodies";
 const std::string USER_READY_KEY = "sai2::optitrack::user_ready";
 
-const std::vector<std::string> MULTI_USER_READY_KEY = {"sai2::optitrack::user_1_ready", "sai2::optitrack::user_2_ready"};
+const std::vector<std::string> MULTI_USER_READY_KEY = {"sai2::optitrack::user_1_ready", "sai2::optitrack::user_2_ready", "sai2::optitrack::user_ready"};
 
 const std::string HEAD_POS = "sai2::sim::toro::head_pos";
 const std::string HEAD_VERT_AXIS = "sai2::sim::toro::head_vert_axis";

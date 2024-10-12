@@ -231,6 +231,12 @@
                 <sphere radius="0.1"/>
             </geometry>
         </visual> -->
+        <!-- <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry>
+        </collision> -->
     </link>
 
     <joint name="j4" type="revolute">
@@ -284,6 +290,12 @@
                 <mesh filename="../../../model/HRP4c/graphics/R_ANKLE_R_rev2.obj"/>
             </geometry>
         </visual>
+        <!-- <visual>
+            <origin xyz="0.2 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry>
+        </visual> -->
     </link>
 
     <joint name="j6" type="revolute">
@@ -369,6 +381,12 @@
                 <mesh filename="../../../model/HRP4c/graphics/L_KNEE_P_rev2.obj"/>
             </geometry>
         </visual>
+        <!-- <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry>
+        </collision> -->
     </link>
 
     <joint name="j10" type="revolute">
@@ -413,6 +431,12 @@
                 <mesh filename="../../../model/HRP4c/graphics/L_ANKLE_R.obj"/>
             </geometry>
         </visual>
+        <!-- <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry>
+        </collision> -->
     </link>
 
     <joint name="j12" type="revolute">
@@ -551,6 +575,12 @@
                 <mesh filename="meshes/obj/va_right_upper_arm.stl.obj"/>
             </geometry>
         </collision> -->
+        <!-- <visual>
+            <origin xyz="0.0 0.0 -0.12" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry>
+        </visual> -->
       </link>
 
     <!-- TODO : Rotated -120 degres aroung Y axis -->
@@ -714,6 +744,12 @@
                 <sphere radius="0.05"/>
             </geometry>
         </visual> -->
+        <!-- <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry>
+        </collision> -->
     </link>
 
     <!-- <joint name="j_rhand_fixed" type="fixed">
@@ -821,6 +857,12 @@
             <origin xyz="0.0000000000 0.0000000000 0.0000000000" rpy="-1.5707963268  0.0000000000  0.0000000000" />
             <geometry>
                 <mesh filename="meshes/obj/va_left_upper_arm.stl.obj"/>
+            </geometry>
+        </collision> -->
+        <!-- <collision>
+            <origin xyz="0.0 0.0 -0.28" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.05"/>
             </geometry>
         </collision> -->
       </link>
@@ -984,6 +1026,12 @@
                 <sphere radius="0.05"/>
             </geometry>
         </visual> -->
+        <!-- <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry>
+        </collision> -->
     </link>
 
     <!-- <joint name="j_lhand_fixed" type="fixed">
@@ -1067,12 +1115,6 @@
                 <capsule a="0.01 -0.078 -0.013" b="0.013 0.078 -0.01" radius="0.05"/>
             </geometry>
         </collision> -->
-        <!-- <visual>
-            <origin xyz="0.0 0.0 0.15" rpy="0.0 0.0 0.0"/>
-            <geometry>
-                <sphere radius="0.1"/>
-            </geometry>
-        </visual> -->
     </link>
 
     <joint name="j28" type="revolute">
