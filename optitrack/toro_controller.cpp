@@ -77,7 +77,7 @@ struct ControllerData {
     std::vector<Vector3d> control_points;
 };
 
-const double MOTION_SF = 0.8;
+const double MOTION_SF = 1.0;
 const double MAX_RADIUS_ARM = 0.5;  // saturate arms within a sphere distance of the pelvis 
 
 enum State {
@@ -286,6 +286,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
             tasks[controller_data.control_links[i]]->disableInternalOtg();
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
+            tasks[controller_data.control_links[i]]->setOriControlGains(350, 20, 0);
         } else if (controller_data.control_links[i] == "ra_link4" || controller_data.control_links[i] == "la_link4") {
             tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
                                                                                                         controller_data.control_links[i],
@@ -296,6 +297,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
             tasks[controller_data.control_links[i]]->disableInternalOtg();
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
+            tasks[controller_data.control_links[i]]->setOriControlGains(350, 20, 0);
         } else if (controller_data.control_links[i] == "ra_end_effector" || controller_data.control_links[i] == "la_end_effector") {
             // tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
             //                                                                                             controller_data.control_links[i],
@@ -336,19 +338,19 @@ void control(std::shared_ptr<Optitrack::Human> human,
 
             tasks[controller_data.control_links[i] + "_ori"]->disableSingularityHandling();
             // tasks[controller_data.control_links[i] + "_ori"]->setSingularityHandlingBounds(1e-1, 5e-1);
-            tasks[controller_data.control_links[i] + "_ori"]->setSingularityHandlingBounds(8e-3, 8e-2);
-            tasks[controller_data.control_links[i] + "_ori"]->handleAllSingularitiesAsType1(true);
+            // tasks[controller_data.control_links[i] + "_ori"]->setSingularityHandlingBounds(1e-2, 1e-1);
+            // tasks[controller_data.control_links[i] + "_ori"]->handleAllSingularitiesAsType1(true);
             // tasks[controller_data.control_links[i] + "_ori"]->enableVelocitySaturation();
             tasks[controller_data.control_links[i] + "_ori"]->disableInternalOtg();
             tasks[controller_data.control_links[i] + "_ori"]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-            tasks[controller_data.control_links[i] + "_ori"]->setOriControlGains(50, 14, 0);
+            tasks[controller_data.control_links[i] + "_ori"]->setOriControlGains(350, 20, 0);
 
             // tasks[controller_data.control_links[i] + "_pos"]->disableSingularityHandling();
-            tasks[controller_data.control_links[i] + "_pos"]->setSingularityHandlingBounds(1e-2, 1e-1);
+            tasks[controller_data.control_links[i] + "_pos"]->setSingularityHandlingBounds(3e-2, 3e-1);
             tasks[controller_data.control_links[i] + "_pos"]->handleAllSingularitiesAsType1(true);
             tasks[controller_data.control_links[i] + "_pos"]->disableInternalOtg();
             tasks[controller_data.control_links[i] + "_pos"]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-            tasks[controller_data.control_links[i] + "_pos"]->setOriControlGains(50, 14, 0);
+            tasks[controller_data.control_links[i] + "_pos"]->setPosControlGains(350, 20, 0);
 
         } else {
             tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
@@ -357,8 +359,8 @@ void control(std::shared_ptr<Optitrack::Human> human,
                                                                                                         controller_data.control_links[i]);
             tasks[controller_data.control_links[i]]->disableInternalOtg();
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-            tasks[controller_data.control_links[i]]->setPosControlGains(50, 14, 0);
-            tasks[controller_data.control_links[i]]->setOriControlGains(50, 14, 0);
+            tasks[controller_data.control_links[i]]->setPosControlGains(350, 20, 0);
+            tasks[controller_data.control_links[i]]->setOriControlGains(350, 20, 0);
             // tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);
             // tasks[controller_data.control_links[i]]->disableSingularityHandling();
         }
@@ -396,7 +398,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
     //             -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, 
     //             -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 
     //             0, 0;
-	joint_task->setGains(100, 20, 0);
+	joint_task->setGains(50, 14, 0);
     joint_task->setDynamicDecouplingType(Sai2Primitives::DynamicDecouplingType::FULL_DYNAMIC_DECOUPLING);
 	joint_task->setGoalPosition(q_desired);  
     nominal_posture = q_desired;

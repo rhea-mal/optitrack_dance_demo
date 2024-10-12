@@ -103,6 +103,7 @@ int main() {
     graphics = std::make_shared<Sai2Graphics::Sai2Graphics>(world_file, camera_name, false);
     //setBackgroundImage(graphics, "../../optitrack/assets/space.jpg"); // Set background to space
     graphics->getCamera(camera_name)->setClippingPlanes(0.1, 2000);  // set the near and far clipping planes 
+	graphics->setMirrorHorizontal(camera_name, true);
 
 	int total_robots = 2; // total number of robots to update (BEFORE WAS 10)
 
@@ -121,6 +122,20 @@ int main() {
 
 	hannah_q_desired << 0, 0.75, 0, 0, 0, 0, 0, -0.1, -0.25, 0.5, -0.25, 0.1, 0, 0.1, -0.25, 0.5, -0.25, -0.1, 0, 0, -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 0, 0;
     tracy_q_desired << 0, -0.75, 0, 0, 0, 0, 0, -0.1, -0.25, 0.5, -0.25, 0.1, 0, 0.1, -0.25, 0.5, -0.25, -0.1, 0, 0, -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 0, 0;
+
+	// hannah_q_desired(24) = -1.0;
+	// hannah_q_desired(25) = 0.6;
+	// hannah_q_desired(26) = -0.1;
+	hannah_q_desired(25) = 0;
+	hannah_q_desired(31) = 0;
+	hannah_q_desired(32) = 0;
+
+	// tracy_q_desired(24) = -1.0;
+	// tracy_q_desired(25) = 0.6;
+	// tracy_q_desired(26) = -0.1;
+	tracy_q_desired(25) = 0;
+	tracy_q_desired(31) = 0;
+	tracy_q_desired(32) = 0;
 
 	hannah->setQ(hannah_q_desired);
 	hannah->updateModel();
@@ -200,6 +215,9 @@ int main() {
 	bool conmove = true;
 	bool LAGRANGIAN_BACKGROUND_MODE = true;
 	bool IMAGE_BACKGROUND_MODE = false;
+	
+	redis_client.set(LAGRANGIAN, std::to_string(0));
+
 	// start simulation thread
 	thread sim_thread(simulation, sim, lower_joint_limits, upper_joint_limits);
 	
@@ -219,12 +237,15 @@ int main() {
 		// Get the Lagrangian value from Redis
 
 		if (LAGRANGIAN_BACKGROUND_MODE) {
-		double lagrangian = stod(redis_client.get(LAGRANGIAN));
+		double lagrangian = stod(redis_client.get(HANNAH_LAGRANGIAN));
 		chai3d::cColorf backgroundColor = lagrangianToColor(lagrangian, -50.0, 200.0);
 		double red = backgroundColor.getR();
     	double green = backgroundColor.getG();
    		double blue = backgroundColor.getB();
 		graphics->setBackgroundColor(red, green, blue);
+		redis_client.set("red", std::to_string(red));
+		redis_client.set("green", std::to_string(green));
+		redis_client.set("blue", std::to_string(blue));
 		}
         
         // Update primary robot graphics
@@ -438,7 +459,7 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
     redis_client.connect();
 
     // create a timer
-    double sim_freq = 2000;
+    double sim_freq = 1000;
     Sai2Common::LoopTimer timer(sim_freq);
 
     sim->setTimestep(1.0 / sim_freq);
@@ -477,7 +498,9 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 		std::vector<int> left_arm_joints = {27, 28, 29, 30, 31, 32, 33};
 		std::vector<int> head_joints = {34, 35};
 
-		std::vector<int> limited_joints = {6, 7, 8, 9, 12, 13, 14, 15};
+		// std::vector<int> limited_joints = {6, 7, 8, 9, 12, 13, 14, 15};
+		// std::vector<int> limited_joints = {9, 15, 6, 7, 9, 10, 11, 12, 13, 16, 17, 23, 30, 19};
+		std::vector<int> limited_joints = {9, 15, 6, 7, 9, 10, 11, 12, 13, 16, 17};
 
 		// std::vector<int> limited_joints = {6, 7, 8, 12, 13, 14, 23, 30};
 		// std::vector<int> limited_joints = {6, 7, 8, 9, 12, 13, 14, 15};
@@ -526,16 +549,16 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
         //robot_dq = 0.1 * VectorXd::Ones(robot_dq.size()) * sin(time);
 
         // Get the mass matrix
-        // MatrixXd hannah_robot_M = hannah->M();
-        // VectorXd hannah_g = hannah->jointGravityVector();
-        // double hannah_kinetic_energy = 0.5 * hannah_robot_dq.transpose() * hannah_robot_M * hannah_robot_dq;
-		// Eigen::VectorXd hanah_comPosition = hannah->comPosition();
-		// double hannah_potential_energy = 90 * hannah_comPosition(2) * -9.8;
-        // double hannah_lagrangian = hannah_kinetic_energy - hannah_potential_energy;
+        MatrixXd hannah_robot_M = hannah->M();
+        VectorXd hannah_g = hannah->jointGravityVector();
+        double hannah_kinetic_energy = 0.5 * hannah_robot_dq.transpose() * hannah_robot_M * hannah_robot_dq;
+		Eigen::VectorXd hanah_comPosition = hannah->comPosition();
+		double hannah_potential_energy = 90 * hanah_comPosition(2) * -9.8;
+        double hannah_lagrangian = hannah_kinetic_energy - hannah_potential_energy;
         
-		// redis_client.set(HANNAH_KINETIC, std::to_string(hannah_kinetic_energy));
-		// redis_client.set(HANNAH_POTENTIAL, std::to_string(hannah_potential_energy));
-		// redis_client.set(HANNAH_LAGRANGIAN, std::to_string(hannah_lagrangian));
+		redis_client.set(HANNAH_KINETIC, std::to_string(hannah_kinetic_energy));
+		redis_client.set(HANNAH_POTENTIAL, std::to_string(hannah_potential_energy));
+		redis_client.set(HANNAH_LAGRANGIAN, std::to_string(hannah_lagrangian));
 
 
 		// MatrixXd tracy_robot_M = tracy->M();

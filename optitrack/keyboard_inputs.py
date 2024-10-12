@@ -22,4 +22,4 @@ def on_key_event(keyboard_event):
 keyboard.hook(on_key_event)
 
 # Block the program from exiting immediately
-keyboard.wait("esc")
+keyboard.wait("q")

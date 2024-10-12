@@ -198,6 +198,9 @@ int main() {
 	bool conmove = true;
 	bool LAGRANGIAN_BACKGROUND_MODE = true;
 	bool IMAGE_BACKGROUND_MODE = false;
+
+	redis_client.set(LAGRANGIAN, std::to_string(0));
+
 	// start simulation thread
 	thread sim_thread(simulation, sim, lower_joint_limits, upper_joint_limits);
 	
@@ -490,7 +493,7 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 
 		// std::vector<int> limited_joints = {6, 7, 8, 12, 13, 14, 23, 30};
 		// std::vector<int> limited_joints = {6, 7, 8, 9, 12, 13, 14, 15};
-		std::vector<int> limited_joints = {9, 15, 6, 7, 9, 10, 11, 12, 13, 16, 17};
+		std::vector<int> limited_joints = {9, 15, 6, 7, 9, 10, 11, 12, 13, 16, 17, 20, 23, 27, 30, 34};
 		// limited_joints.push_back(20);
 		// limited_joints.push_back(21);
 		// limited_joints.push_back(27);

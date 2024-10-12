@@ -10,13 +10,13 @@
 	</robot> -->
 
 	<robot name="HRP4C0">
-        <model dir="./resources" path="model/HRP4c.urdf" name="HRP4C0" />
+        <model dir="./resources" path="model/HRP4c_purple.urdf" name="HRP4C0" />
         <!-- <origin xyz="1.0 -4.5 1" rpy="0 0 3.1415" /> -->
         <origin xyz="0 0 0" rpy="0 0 0" />
     </robot>
 
     <robot name="HRP4C1">
-        <model dir="./resources" path="model/HRP4c.urdf" name="HRP4C1" />
+        <model dir="./resources" path="model/HRP4c_green.urdf" name="HRP4C1" />
         <origin xyz="0 0 0" rpy="0 0 0" />
     </robot>
 
