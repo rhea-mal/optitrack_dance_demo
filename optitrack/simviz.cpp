@@ -120,8 +120,8 @@ int main() {
 	std::cout << "Robot DOF: " << toro->dof() << std::endl;
 
 	q_desired << 0, 0, 0, 0, 0, 0, 
-					0, -0.1, -0.25, 0.5, -0.25, 0.1, 
-					0, 0.1, -0.25, 0.5, -0.25, -0.1, 
+					0, -0.1, -0.25, 0.5, -0.25, 0, 0.1, 
+					0, 0.1, -0.25, 0.5, -0.25, 0, -0.1, 
 					0, 0,
 					-0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, 
 					-0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 
@@ -493,7 +493,8 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 
 		// std::vector<int> limited_joints = {6, 7, 8, 12, 13, 14, 23, 30};
 		// std::vector<int> limited_joints = {6, 7, 8, 9, 12, 13, 14, 15};
-		std::vector<int> limited_joints = {9, 15, 6, 7, 9, 10, 11, 12, 13, 16, 17, 20, 23, 27, 30, 34};
+		// std::vector<int> limited_joints = {9, 15, 6, 7, 9, 10, 11, 12, 13, 16, 17, 20, 23, 27, 30, 34};
+		std::vector<int> limited_joints = {6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21};
 		// limited_joints.push_back(20);
 		// limited_joints.push_back(21);
 		// limited_joints.push_back(27);

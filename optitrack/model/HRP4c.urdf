@@ -119,8 +119,10 @@
     <link name="RL_KOSY_L1">
         <inertial>
             <origin xyz="0.0140200000 -0.0003900000 -0.0807700000" rpy="0 0 0" />
-            <mass value="2.7752200000" />
-            <inertia  ixx="0.0132241200" iyy="0.0128226400" izz="0.0055660800" ixy="-0.0002500743" ixz="-0.0022333460" iyz="-0.0004034797" />
+            <!-- <mass value="2.7752200000" />
+            <inertia ixx="0.0132241200" iyy="0.0128226400" izz="0.0055660800" ixy="-0.0002500743" ixz="-0.0022333460" iyz="-0.0004034797" /> -->
+            <mass value="1" />
+            <inertia ixx="1" iyy="1" izz="1" ixy="-0.0002500743" ixz="-0.0022333460" iyz="-0.0004034797" />
         </inertial>
         <!-- <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
@@ -151,7 +153,8 @@
             <origin xyz="-0.0004400000 -0.0134800000 -0.1181100000" rpy="0 0 0" />
             <!-- <mass value="2.2450500000" /> -->
             <mass value="1" />
-            <inertia  ixx="0.0186767700" iyy="0.0182876800" izz="0.0041391160" ixy="0.0000149158" ixz="-0.0000216283" iyz="0.0029088950" />
+            <inertia ixx="1" iyy="1" izz="1" ixy="0.0000149158" ixz="-0.0000216283" iyz="0.0029088950" />
+            <!-- <inertia ixx="0.0186767700" iyy="0.0182876800" izz="0.0041391160" ixy="0.0000149158" ixz="-0.0000216283" iyz="0.0029088950" /> -->
         </inertial>
         <!-- <visual>
         <origin  xyz="0 0 0" rpy="-1.5708 0 3.1416 "/>
@@ -275,6 +278,22 @@
         <axis xyz="0 1 0"/>
     </joint>
 
+    <link name="RL_ankle_2">
+        <inertial>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <mass value="1.0"/>
+            <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
+        </inertial>
+    </link>
+
+    <joint name="j_5.5" type="revolute">
+        <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        <parent link="RL_ankle"/>
+        <child link="RL_ankle_2"/>
+        <axis xyz="0.0 0.0 1.0"/>
+        <limit lower="-0.5" upper="0.5" effort="50.0" velocity="50.0"/>
+    </joint>
+
     <link name="RL_foot">
         <tcp number="0"/>
         <inertial>
@@ -289,7 +308,7 @@
             <geometry>
                 <mesh filename="../../../model/HRP4c/graphics/R_ANKLE_R_rev2.obj"/>
             </geometry>
-        </visual>
+        </visual> 
         <!-- <visual>
             <origin xyz="0.2 0.0 0.0" rpy="0.0 0.0 0.0"/>
             <geometry>
@@ -300,7 +319,7 @@
 
     <joint name="j6" type="revolute">
         <origin xyz="0 0 0" rpy="0 0 0" />
-        <parent link="RL_ankle"/>
+        <parent link="RL_ankle_2"/>
         <child link="RL_foot"/>
         <limit lower="-0.6" upper="0.6" effort="165" velocity="3.0718" />
         <axis xyz="1 0 0"/>
@@ -416,6 +435,22 @@
         <axis xyz="0 1 0"/>
     </joint>
 
+    <link name="LL_ankle_2">
+        <inertial>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <mass value="1.0"/>
+            <inertia ixx="1" ixy="0.0" ixz="0.0" iyy="1" iyz="0.0" izz="1"/>
+        </inertial>
+    </link>
+
+    <joint name="j_11.5" type="revolute">
+        <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        <parent link="LL_ankle"/>
+        <child link="LL_ankle_2"/>
+        <axis xyz="0.0 0.0 1.0"/>
+        <limit lower="-0.5" upper="0.5" effort="50.0" velocity="50.0"/>
+    </joint>
+
     <link name="LL_foot">
         <tcp number="1"/>
         <inertial>
@@ -441,7 +476,7 @@
 
     <joint name="j12" type="revolute">
         <origin xyz="0 0 0" rpy="0 0 0" />
-        <parent link="LL_ankle"/>
+        <parent link="LL_ankle_2"/>
         <child link="LL_foot"/>
         <limit lower="-0.6" upper="0.6" effort="165" velocity="3.0718" />
         <axis xyz="1 0 0"/>
@@ -477,9 +512,9 @@
         <inertial>
             <origin xyz="-0.0772300000 -0.0064300000 0.1945200000" rpy="0 0 0" />
             <!-- <mass value="18.9794300000" /> -->
-            <mass value="1" />
+            <mass value="100" />
             <!-- <inertia  ixx="0.3855858000" iyy="0.3964879000" izz="0.1987808000" ixy="-0.0081148260" ixz="0.0365890100" iyz="0.0153433200" /> -->
-            <inertia ixx="1" iyy="1" izz="1" ixy="0" ixz="0" iyz="0" />
+            <inertia ixx="100" iyy="100" izz="100" ixy="0" ixz="0" iyz="0" />
         </inertial>
          <visual>
             <geometry>
@@ -724,7 +759,7 @@
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <!-- <mass value="0.1" /> -->
             <mass value="1" />
-            <inertia ixx="0.001" iyy="0.001" izz="0.001" ixy="-0.0" ixz="-0.0" iyz="-0.0" />
+            <inertia ixx="1" iyy="1" izz="1" ixy="-0.0" ixz="-0.0" iyz="-0.0" />
         </inertial>   
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -764,8 +799,8 @@
         <child link="ra_end_effector"/> 
         <limit lower="-0.9" upper="0.3" effort="35" velocity="2.0944" />
         <calibration falling="0.0" />
-        <!-- <axis xyz="0 0 1"/> -->
-        <axis xyz="1 0 0"/>
+        <axis xyz="0 0 1"/>
+        <!-- <axis xyz="1 0 0"/> -->
     </joint>
 
     <!-- Left Arm -->
@@ -950,7 +985,7 @@
 
     <joint name="j25" type="revolute">
         <!-- <origin xyz="-0.0300000000 -0.0115000000 -0.3058000000" rpy="0 0 0" /> -->
-        <origin xyz="0.0000 0.035  -0.21" rpy="0.177 0 0" />
+        <origin xyz="0.0000 0.035 -0.21" rpy="0.177 0 0" />
         <parent link="la_link4"/>
         <child link="la_link5"/>
         <limit lower="-0.5" upper="0.5" effort="40" velocity="2.0944" />
@@ -1047,8 +1082,8 @@
         <child link="la_end_effector"/> 
         <limit lower="-0.9" upper="0.3" effort="35" velocity="2.0944" />
         <calibration falling="0.0" />
-        <!-- <axis xyz="0 0 1"/> -->
-        <axis xyz="1 0 0"/>
+        <axis xyz="0 0 1"/>
+        <!-- <axis xyz="1 0 0"/> -->
     </joint>
 
     <!-- Head -->

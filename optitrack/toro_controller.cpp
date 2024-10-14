@@ -131,14 +131,14 @@ Matrix3d R_mirror;
 Matrix3d R_optitrack_to_sai = (AngleAxisd(M_PI / 2, Vector3d::UnitZ()) * AngleAxisd(0 * M_PI / 2, Vector3d::UnitX())).toRotationMatrix();
 
 std::string NAME = "";
-int ROBOT_ID = 0;
+int ROBOT_ID = 2;
 
 int main(int argc, char** argv) {
 
     CLI::App app("Argument parser app");
     argv = app.ensure_utf8(argv);
 
-    app.add_option("--name", NAME, "Name (Tracy or Hannah or User)")->required();
+    app.add_option("--name", NAME, "Name (Tracy or Hannah or User)");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -151,6 +151,7 @@ int main(int argc, char** argv) {
         ROBOT_ID = 2;
     }
 
+    NAME = "User";
     if (NAME != "Hannah" && NAME != "Tracy" && NAME != "User") {
         throw runtime_error("Must select either Hannah or Tracy or User");
     }
@@ -262,7 +263,8 @@ void control(std::shared_ptr<Optitrack::Human> human,
     // create task mappings 
     std::map<std::string, std::shared_ptr<Sai2Primitives::MotionForceTask>> tasks;
 
-    std::vector<Vector3d> controlled_directions = {Vector3d::UnitX(), Vector3d::UnitY(), Vector3d::UnitZ()};
+    std::vector<Vector3d> fully_controlled_directions = {Vector3d::UnitX(), Vector3d::UnitY(), Vector3d::UnitZ()};
+    std::vector<Vector3d> yz_controlled_directions = {Vector3d::UnitY(), Vector3d::UnitZ()};
     std::vector<Vector3d> uncontrolled_directions = {};
 
     for (int i = 0; i < controller_data.control_links.size(); ++i) {
@@ -276,94 +278,191 @@ void control(std::shared_ptr<Optitrack::Human> human,
         //                                                                                             compliant_frame,
         //                                                                                             controller_data.control_links[i]);
 
-        if (controller_data.control_links[i] == "trunk_rz" || controller_data.control_links[i] == "neck_link2") {
+        // if (controller_data.control_links[i] == "trunk_rz" || controller_data.control_links[i] == "neck_link2") {
+        //     tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
+        //                                                                                                 controller_data.control_links[i],
+        //                                                                                                 uncontrolled_directions,
+        //                                                                                                 controlled_directions,
+        //                                                                                                 compliant_frame,
+        //                                                                                                 controller_data.control_links[i]);
+        //     tasks[controller_data.control_links[i]]->disableSingularityHandling();
+        //     tasks[controller_data.control_links[i]]->disableInternalOtg();
+        //     tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
+        //     tasks[controller_data.control_links[i]]->setOriControlGains(350, 20, 0);
+        // } else if (controller_data.control_links[i] == "ra_link4" || controller_data.control_links[i] == "la_link4") {
+        //     tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
+        //                                                                                                 controller_data.control_links[i],
+        //                                                                                                 uncontrolled_directions,
+        //                                                                                                 controlled_directions,
+        //                                                                                                 compliant_frame,
+        //                                                                                                 controller_data.control_links[i]);
+        //     tasks[controller_data.control_links[i]]->disableSingularityHandling();
+        //     tasks[controller_data.control_links[i]]->disableInternalOtg();
+        //     tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
+        //     tasks[controller_data.control_links[i]]->setOriControlGains(350, 20, 0);
+        // } else if (controller_data.control_links[i] == "ra_end_effector" || \
+        //             controller_data.control_links[i] == "la_end_effector" || \
+        //             controller_data.control_links[i] == "RL_foot" || \
+        //             controller_data.control_links[i] == "LL_foot") {
+        //     // tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
+        //     //                                                                                             controller_data.control_links[i],
+        //     //                                                                                             compliant_frame,
+        //     //                                                                                             controller_data.control_links[i]);
+
+        //     // decouple position and orientation control in the order of orientation -> position 
+        //     // compliant_frame.translation() = Vector3d(0.01, 0, 0);
+        //     tasks[controller_data.control_links[i] + "_ori"] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
+        //                                                                                                          controller_data.control_links[i],
+        //                                                                                                          uncontrolled_directions,
+        //                                                                                                          fully_controlled_directions,
+        //                                                                                                          compliant_frame,
+        //                                                                                                          controller_data.control_links[i] + "_ori");
+
+        //     // tasks[controller_data.control_links[i] + "_pos"] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
+        //     //                                                                                                      controller_data.control_links[i],
+        //     //                                                                                                      controlled_directions,
+        //     //                                                                                                      uncontrolled_directions,
+        //     //                                                                                                      compliant_frame,
+        //     //                                                                                                      controller_data.control_links[i] + "_pos");
+
+        //     if (controller_data.control_links[i] == "ra_end_effector") {
+        //         tasks[controller_data.control_links[i] + "_pos"] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
+        //                                                                                                             "ra_link5",
+        //                                                                                                             fully_controlled_directions,
+        //                                                                                                             uncontrolled_directions,
+        //                                                                                                             compliant_frame,
+        //                                                                                                             controller_data.control_links[i] + "_pos");
+        //     } else if (controller_data.control_links[i] == "la_end_effector") {
+        //         tasks[controller_data.control_links[i] + "_pos"] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
+        //                                                                                                             "la_link5",
+        //                                                                                                             fully_controlled_directions,
+        //                                                                                                             uncontrolled_directions,
+        //                                                                                                             compliant_frame,
+        //                                                                                                             controller_data.control_links[i] + "_pos");
+        //     } else if (controller_data.control_links[i] == "RL_foot") {
+        //         tasks[controller_data.control_links[i] + "_pos"] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
+        //                                                                                                             "RL_KOSY_L56",
+        //                                                                                                             fully_controlled_directions,
+        //                                                                                                             uncontrolled_directions,
+        //                                                                                                             compliant_frame,
+        //                                                                                                             controller_data.control_links[i] + "_pos");
+        //     } else if (controller_data.control_links[i] == "LL_foot") {
+        //         tasks[controller_data.control_links[i] + "_pos"] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
+        //                                                                                                             "LL_KOSY_L56",
+        //                                                                                                             fully_controlled_directions,
+        //                                                                                                             uncontrolled_directions,
+        //                                                                                                             compliant_frame,
+        //                                                                                                             controller_data.control_links[i] + "_pos");
+        //     }
+
+        //     // tasks[controller_data.control_links[i] + "_ori"]->disableSingularityHandling();
+        //     // tasks[controller_data.control_links[i] + "_ori"]->setSingularityHandlingBounds(1e-1, 5e-1);
+        //     tasks[controller_data.control_links[i] + "_ori"]->setSingularityHandlingBounds(1e-2, 1e-1);
+        //     // tasks[controller_data.control_links[i] + "_ori"]->handleAllSingularitiesAsType1(true);
+        //     // tasks[controller_data.control_links[i] + "_ori"]->enableVelocitySaturation();
+        //     tasks[controller_data.control_links[i] + "_ori"]->disableInternalOtg();
+        //     tasks[controller_data.control_links[i] + "_ori"]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
+        //     tasks[controller_data.control_links[i] + "_ori"]->setOriControlGains(350, 20, 0);
+
+        //     // tasks[controller_data.control_links[i] + "_pos"]->disableSingularityHandling();
+        //     // tasks[controller_data.control_links[i] + "_pos"]->setSingularityHandlingBounds(1e-3, 1e-2);
+        //     tasks[controller_data.control_links[i] + "_pos"]->handleAllSingularitiesAsType1(true);
+        //     tasks[controller_data.control_links[i] + "_pos"]->disableInternalOtg();
+        //     tasks[controller_data.control_links[i] + "_pos"]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
+        //     tasks[controller_data.control_links[i] + "_pos"]->setPosControlGains(350, 20, 0);
+
+        // } else {
+
+        if (controller_data.control_links[i] == "trunk_rz") {
+            // 2 DOF task
             tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
                                                                                                         controller_data.control_links[i],
                                                                                                         uncontrolled_directions,
-                                                                                                        controlled_directions,
+                                                                                                        fully_controlled_directions,
                                                                                                         compliant_frame,
                                                                                                         controller_data.control_links[i]);
-            tasks[controller_data.control_links[i]]->disableSingularityHandling();
+
             tasks[controller_data.control_links[i]]->disableInternalOtg();
+            tasks[controller_data.control_links[i]]->disableSingularityHandling();
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-            tasks[controller_data.control_links[i]]->setOriControlGains(350, 20, 0);
+            tasks[controller_data.control_links[i]]->setOriControlGains(300, 20, 0);
+
+        } else if (controller_data.control_links[i] == "neck_link2") {
+            // 2 DOF task 
+            tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
+                                                                                                        controller_data.control_links[i],
+                                                                                                        uncontrolled_directions,
+                                                                                                        fully_controlled_directions,
+                                                                                                        compliant_frame,
+                                                                                                        controller_data.control_links[i]);
+
+            tasks[controller_data.control_links[i]]->disableInternalOtg();
+            tasks[controller_data.control_links[i]]->disableSingularityHandling();
+            tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
+            tasks[controller_data.control_links[i]]->setOriControlGains(250, 20, 0);
+
         } else if (controller_data.control_links[i] == "ra_link4" || controller_data.control_links[i] == "la_link4") {
+            // 1 DOF task
             tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
                                                                                                         controller_data.control_links[i],
                                                                                                         uncontrolled_directions,
-                                                                                                        controlled_directions,
+                                                                                                        fully_controlled_directions,
                                                                                                         compliant_frame,
                                                                                                         controller_data.control_links[i]);
-            tasks[controller_data.control_links[i]]->disableSingularityHandling();
             tasks[controller_data.control_links[i]]->disableInternalOtg();
+            tasks[controller_data.control_links[i]]->disableSingularityHandling();
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-            tasks[controller_data.control_links[i]]->setOriControlGains(350, 20, 0);
+            tasks[controller_data.control_links[i]]->setOriControlGains(50, 14, 0);
         } else if (controller_data.control_links[i] == "ra_end_effector" || controller_data.control_links[i] == "la_end_effector") {
-            // tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
-            //                                                                                             controller_data.control_links[i],
-            //                                                                                             compliant_frame,
-            //                                                                                             controller_data.control_links[i]);
-
-            // decouple position and orientation control in the order of orientation -> position 
-            // compliant_frame.translation() = Vector3d(0.01, 0, 0);
-            tasks[controller_data.control_links[i] + "_ori"] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
-                                                                                                                 controller_data.control_links[i],
-                                                                                                                 uncontrolled_directions,
-                                                                                                                 controlled_directions,
-                                                                                                                 compliant_frame,
-                                                                                                                 controller_data.control_links[i] + "_ori");
-
-            tasks[controller_data.control_links[i] + "_pos"] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
-                                                                                                                 controller_data.control_links[i],
-                                                                                                                 controlled_directions,
-                                                                                                                 uncontrolled_directions,
-                                                                                                                 compliant_frame,
-                                                                                                                 controller_data.control_links[i] + "_pos");
-
-            if (controller_data.control_links[i] == "ra_end_effector") {
-                tasks[controller_data.control_links[i] + "_pos"] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
-                                                                                                                    "ra_link5",
-                                                                                                                    controlled_directions,
-                                                                                                                    uncontrolled_directions,
-                                                                                                                    compliant_frame,
-                                                                                                                    controller_data.control_links[i] + "_pos");
-            } else if (controller_data.control_links[i] == "la_end_effector") {
-                tasks[controller_data.control_links[i] + "_pos"] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
-                                                                                                                    "la_link5",
-                                                                                                                    controlled_directions,
-                                                                                                                    uncontrolled_directions,
-                                                                                                                    compliant_frame,
-                                                                                                                    controller_data.control_links[i] + "_pos");
-            }
-
-            tasks[controller_data.control_links[i] + "_ori"]->disableSingularityHandling();
-            // tasks[controller_data.control_links[i] + "_ori"]->setSingularityHandlingBounds(1e-1, 5e-1);
-            // tasks[controller_data.control_links[i] + "_ori"]->setSingularityHandlingBounds(1e-2, 1e-1);
-            // tasks[controller_data.control_links[i] + "_ori"]->handleAllSingularitiesAsType1(true);
-            // tasks[controller_data.control_links[i] + "_ori"]->enableVelocitySaturation();
-            tasks[controller_data.control_links[i] + "_ori"]->disableInternalOtg();
-            tasks[controller_data.control_links[i] + "_ori"]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-            tasks[controller_data.control_links[i] + "_ori"]->setOriControlGains(350, 20, 0);
-
-            // tasks[controller_data.control_links[i] + "_pos"]->disableSingularityHandling();
-            tasks[controller_data.control_links[i] + "_pos"]->setSingularityHandlingBounds(3e-2, 3e-1);
-            tasks[controller_data.control_links[i] + "_pos"]->handleAllSingularitiesAsType1(true);
-            tasks[controller_data.control_links[i] + "_pos"]->disableInternalOtg();
-            tasks[controller_data.control_links[i] + "_pos"]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-            tasks[controller_data.control_links[i] + "_pos"]->setPosControlGains(350, 20, 0);
-
-        } else {
+            // 6 DOF task 
             tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
                                                                                                         controller_data.control_links[i],
                                                                                                         compliant_frame,
                                                                                                         controller_data.control_links[i]);
             tasks[controller_data.control_links[i]]->disableInternalOtg();
+            tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(6e-3, 6e-2);
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-            tasks[controller_data.control_links[i]]->setPosControlGains(350, 20, 0);
-            tasks[controller_data.control_links[i]]->setOriControlGains(350, 20, 0);
-            // tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);
-            // tasks[controller_data.control_links[i]]->disableSingularityHandling();
+            tasks[controller_data.control_links[i]]->setPosControlGains(250, 20, 0);
+            tasks[controller_data.control_links[i]]->setOriControlGains(250, 20, 0);
+        } else {
+            // 6 DOF task 
+            tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
+                                                                                                        controller_data.control_links[i],
+                                                                                                        compliant_frame,
+                                                                                                        controller_data.control_links[i]);
+            tasks[controller_data.control_links[i]]->disableInternalOtg();
+            tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(1e-2, 1e-1);
+            tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
+            tasks[controller_data.control_links[i]]->setPosControlGains(250, 20, 0);
+            tasks[controller_data.control_links[i]]->setOriControlGains(250, 20, 0);
         }
+
+        // if (controller_data.control_links[i] == "trunk_rz" || controller_data.control_links[i] == "neck_link2") { 
+        //     tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
+        //                                                                                                 controller_data.control_links[i],
+        //                                                                                                 fully_controlled_directions,
+        //                                                                                                 uncontrolled_directions,
+        //                                                                                                 compliant_frame,
+        //                                                                                                 controller_data.control_links[i]);
+
+        //     tasks[controller_data.control_links[i]]->disableInternalOtg();
+        //     tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(1e-1, 1e0);
+        //     tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
+        //     tasks[controller_data.control_links[i]]->setPosControlGains(350, 20, 0);
+        //     tasks[controller_data.control_links[i]]->setOriControlGains(350, 20, 0);
+        // } else {
+        //     tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
+        //                                                                                                 controller_data.control_links[i],
+        //                                                                                                 compliant_frame,
+        //                                                                                                 controller_data.control_links[i]);
+        //     tasks[controller_data.control_links[i]]->disableInternalOtg();
+        //     tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(1e-2, 1e-1);
+        //     tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
+        //     tasks[controller_data.control_links[i]]->setPosControlGains(350, 20, 0);
+        //     tasks[controller_data.control_links[i]]->setOriControlGains(350, 20, 0);
+        //     // tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);s
+        //     // tasks[controller_data.control_links[i]]->disableSingularityHandling();
+        // }
         
         // tasks[controller_data.control_links[i]]->disableInternalOtg();
         // tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
@@ -406,12 +505,12 @@ void control(std::shared_ptr<Optitrack::Human> human,
     // create robot controller
     std::vector<shared_ptr<Sai2Primitives::TemplateTask>> task_list;
     for (auto task_name : controller_data.control_links) {
-        if (task_name == "ra_end_effector" || task_name == "la_end_effector") {
-            task_list.push_back(tasks[task_name + "_ori"]);
-            task_list.push_back(tasks[task_name + "_pos"]);
-        } else {
+        // if (task_name == "ra_end_effector" || task_name == "la_end_effector" || task_name == "RL_foot" || task_name == "LL_foot") {
+            // task_list.push_back(tasks[task_name + "_ori"]);
+            // task_list.push_back(tasks[task_name + "_pos"]);
+        // } else {
             task_list.push_back(tasks[task_name]);
-        }
+        // }
     }
     task_list.push_back(joint_task);
 	auto robot_controller = std::make_unique<Sai2Primitives::RobotController>(robot, task_list);
@@ -633,15 +732,15 @@ void control(std::shared_ptr<Optitrack::Human> human,
 
                 Vector3d desired_position = sim_body_data.starting_pose[name].translation() + MOTION_SF * relative_poses[i].translation();
                 Matrix3d desired_orientation = relative_poses[i].linear() * sim_body_data.starting_pose[name].linear();
-                desired_orientation = reOrthogonalizeRotationMatrix(desired_orientation);
+                // desired_orientation = reOrthogonalizeRotationMatrix(desired_orientation);
 
-                if (name == "ra_end_effector" || name == "la_end_effector") {
-                    tasks[name + "_pos"]->setGoalPosition(desired_position);
-                    tasks[name + "_ori"]->setGoalOrientation(desired_orientation);
-                } else {
+                // if (name == "ra_end_effector" || name == "la_end_effector" || name == "RL_foot" || name == "LL_foot") {
+                    // tasks[name + "_pos"]->setGoalPosition(desired_position);
+                    // tasks[name + "_ori"]->setGoalOrientation(desired_orientation);
+                // } else {
                     tasks[name]->setGoalPosition(desired_position);
                     tasks[name]->setGoalOrientation(desired_orientation);
-                }
+                // }
                 i++;
             }
 
