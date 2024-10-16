@@ -25,6 +25,7 @@
 #include "timer/LoopTimer.h"
 #include "logger/Logger.h"
 #include <chrono>
+#include <yaml-cpp/yaml.h>
 
 bool fSimulationRunning = true;
 void sighandler(int){fSimulationRunning = false;}
@@ -32,12 +33,10 @@ double DELAY = 2000; // simulation frequency in Hz
 std::shared_ptr<Sai2Model::Sai2Model> toro;
 std::shared_ptr<Sai2Graphics::Sai2Graphics> graphics;
 
-
 #include "redis_keys.h"
 
 using namespace Eigen;
 using namespace std;
-
 
 // mutex and globals
 VectorXd toro_ui_torques;
@@ -47,6 +46,8 @@ mutex mutex_torques, mutex_update;
 // specify urdf and robots 
 static const string toro_name = "HRP4C0";
 static const string camera_name = "camera_fixed";
+const std::string yaml_fname = "./resources/controller_settings_multi_dancers.yaml";
+bool DEBUG = true;
 
 const std::vector<std::string> background_paths = {
     "../../optitrack/assets/space.jpg",
@@ -78,7 +79,6 @@ chai3d::cColorf lagrangianToColor(double lagrangian, double min_lagrangian, doub
     return chai3d::cColorf(red, green, blue);
 }
 
-
 // simulation thread
 void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 				const std::vector<double>& lower_limit,
@@ -91,6 +91,14 @@ int main() {
     //static const string world_file = "./resources/world/world_basic_10.urdf";
 	static const string world_file = "./resources/world/world_basic_1.urdf";
     std::cout << "Loading URDF world model file: " << world_file << endl;
+
+	// parse yaml controller settings 
+    YAML::Node config = YAML::LoadFile(yaml_fname);
+
+    // optitrack settings 
+    YAML::Node current_node = config["optitrack"];
+    std::vector<std::string> body_part_names = current_node["body_part_names"].as<std::vector<std::string>>();
+	DEBUG = current_node["debug"].as<bool>();
 
     // start redis client
     auto redis_client = Sai2Common::RedisClient();
@@ -179,7 +187,6 @@ int main() {
 	redis_client.setEigen(TORO_JOINT_VELOCITIES_KEY, toro->dq()); 
 	redis_client.setEigen(TORO_JOINT_TORQUES_COMMANDED_KEY, 0 * toro->q());
 
-
 	string link_name = "neck_link2"; // head lnk
 	Eigen::Affine3d transform = toro->transformInWorld(link_name); // p_base = T * p_link
 	MatrixXd rot = transform.rotation();
@@ -212,6 +219,7 @@ int main() {
 
 	bool changed_recently = false;
 	double last_background_change_time = 0.0;
+	bool first_loop = true;
 
 	// while window is open:
 	while (graphics->isWindowOpen() && fSimulationRunning) {
@@ -242,12 +250,12 @@ int main() {
 		// Get the Lagrangian value from Redis
 
 		if (LAGRANGIAN_BACKGROUND_MODE) {
-		double lagrangian = stod(redis_client.get(LAGRANGIAN));
-		chai3d::cColorf backgroundColor = lagrangianToColor(lagrangian, -50.0, 200.0);
-		double red = backgroundColor.getR();
-    	double green = backgroundColor.getG();
-   		double blue = backgroundColor.getB();
-		graphics->setBackgroundColor(red, green, blue);
+			double lagrangian = stod(redis_client.get(LAGRANGIAN));
+			chai3d::cColorf backgroundColor = lagrangianToColor(lagrangian, -50.0, 200.0);
+			double red = backgroundColor.getR();
+			double green = backgroundColor.getG();
+			double blue = backgroundColor.getB();
+			graphics->setBackgroundColor(red, green, blue);
 		}
         
         // Update primary robot graphics
@@ -429,7 +437,27 @@ int main() {
 			conmove = true;
 		}
 
-		
+		// update object graphics for optitrack inputs 
+		if (DEBUG) {
+			for (auto name : body_part_names) {
+				if (first_loop) {
+					redis_client.setEigen("opti::" + name + "::pos", Vector3d(0, 0, 0));
+					redis_client.setEigen("opti::" + name + "::ori", Matrix3d::Identity());
+					graphics->showObjectLinkFrame(true, name, 0.15);
+				} else {
+					auto body_part_pos = redis_client.getEigen("opti::" + name + "::pos");
+					auto body_part_ori = redis_client.getEigen("opti::" + name + "::ori");
+					Affine3d body_pose;
+					body_pose.translation() = body_part_pos;
+					body_pose.linear() = body_part_ori;
+					graphics->updateObjectGraphics(name, body_pose);
+				}
+			}
+			if (first_loop) {
+				first_loop = false;
+			}
+		}
+
 		graphics->renderGraphicsWorld();
 		{
 			lock_guard<mutex> lock(mutex_torques);

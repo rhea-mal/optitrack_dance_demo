@@ -31,6 +31,10 @@ class Human {
                            const int n_samples,
                            const bool reset = 0);
 
+        void calibratePose(const std::vector<std::string>& link_names,
+                                  const std::vector<Affine3d>& current_poses,
+                                  const bool reset);
+
         // get relative pose from the calibrated starting positions 
         std::vector<Affine3d> relativePose(const std::vector<std::string> link_names,
                                            const std::vector<Affine3d>& current_poses);

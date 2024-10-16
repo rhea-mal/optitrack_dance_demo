@@ -30,7 +30,7 @@ const std::vector<std::string> MULTI_TORO_JOINT_ANGLES_KEY = {HANNAH_TORO_JOINT_
 const std::vector<std::string> MULTI_TORO_JOINT_VELOCITIES_KEY = {HANNAH_TORO_JOINT_VELOCITIES_KEY, TRACY_TORO_JOINT_VELOCITIES_KEY, TORO_JOINT_VELOCITIES_KEY};
 const std::vector<std::string> MULTI_TORO_JOINT_TORQUES_COMMANDED_KEY = {HANNAH_TORO_JOINT_TORQUES_COMMANDED_KEY, TRACY_TORO_JOINT_TORQUES_COMMANDED_KEY, TORO_JOINT_TORQUES_COMMANDED_KEY};
 
-//const std::string TORO_CONTROLLER_RUNNING_KEY = "sai2::sim::toro::controller";
+// const std::string TORO_CONTROLLER_RUNNING_KEY = "sai2::sim::toro::controller";
 
 const std::string POSITION_FROM_CAMERA = "sai2::animation::camera::position";
 const std::string RESET_BUTTON = "sai2::animation::reset";
@@ -70,3 +70,9 @@ const std::string Z_VIEWING_ANGLE = "sai2::sim::viewing_angle";
 const std::string RESET_ROBOT_KEY = "sai2::sim::reset";
 
 const std::vector<std::string> MULTI_RESET_ROBOT_KEY = {"sai2::sim::reset_1", "sai2::sim::reset_2"};
+
+// debug keys for visualization of optitrack frames 
+const std::vector<std::string> DEBUG_LINK_NAMES = {"opti::neck_link2", "opti::trunk_rz", \
+                                                    "opti::hip_base", "opti::LL_foot", \
+                                                    "opti::RL_foot", "opti::la_end_effector", \
+                                                    "opti::ra_end_effector", "opti::la_link4", "opti::ra_link4"};

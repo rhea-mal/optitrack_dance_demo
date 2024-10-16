@@ -129,6 +129,7 @@ Eigen::VectorXd generateRandomVector(double lowerBound, double upperBound, int s
 Matrix3d R_camera_world = Matrix3d::Identity();
 Matrix3d R_mirror;
 Matrix3d R_optitrack_to_sai = (AngleAxisd(M_PI / 2, Vector3d::UnitZ()) * AngleAxisd(0 * M_PI / 2, Vector3d::UnitX())).toRotationMatrix();
+bool DEBUG = false;
 
 std::string NAME = "";
 int ROBOT_ID = 2;
@@ -181,6 +182,7 @@ int main(int argc, char** argv) {
     std::vector<std::string> body_part_names = current_node["body_part_names"].as<std::vector<std::string>>();
     std::vector<int> optitrack_ids = current_node["indices"].as<std::vector<int>>();
     std::vector<int> human_ids = current_node["human_ids"].as<std::vector<int>>();
+    DEBUG = current_node["debug"].as<bool>();
 
     // create map between body part names and indices 
     std::map<std::string, int> body_index_mapping; 
@@ -519,7 +521,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
     int state = INIT;
 
     bool first_loop = true;
-    const int n_calibration_samples = 1 * 1000;  // N second of samples
+    const int n_calibration_samples = 1;  // N second of samples
     int n_samples = 0;
     VectorXd robot_control_torques = VectorXd::Zero(dof);
     VectorXd prev_control_torques = VectorXd::Zero(dof);
@@ -573,6 +575,12 @@ void control(std::shared_ptr<Optitrack::Human> human,
                 // Overwrite map for pose 
                 optitrack_data.current_pose[body_part_name] = current_pose;
 
+                // DEBUG only for visualization
+                if (DEBUG) {
+                    redis_client.setEigen("opti::" + body_part_name + "::pos", R_optitrack_to_sai * current_pose.translation());
+                    redis_client.setEigen("opti::" + body_part_name + "::ori", R_optitrack_to_sai * current_pose.linear() * R_optitrack_to_sai.transpose());
+                }
+
             }
             // // If needed, store in other vectors as   well
             //     if (i <= 3) {
@@ -603,11 +611,11 @@ void control(std::shared_ptr<Optitrack::Human> human,
                     first_loop = true;
                     n_samples = 0;
 
-                    nominal_posture(9) = 2.0;
-                    nominal_posture(15) = 2.0;
-                    nominal_posture(23) = -1.5;
-                    nominal_posture(30) = -1.5;  // elbows
-                    joint_task->setGoalPosition(nominal_posture);
+                    // nominal_posture(9) = 2.0;
+                    // nominal_posture(15) = 2.0;
+                    // nominal_posture(23) = -1.5;
+                    // nominal_posture(30) = -1.5;  // elbows
+                    // joint_task->setGoalPosition(nominal_posture);
                     continue;
                 }
 
@@ -642,7 +650,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
                     link_names.push_back(it->first);
                     link_poses.push_back(it->second);
                 }
-                human->calibratePose(link_names, link_poses, n_calibration_samples, first_loop);
+                human->calibratePose(link_names, link_poses, first_loop);
                 if (first_loop) {
                     first_loop = false;
                 }
@@ -707,14 +715,14 @@ void control(std::shared_ptr<Optitrack::Human> human,
                 // it->second->setType1Posture(nominal_posture);
             }
 
-            // update simulation current pose 
-            std::vector<Affine3d> sim_current_pose;
-            for (int i = 0; i < controller_data.control_links.size(); ++i) {
-                Affine3d current_pose = Affine3d::Identity();
-                current_pose.translation() = robot->positionInWorld(controller_data.control_links[i], controller_data.control_points[i]);
-                current_pose.linear() = robot->rotationInWorld(controller_data.control_links[i]);
-                sim_current_pose.push_back(current_pose);
-            }
+            // // update simulation current pose 
+            // std::vector<Affine3d> sim_current_pose;
+            // for (int i = 0; i < controller_data.control_links.size(); ++i) {
+            //     Affine3d current_pose = Affine3d::Identity();
+            //     current_pose.translation() = robot->positionInWorld(controller_data.control_links[i], controller_data.control_points[i]);
+            //     current_pose.linear() = robot->rotationInWorld(controller_data.control_links[i]);
+            //     sim_current_pose.push_back(current_pose);
+            // }
 
             // package optitrack poses for relative pose
             std::vector<Affine3d> optitrack_current_pose;
