@@ -47,7 +47,8 @@ mutex mutex_torques, mutex_update;
 static const string toro_name = "HRP4C0";
 static const string camera_name = "camera_fixed";
 const std::string yaml_fname = "./resources/controller_settings_multi_dancers.yaml";
-bool DEBUG = true;
+bool DEBUG = false;
+std::vector<int> limited_joints;
 
 const std::vector<std::string> background_paths = {
     "../../optitrack/assets/space.jpg",
@@ -99,6 +100,14 @@ int main() {
     YAML::Node current_node = config["optitrack"];
     std::vector<std::string> body_part_names = current_node["body_part_names"].as<std::vector<std::string>>();
 	DEBUG = current_node["debug"].as<bool>();
+	limited_joints = current_node["limited_joints"].as<std::vector<int>>();
+
+	// print settings
+	std::cout << "Debug mode: " << DEBUG << "\n";
+	std::cout << "Limited joints: ";
+	for (auto joint : limited_joints) {
+		std::cout << joint << ", ";
+	}
 
     // start redis client
     auto redis_client = Sai2Common::RedisClient();
@@ -411,7 +420,7 @@ int main() {
 			camera_pose.linear() = rotation;
 
 			// Call setCameraPose with the correct arguments
-			graphics->setCameraPose(camera_name, camera_pose);
+			// graphics->setCameraPose(camera_name, camera_pose);
 			conmove = false;
 		} 
 
@@ -433,7 +442,7 @@ int main() {
 			camera_pose.linear() = rotation;
 
 			// Call setCameraPose with the correct arguments
-			graphics->setCameraPose(camera_name, camera_pose);
+			// graphics->setCameraPose(camera_name, camera_pose);
 			conmove = true;
 		}
 
@@ -522,7 +531,7 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 		// std::vector<int> limited_joints = {6, 7, 8, 12, 13, 14, 23, 30};
 		// std::vector<int> limited_joints = {6, 7, 8, 9, 12, 13, 14, 15};
 		// std::vector<int> limited_joints = {9, 15, 6, 7, 9, 10, 11, 12, 13, 16, 17, 20, 23, 27, 30, 34};
-		std::vector<int> limited_joints = {6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21};
+		// std::vector<int> limited_joints = {6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21};
 		// limited_joints.push_back(20);
 		// limited_joints.push_back(21);
 		// limited_joints.push_back(27);

@@ -25,6 +25,7 @@
 #include "timer/LoopTimer.h"
 #include "logger/Logger.h"
 #include <chrono>
+#include <yaml-cpp/yaml.h>
 
 bool fSimulationRunning = true;
 void sighandler(int){fSimulationRunning = false;}
@@ -48,6 +49,9 @@ mutex mutex_torques, mutex_update;
 static const string hannah_name = "HRP4C0";
 static const string tracy_name = "HRP4C1";
 static const string camera_name = "camera_fixed";
+const std::string yaml_fname = "./resources/controller_settings_multi_dancers.yaml";
+bool DEBUG = false;
+std::vector<int> limited_joints;
 
 const std::vector<std::string> background_paths = {
     "../../optitrack/assets/space.jpg",
@@ -89,6 +93,22 @@ int main() {
     //static const string world_file = "./resources/world/world_basic_10.urdf";
 	static const string world_file = "./resources/world/world_basic_2.urdf";
     std::cout << "Loading URDF world model file: " << world_file << endl;
+
+	// parse yaml controller settings 
+    YAML::Node config = YAML::LoadFile(yaml_fname);
+
+    // optitrack settings 
+    YAML::Node current_node = config["optitrack"];
+    std::vector<std::string> body_part_names = current_node["body_part_names"].as<std::vector<std::string>>();
+	DEBUG = current_node["debug"].as<bool>();
+	limited_joints = current_node["limited_joints"].as<std::vector<int>>();
+
+	// print settings
+	std::cout << "Debug mode: " << DEBUG << "\n";
+	std::cout << "Limited joints: ";
+	for (auto joint : limited_joints) {
+		std::cout << joint << ", ";
+	}
 
     // start redis client
     auto redis_client = Sai2Common::RedisClient();

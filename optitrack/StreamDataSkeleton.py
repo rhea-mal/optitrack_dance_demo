@@ -35,6 +35,13 @@ def signal_handler(sig, frame):
 
 redis_client = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
+# create redis pipeline 
+pipeline = redis_client.pipeline()
+n_skeletons = 2
+min_id = 1
+max_id = 51 
+indices = [5, 3, 2, 47, 50, 23, 32, 8, 27, 49, 45]
+
 # This is a callback function that gets connected to the NatNet client
 # and called once per mocap frame.
 def receive_new_frame(data_dict):
@@ -58,8 +65,13 @@ def receive_rigid_body_frame( new_id, position, rotation ):
     redis_client.set(RIGID_BODY_ORI_KEY + str(new_id), '[' + str(rotation)[1:-1] + ']')
 
 def receive_skeleton_frame(new_id, skeleton):
+    
+    # # Do timing 
+    # start_time = time.time()
+    
     # Iterate over each rigid body in the skeleton's rigid body list
     for i, rigid_body in enumerate(skeleton.rigid_body_list):
+        # if i in indices:
         # Construct Redis keys for position and orientation
         position_key = f"{new_id}::{i + 1}::pos"
         orientation_key = f"{new_id}::{i + 1}::ori"
@@ -69,8 +81,13 @@ def receive_skeleton_frame(new_id, skeleton):
         orientation_str = '[' + ', '.join(map(str, rigid_body.rot)) + ']'
 
         # Set the position and orientation in Redis
-        redis_client.set(position_key, position_str)
-        redis_client.set(orientation_key, orientation_str)
+        # redis_client.set(position_key, position_str)
+        # redis_client.set(orientation_key, orientation_str)
+        
+        pipeline.set(position_key, position_str)  # change to pipeline 
+        pipeline.set(orientation_key, orientation_str)
+        
+    pipeline.execute()
 
 
 def add_lists(totals, totals_tmp):

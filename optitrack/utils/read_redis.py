@@ -7,14 +7,20 @@ from datetime import datetime
 REDIS_HOST = '127.0.0.1'
 REDIS_PORT = 6379
 # OUTPUT_FILE = '../recordings/tracy_oct_6_24_in_place.txt'
+# OUTPUT_FILE = '../recordings/dual_oct_15_rev2.txt'
+# OUTPUT_FILE = '../recordings/dual_oct_15_slow_dance_rev1.txt'
+# OUTPUT_FILE = '../recordings/dual_oct_15_slow_dance_rev2.txt'
+# OUTPUT_FILE = '../recordings/dual_oct_15_fast_dance_rev1.txt'
+# OUTPUT_FILE = '../recordings/dual_oct_15_fast_dance_rev2.txt'
 
 # List of specific IDs to monitor
-IDS_TO_MONITOR = [5, 3, 2, 47, 50, 23, 32, 8, 27]
+# IDS_TO_MONITOR = [5, 3, 2, 47, 50, 23, 32, 8, 27]
+IDS_TO_MONITOR = [5, 3, 2, 47, 50, 23, 32, 8, 27, 49, 45]
 
 opti_id = 0
 
 # Generate keys for both position and orientation
-ALL_KEYS = [f"0::{id_num}::pos" for id_num in IDS_TO_MONITOR] + [f"0::{id_num}::ori" for id_num in IDS_TO_MONITOR]
+ALL_KEYS = [f"0::{id_num}::pos" for id_num in IDS_TO_MONITOR] + [f"0::{id_num}::ori" for id_num in IDS_TO_MONITOR] + [f"1::{id_num}::pos" for id_num in IDS_TO_MONITOR] + [f"1::{id_num}::ori" for id_num in IDS_TO_MONITOR] 
 
 # Connect to Redis
 redis_client = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)

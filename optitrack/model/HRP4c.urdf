@@ -406,6 +406,12 @@
                 <sphere radius="0.05"/>
             </geometry>
         </collision> -->
+        <visual>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry>
+        </visual>
     </link>
 
     <joint name="j10" type="revolute">

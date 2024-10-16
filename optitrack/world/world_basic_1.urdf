@@ -218,6 +218,36 @@
         </visual>
 	</dynamic_object>
 
+    <dynamic_object name="LL_KOSY_L56">
+		<origin xyz="0 0 0" rpy="0 0 0" /> 
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="1" />
+            <inertia  ixx="0" iyy="0" izz="0" ixy="0" ixz="0" iyz="0" />
+        </inertial>
+	    <visual>
+            <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.1 0.1 0.1" />
+            </geometry>
+        </visual>
+	</dynamic_object>
+
+    <dynamic_object name="RL_KOSY_L56">
+		<origin xyz="0 0 0" rpy="0 0 0" /> 
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <mass value="1" />
+            <inertia  ixx="0" iyy="0" izz="0" ixy="0" ixz="0" iyz="0" />
+        </inertial>
+	    <visual>
+            <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.1 0.1 0.1" />
+            </geometry>
+        </visual>
+	</dynamic_object>
+
 	<light name="light1" type="directional">
 		<position xyz="2.0 2.0 2.0" />
 		<lookat xyz="0.0 0.0 0.0" />
