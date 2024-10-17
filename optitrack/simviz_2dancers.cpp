@@ -140,22 +140,38 @@ int main() {
 	VectorXd hannah_q_desired(hannah->dof());
 	VectorXd tracy_q_desired(tracy->dof());
 
-	hannah_q_desired << 0, 0.75, 0, 0, 0, 0, 0, -0.1, -0.25, 0.5, -0.25, 0.1, 0, 0.1, -0.25, 0.5, -0.25, -0.1, 0, 0, -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 0, 0;
-    tracy_q_desired << 0, -0.75, 0, 0, 0, 0, 0, -0.1, -0.25, 0.5, -0.25, 0.1, 0, 0.1, -0.25, 0.5, -0.25, -0.1, 0, 0, -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 0, 0;
+	// hannah_q_desired << 0, 0.75, 0, 0, 0, 0, 0, -0.1, -0.25, 0.5, -0.25, 0.1, 0, 0.1, -0.25, 0.5, -0.25, -0.1, 0, 0, -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 0, 0;
+    // tracy_q_desired << 0, -0.75, 0, 0, 0, 0, 0, -0.1, -0.25, 0.5, -0.25, 0.1, 0, 0.1, -0.25, 0.5, -0.25, -0.1, 0, 0, -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 0, 0;
+
+	hannah_q_desired << 0, 0.75, 0, 0, 0, 0, 
+					0, -0.1, -0.25, 0.5, -0.25, 0, 0.1, 
+					0, 0.1, -0.25, 0.5, -0.25, 0, -0.1, 
+					0, 0,
+					-0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, 
+					-0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 
+					0, 0;
+
+	tracy_q_desired << 0, -0.75, 0, 0, 0, 0, 
+					0, -0.1, -0.25, 0.5, -0.25, 0, 0.1, 
+					0, 0.1, -0.25, 0.5, -0.25, 0, -0.1, 
+					0, 0,
+					-0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, 
+					-0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 
+					0, 0;
 
 	// hannah_q_desired(24) = -1.0;
 	// hannah_q_desired(25) = 0.6;
 	// hannah_q_desired(26) = -0.1;
-	hannah_q_desired(25) = 0;
-	hannah_q_desired(31) = 0;
-	hannah_q_desired(32) = 0;
+	// hannah_q_desired(25) = 0;
+	// hannah_q_desired(31) = 0;
+	// hannah_q_desired(32) = 0;
 
 	// tracy_q_desired(24) = -1.0;
 	// tracy_q_desired(25) = 0.6;
 	// tracy_q_desired(26) = -0.1;
-	tracy_q_desired(25) = 0;
-	tracy_q_desired(31) = 0;
-	tracy_q_desired(32) = 0;
+	// tracy_q_desired(25) = 0;
+	// tracy_q_desired(31) = 0;
+	// tracy_q_desired(32) = 0;
 
 	hannah->setQ(hannah_q_desired);
 	hannah->updateModel();
@@ -511,16 +527,16 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 		// tracy->setQ(tracy_robot_q);
 		// tracy->updateModel();
 
-		std::vector<int> right_leg_joints = {6, 7, 8, 9, 10, 11};
-		std::vector<int> left_leg_joints = {12, 13, 14, 15, 16, 17};
-		std::vector<int> torso_joints = {18, 19};
-		std::vector<int> right_arm_joints = {20, 21, 22, 23, 24, 25, 26};
-		std::vector<int> left_arm_joints = {27, 28, 29, 30, 31, 32, 33};
-		std::vector<int> head_joints = {34, 35};
+		// std::vector<int> right_leg_joints = {6, 7, 8, 9, 10, 11};
+		// std::vector<int> left_leg_joints = {12, 13, 14, 15, 16, 17};
+		// std::vector<int> torso_joints = {18, 19};
+		// std::vector<int> right_arm_joints = {20, 21, 22, 23, 24, 25, 26};
+		// std::vector<int> left_arm_joints = {27, 28, 29, 30, 31, 32, 33};
+		// std::vector<int> head_joints = {34, 35};
 
 		// std::vector<int> limited_joints = {6, 7, 8, 9, 12, 13, 14, 15};
 		// std::vector<int> limited_joints = {9, 15, 6, 7, 9, 10, 11, 12, 13, 16, 17, 23, 30, 19};
-		std::vector<int> limited_joints = {9, 15, 6, 7, 9, 10, 11, 12, 13, 16, 17};
+		// std::vector<int> limited_joints = {9, 15, 6, 7, 9, 10, 11, 12, 13, 16, 17};
 
 		// std::vector<int> limited_joints = {6, 7, 8, 12, 13, 14, 23, 30};
 		// std::vector<int> limited_joints = {6, 7, 8, 9, 12, 13, 14, 15};
