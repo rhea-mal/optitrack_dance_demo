@@ -68,8 +68,10 @@ const std::string TEST_ORI = "test::ori";
 
 const std::string Z_VIEWING_ANGLE = "sai2::sim::viewing_angle";
 const std::string RESET_ROBOT_KEY = "sai2::sim::reset";
+const std::string RESET_SIM_KEY = "sai2::sim::reset";
 
 const std::vector<std::string> MULTI_RESET_ROBOT_KEY = {"sai2::sim::reset_1", "sai2::sim::reset_2"};
+const std::vector<std::string> MULTI_RESET_CONTROLLER_KEY = {"sai2::controller::reset_0", "sai2::simcontroller::reset_1", "sai2::sim::controller::reset_2"};
 
 // debug keys for visualization of optitrack frames 
 const std::vector<std::string> DEBUG_LINK_NAMES = {"opti::neck_link2", "opti::trunk_rz", \

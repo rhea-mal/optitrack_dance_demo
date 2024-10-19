@@ -322,8 +322,8 @@ void control(std::shared_ptr<Optitrack::Human> human,
             // 1 DOF task
             tasks[controller_data.control_links[i]] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
                                                                                                         controller_data.control_links[i],
-                                                                                                        uncontrolled_directions,
                                                                                                         fully_controlled_directions,
+                                                                                                        uncontrolled_directions,
                                                                                                         compliant_frame,
                                                                                                         controller_data.control_links[i]);
             tasks[controller_data.control_links[i]]->disableInternalOtg();
@@ -428,10 +428,12 @@ void control(std::shared_ptr<Optitrack::Human> human,
         robot->updateModel();
 
         // read the reset state 
-        int reset_robot = redis_client.getInt(MULTI_RESET_ROBOT_KEY[ROBOT_ID]);
+        int reset_robot = redis_client.getInt(MULTI_RESET_CONTROLLER_KEY[ROBOT_ID]);
         if (reset_robot) {
+            std::cout << "Controller Reset\n";
             state = RESET;
-            redis_client.setInt(MULTI_RESET_ROBOT_KEY[ROBOT_ID], 0);
+            redis_client.setInt(MULTI_RESET_CONTROLLER_KEY[ROBOT_ID], 0);
+            redis_client.setInt(RESET_SIM_KEY, 0);
         }
 
         // read optitrack input and store in optitrack struct 

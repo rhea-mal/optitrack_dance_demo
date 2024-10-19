@@ -50,8 +50,15 @@ static const string hannah_name = "HRP4C0";
 static const string tracy_name = "HRP4C1";
 static const string camera_name = "camera_fixed";
 const std::string yaml_fname = "./resources/controller_settings_multi_dancers.yaml";
+
+static const string toro_file = "./resources/model/HRP4c.urdf";
+//static const string world_file = "./resources/world/world_basic_10.urdf";
+static const string world_file = "./resources/world/world_basic_2.urdf";
+
 bool DEBUG = false;
 std::vector<int> limited_joints;
+VectorXd hannah_q_desired(38);
+VectorXd tracy_q_desired(38);
 
 const std::vector<std::string> background_paths = {
     "../../optitrack/assets/space.jpg",
@@ -89,9 +96,6 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 				const std::vector<double>& upper_limit);
 
 int main() {
-	static const string toro_file = "./resources/model/HRP4c.urdf";
-    //static const string world_file = "./resources/world/world_basic_10.urdf";
-	static const string world_file = "./resources/world/world_basic_2.urdf";
     std::cout << "Loading URDF world model file: " << world_file << endl;
 
 	// parse yaml controller settings 
@@ -137,8 +141,6 @@ int main() {
     hannah_ui_torques = VectorXd::Zero(hannah->dof());
 	tracy_ui_torques = VectorXd::Zero(tracy->dof());
 	// SET the initial q -- define manual here to stand
-	VectorXd hannah_q_desired(hannah->dof());
-	VectorXd tracy_q_desired(tracy->dof());
 
 	// hannah_q_desired << 0, 0.75, 0, 0, 0, 0, 0, -0.1, -0.25, 0.5, -0.25, 0.1, 0, 0.1, -0.25, 0.5, -0.25, -0.1, 0, 0, -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 0, 0;
     // tracy_q_desired << 0, -0.75, 0, 0, 0, 0, 0, -0.1, -0.25, 0.5, -0.25, 0.1, 0, 0.1, -0.25, 0.5, -0.25, -0.1, 0, 0, -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 0, 0;
@@ -504,9 +506,23 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
     sim->disableJointLimits(hannah_name);
 	sim->disableJointLimits(tracy_name);
 
+	// reset logic
+	bool flag_reset = false;
+
     while (fSimulationRunning) {
         timer.waitForNextLoop();
         const double time = timer.elapsedSimTime();
+
+		// query reset key 
+		flag_reset = redis_client.getBool(RESET_SIM_KEY);  
+		if (flag_reset) {
+			sim->resetWorld(world_file);
+			sim->setJointPositions(hannah_name, hannah_q_desired);
+			sim->setJointPositions(tracy_name, tracy_q_desired);
+			// redis_client.set(RESET_SIM_KEY, "0");
+			redis_client.set(MULTI_RESET_CONTROLLER_KEY[0], "1");  // hannah
+			redis_client.set(MULTI_RESET_CONTROLLER_KEY[1], "1");  // tracy 
+		} else {
 
         VectorXd hannah_control_torques = redis_client.getEigen(HANNAH_TORO_JOINT_TORQUES_COMMANDED_KEY);
 		VectorXd tracy_control_torques = redis_client.getEigen(TRACY_TORO_JOINT_TORQUES_COMMANDED_KEY);
@@ -616,6 +632,7 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
         // {
         //     lock_guard<mutex> lock(mutex_update);
         // }
+		}
     }
     timer.stop();
     cout << "\nSimulation loop timer stats:\n";
