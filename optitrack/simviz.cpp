@@ -223,7 +223,7 @@ int main() {
 	int robot_index = 0; // index to track which robot to update next
     int total_robots = 10; // total number of robots to update
 
-    Sai2Common::LoopTimer timer(30, 1e6);
+    Sai2Common::LoopTimer timer(120, 1e6);
     timer.reinitializeTimer(1e9);
 
 	bool changed_recently = false;

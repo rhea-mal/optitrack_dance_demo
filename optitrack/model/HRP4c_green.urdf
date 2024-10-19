@@ -199,6 +199,12 @@
                 <mesh filename="meshes/obj/kuka-link3.stl.obj"/>
             </geometry>
         </collision> -->
+        <collision>
+            <origin xyz="0.0 0.0 -0.2" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <cylinder radius="0.05" length="0.25"/>
+            </geometry>
+        </collision>
     </link>
 
     <joint name="j3" type="revolute">
@@ -240,6 +246,12 @@
                 <sphere radius="0.05"/>
             </geometry>
         </collision> -->
+        <collision>
+            <origin xyz="0.0 0.0 -0.2" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <cylinder radius="0.05" length="0.2"/>
+            </geometry>
+        </collision>
     </link>
 
     <joint name="j4" type="revolute">
@@ -309,12 +321,12 @@
                 <mesh filename="../../../model/HRP4c/graphics/R_ANKLE_R_rev2.obj"/>
             </geometry>
         </visual> 
-        <!-- <visual>
-            <origin xyz="0.2 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        <collision>
+            <origin xyz="0.08 0.0 -0.05" rpy="0.0 0.0 0.0"/>
             <geometry>
-                <sphere radius="0.05"/>
+                <sphere radius="0.03"/>
             </geometry>
-        </visual> -->
+        </collision>
     </link>
 
     <joint name="j6" type="revolute">
@@ -377,6 +389,12 @@
                 <mesh filename="../../../model/HRP4c/graphics/L_HIP_P_rev2.obj"/>
             </geometry>
         </visual>
+        <collision>
+           <origin xyz="0.0 0.0 -0.2" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <cylinder radius="0.05" length="0.25"/>
+            </geometry>
+        </collision>
       </link>
 
     <joint name="j9" type="revolute">
@@ -406,12 +424,18 @@
                 <sphere radius="0.05"/>
             </geometry>
         </collision> -->
-        <visual>
+        <!-- <visual>
             <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
             <geometry>
                 <sphere radius="0.05"/>
             </geometry>
-        </visual>
+        </visual> -->
+        <collision>
+            <origin xyz="0.0 0.0 -0.2" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <cylinder radius="0.05" length="0.2"/>
+            </geometry>
+        </collision>
     </link>
 
     <joint name="j10" type="revolute">
@@ -472,12 +496,12 @@
                 <mesh filename="../../../model/HRP4c/graphics/L_ANKLE_R.obj"/>
             </geometry>
         </visual>
-        <!-- <collision>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        <collision>
+            <origin xyz="0.08 0.0 -0.05" rpy="0.0 0.0 0.0"/>
             <geometry>
-                <sphere radius="0.05"/>
+                <sphere radius="0.03"/>
             </geometry>
-        </collision> -->
+        </collision>
     </link>
 
     <joint name="j12" type="revolute">
@@ -533,6 +557,12 @@
                 <sphere radius="0.15"/>
             </geometry>
         </visual> -->
+        <collision>
+            <origin xyz="0.0 0.0 0.08" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <cylinder radius="0.13" length="0.45"/> 
+            </geometry>
+        </collision>
       </link>
 
     <joint name="j14" type="revolute">
@@ -622,6 +652,17 @@
                 <sphere radius="0.05"/>
             </geometry>
         </visual> -->
+        <collision>
+            <!-- <origin xyz="0.0 0.0 -0.28" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry> -->
+            <!-- modified -->
+            <origin xyz="0.0 0.0 -0.17" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <cylinder radius="0.04" length="0.15"/>
+            </geometry>
+        </collision>
       </link>
 
     <!-- TODO : Rotated -120 degres aroung Y axis -->
@@ -704,6 +745,17 @@
                 <sphere radius="0.05"/>
             </geometry>
         </visual> -->
+        <collision>
+            <!-- <origin xyz="0.0 0.0 -0.28" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry> -->
+            <!-- modified -->
+            <origin xyz="0.0 0.0 0.08" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <cylinder radius="0.04" length="0.13"/>
+            </geometry>
+        </collision>
     </link>
 
     <joint name="j19" type="revolute">
@@ -785,10 +837,16 @@
                 <sphere radius="0.05"/>
             </geometry>
         </visual> -->
-        <!-- <collision>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        <collision>
+            <origin xyz="0.07 0.0 0.0" rpy="0.0 0.0 0.0"/>
             <geometry>
                 <sphere radius="0.05"/>
+            </geometry>
+        </collision>
+        <!-- <collision>
+            <origin xyz="0.1 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.03"/>
             </geometry>
         </collision> -->
     </link>
@@ -907,6 +965,16 @@
                 <sphere radius="0.05"/>
             </geometry>
         </collision> -->
+        <collision>
+            <!-- <origin xyz="0.0 0.0 -0.28" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry> -->
+            <origin xyz="0.0 0.0 -0.17" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <cylinder radius="0.04" length="0.15"/>
+            </geometry>
+        </collision>
       </link>
 
     <joint name="j23" type="revolute">
@@ -987,6 +1055,16 @@
                 <sphere radius="0.05"/>
             </geometry>
         </visual> -->
+        <collision>
+            <!-- <origin xyz="0.0 0.0 -0.28" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry> -->
+            <origin xyz="0.0 0.0 0.08" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <cylinder radius="0.04" length="0.13"/>
+            </geometry>
+        </collision>
       </link>
 
     <joint name="j25" type="revolute">
@@ -1068,10 +1146,16 @@
                 <sphere radius="0.05"/>
             </geometry>
         </visual> -->
-        <!-- <collision>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        <collision>
+            <origin xyz="0.07 0.0 0.0" rpy="0.0 0.0 0.0"/>
             <geometry>
                 <sphere radius="0.05"/>
+            </geometry>
+        </collision>
+        <!-- <collision>
+            <origin xyz="0.1 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.03"/>
             </geometry>
         </collision> -->
     </link>
@@ -1158,6 +1242,12 @@
                 <capsule a="0.01 -0.078 -0.013" b="0.013 0.078 -0.01" radius="0.05"/>
             </geometry>
         </collision> -->
+        <collision>
+            <origin xyz="0.03 0.0 0.08" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <sphere radius="0.12"/>
+            </geometry>
+        </collision>
     </link>
 
     <joint name="j28" type="revolute">

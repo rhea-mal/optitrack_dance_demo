@@ -1,12 +1,12 @@
 cmake_minimum_required (VERSION 3.0)
 project (CENTER_DEMO)
 if (${CMAKE_SYSTEM_NAME} MATCHES Linux)
-	SET(CMAKE_CXX_FLAGS "-std=c++17 -I/usr/include -I/usr/local/include -O2")
+	SET(CMAKE_CXX_FLAGS "-std=c++17 -I/usr/include -I/usr/local/include -O3 -ffast-math")
 elseif (${CMAKE_SYSTEM_NAME} MATCHES Darwin)
-	SET(CMAKE_CXX_FLAGS "-std=c++17 -I/usr/include -I/usr/local/include -I/opt/homebrew/include -w -O2")
+	SET(CMAKE_CXX_FLAGS "-std=c++17 -I/usr/include -I/usr/local/include -I/opt/homebrew/include -w -O3 -ffast-math")
 endif()
-SET(CMAKE_BUILD_TYPE "Debug")  
-# SET(CMAKE_BUILD_TYPE "Release")  
+# SET(CMAKE_BUILD_TYPE "Debug")  
+SET(CMAKE_BUILD_TYPE "Release")  
 
 # set common dependencies
 # - eigen3

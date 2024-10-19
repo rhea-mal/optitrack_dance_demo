@@ -495,7 +495,7 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
     redis_client.connect();
 
     // create a timer
-    double sim_freq = 1000;
+    double sim_freq = 2000;
     Sai2Common::LoopTimer timer(sim_freq);
 
     sim->setTimestep(1.0 / sim_freq);
