@@ -452,7 +452,7 @@ int main() {
 				if (first_loop) {
 					redis_client.setEigen("opti::" + name + "::pos", Vector3d(0, 0, 0));
 					redis_client.setEigen("opti::" + name + "::ori", Matrix3d::Identity());
-					graphics->showObjectLinkFrame(true, name, 0.15);
+					// graphics->showObjectLinkFrame(true, name, 0.15);
 				} else {
 					auto body_part_pos = redis_client.getEigen("opti::" + name + "::pos");
 					auto body_part_ori = redis_client.getEigen("opti::" + name + "::ori");

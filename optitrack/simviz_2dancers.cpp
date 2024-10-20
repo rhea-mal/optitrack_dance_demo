@@ -274,7 +274,7 @@ int main() {
 
 		// Get the Lagrangian value from Redis
 
-		if (LAGRANGIAN_BACKGROUND_MODE) {
+		if (true) {
 		double lagrangian = stod(redis_client.get(HANNAH_LAGRANGIAN));
 		chai3d::cColorf backgroundColor = lagrangianToColor(lagrangian, -50.0, 200.0);
 		double red = backgroundColor.getR();
