@@ -351,7 +351,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
                                                                                                         compliant_frame,
                                                                                                         controller_data.control_links[i]);
             tasks[controller_data.control_links[i]]->disableInternalOtg();
-            // tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(1e-3, 1e-2);  // adjusted from 6e-3 to 6e-2
+            tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(8e-3, 8e-2);  // adjusted from 6e-3 to 6e-2
             // tasks[controller_data.control_links[i]]->disableSingularityHandling();
             tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);  // need to test 
             tasks[controller_data.control_links[i]]->setSingularityHandlingGains(100, 20, 20);
@@ -374,8 +374,8 @@ void control(std::shared_ptr<Optitrack::Human> human,
             tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);  // need to test 
             tasks[controller_data.control_links[i]]->setSingularityHandlingGains(100, 20, 20);
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-            tasks[controller_data.control_links[i]]->setPosControlGains(350, 25, 0);
-            tasks[controller_data.control_links[i]]->setOriControlGains(350, 25, 0);
+            tasks[controller_data.control_links[i]]->setPosControlGains(350, 20, 0);
+            tasks[controller_data.control_links[i]]->setOriControlGains(350, 20, 0);
         }
     }
 
@@ -445,8 +445,8 @@ void control(std::shared_ptr<Optitrack::Human> human,
                 int index = it->second;
                 // Vector3d current_position = redis_client.getEigen(std::to_string(optitrack_data.human_ids[ROBOT_ID]) + "::" + std::to_string(index) + "::pos");
                 // MatrixXd quaternion_matrix = redis_client.getEigen(std::to_string(optitrack_data.human_ids[ROBOT_ID]) + "::" + std::to_string(index) + "::ori");
-                Vector3d current_position = redis_client.getEigen("0::" + std::to_string(index) + "::pos");
-                MatrixXd quaternion_matrix = redis_client.getEigen("0::" + std::to_string(index) + "::ori");
+                Vector3d current_position = redis_client.getEigen(std::to_string(ROBOT_ID) + "::" + std::to_string(index) + "::pos");
+                MatrixXd quaternion_matrix = redis_client.getEigen(std::to_string(ROBOT_ID) + "::" + std::to_string(index) + "::ori");
                 if (quaternion_matrix.size() != 4) {
                     std::cerr << "Error: Quaternion retrieved from Redis does not have 4 elements." << std::endl;
                     continue;

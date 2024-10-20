@@ -251,7 +251,7 @@ int main() {
 	redis_client.setEigen(HEAD_LOOK_AT, lookat + pos);
 
 	bool conmove = true;
-	bool LAGRANGIAN_BACKGROUND_MODE = true;
+	bool LAGRANGIAN_BACKGROUND_MODE = false;
 	bool IMAGE_BACKGROUND_MODE = false;
 	
 	redis_client.set(LAGRANGIAN, std::to_string(0));
@@ -280,7 +280,8 @@ int main() {
 		double red = backgroundColor.getR();
     	double green = backgroundColor.getG();
    		double blue = backgroundColor.getB();
-		graphics->setBackgroundColor(red, green, blue);
+		// graphics->setBackgroundColor(red, green, blue);
+		graphics->setBackgroundColor(0, 0, 0);
 		redis_client.set("red", std::to_string(red));
 		redis_client.set("green", std::to_string(green));
 		redis_client.set("blue", std::to_string(blue));
