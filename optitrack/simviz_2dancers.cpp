@@ -27,6 +27,12 @@
 #include <chrono>
 #include <yaml-cpp/yaml.h>
 
+#include <chrono>
+using std::chrono::high_resolution_clock;
+using std::chrono::duration_cast;
+using std::chrono::duration;
+using std::chrono::milliseconds;
+
 bool fSimulationRunning = true;
 void sighandler(int){fSimulationRunning = false;}
 double DELAY = 2000; // simulation frequency in Hz
@@ -94,6 +100,8 @@ chai3d::cColorf lagrangianToColor(double lagrangian, double min_lagrangian, doub
 void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 				const std::vector<double>& lower_limit,
 				const std::vector<double>& upper_limit);
+
+void computeEnergy();
 
 int main() {
     std::cout << "Loading URDF world model file: " << world_file << endl;
@@ -255,6 +263,7 @@ int main() {
 	bool IMAGE_BACKGROUND_MODE = false;
 	
 	redis_client.set(LAGRANGIAN, std::to_string(0));
+	redis_client.set(RESET_SIM_KEY, "0");
 
 	// start simulation thread
 	thread sim_thread(simulation, sim, lower_joint_limits, upper_joint_limits);
@@ -493,29 +502,54 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 				const std::vector<double>& upper_limit) {
     // fSimulationRunning = true;
 
+	// initialize timer 
+	auto t1 = high_resolution_clock::now();
+	auto t2 = high_resolution_clock::now();
+	duration<double, std::milli> ms_double = t2 - t1;
+
     // create redis client
     auto redis_client = Sai2Common::RedisClient();
     redis_client.connect();
+
+	// setup loop variables
+	int ROBOT_DOF = 38;
+	VectorXd hannah_control_torques = VectorXd::Zero(ROBOT_DOF);
+	VectorXd tracy_control_torques = VectorXd::Zero(ROBOT_DOF);
+	bool flag_reset = false;
+
+	VectorXd hannah_robot_q = redis_client.getEigen(MULTI_TORO_JOINT_ANGLES_KEY[0]);
+	VectorXd hannah_robot_dq = redis_client.getEigen(MULTI_TORO_JOINT_VELOCITIES_KEY[0]);
+	VectorXd tracy_robot_q = redis_client.getEigen(MULTI_TORO_JOINT_ANGLES_KEY[1]);
+	VectorXd tracy_robot_dq = redis_client.getEigen(MULTI_TORO_JOINT_VELOCITIES_KEY[1]);
+
+	// create redis client get and set pipeline 
+	redis_client.addToReceiveGroup(HANNAH_TORO_JOINT_TORQUES_COMMANDED_KEY, hannah_control_torques);
+	redis_client.addToReceiveGroup(TRACY_TORO_JOINT_TORQUES_COMMANDED_KEY, tracy_control_torques);
+
+	redis_client.addToSendGroup(MULTI_TORO_JOINT_ANGLES_KEY[0], hannah_robot_q);
+	redis_client.addToSendGroup(MULTI_TORO_JOINT_ANGLES_KEY[1], tracy_robot_q);
+	redis_client.addToSendGroup(MULTI_TORO_JOINT_VELOCITIES_KEY[0], hannah_robot_dq);
+	redis_client.addToSendGroup(MULTI_TORO_JOINT_VELOCITIES_KEY[1], tracy_robot_dq);
 
     // create a timer
     double sim_freq = 2000;
     Sai2Common::LoopTimer timer(sim_freq);
 
     sim->setTimestep(1.0 / sim_freq);
-    sim->enableGravityCompensation(true);
+    sim->enableGravityCompensation(false);
 
     sim->disableJointLimits(hannah_name);
 	sim->disableJointLimits(tracy_name);
-
-	// reset logic
-	bool flag_reset = false;
 
     while (fSimulationRunning) {
         timer.waitForNextLoop();
         const double time = timer.elapsedSimTime();
 
+		// execute read callback 
+		redis_client.receiveAllFromGroup();
+
 		// query reset key 
-		flag_reset = redis_client.getBool(RESET_SIM_KEY);  
+		// flag_reset = redis_client.getBool(RESET_SIM_KEY);  
 		if (flag_reset) {
 			sim->resetWorld(world_file);
 			sim->setJointPositions(hannah_name, hannah_q_desired);
@@ -525,19 +559,29 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 			redis_client.set(MULTI_RESET_CONTROLLER_KEY[1], "1");  // tracy 
 		} else {
 
-        VectorXd hannah_control_torques = redis_client.getEigen(HANNAH_TORO_JOINT_TORQUES_COMMANDED_KEY);
-		VectorXd tracy_control_torques = redis_client.getEigen(TRACY_TORO_JOINT_TORQUES_COMMANDED_KEY);
+		// t1 = high_resolution_clock::now();
+        // VectorXd hannah_control_torques = redis_client.getEigen(HANNAH_TORO_JOINT_TORQUES_COMMANDED_KEY);
+		// VectorXd tracy_control_torques = redis_client.getEigen(TRACY_TORO_JOINT_TORQUES_COMMANDED_KEY);
+		// t2 = high_resolution_clock::now();
+		// ms_double = t2 - t1;
+		// std::cout << "get torques time: " << ms_double.count() << " ms\n";
+
         // {
             // lock_guard<mutex> lock(mutex_torques);
-            sim->setJointTorques(hannah_name, hannah_control_torques + 0 * hannah_ui_torques);
-			sim->setJointTorques(tracy_name, tracy_control_torques + 0 * tracy_ui_torques);
+            sim->setJointTorques(hannah_name, hannah_control_torques);
+			sim->setJointTorques(tracy_name, tracy_control_torques);
         // }
-        sim->integrate();
 
-		VectorXd hannah_robot_q = sim->getJointPositions(hannah_name);
-    	VectorXd hannah_robot_dq = sim->getJointVelocities(hannah_name);
-		VectorXd tracy_robot_q = sim->getJointPositions(tracy_name);
-    	VectorXd tracy_robot_dq = sim->getJointVelocities(tracy_name);
+		// t1 = high_resolution_clock::now();
+        sim->integrate();
+		// t2 = high_resolution_clock::now();
+		// ms_double = t2 - t1;
+		// std::cout << "integrate time: " << ms_double.count() << " ms\n";
+
+		hannah_robot_q = sim->getJointPositions(hannah_name);
+    	hannah_robot_dq = sim->getJointVelocities(hannah_name);
+		tracy_robot_q = sim->getJointPositions(tracy_name);
+    	tracy_robot_dq = sim->getJointVelocities(tracy_name);
 		
 		// hannah->setQ(hannah_robot_q);
 		// hannah->updateModel();
@@ -570,49 +614,52 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 		for (auto id : limited_joints) {
 			if (hannah_robot_q(id) > upper_limit[id]) {
 				hannah_robot_q[id] = upper_limit[id];
+				// hannah_robot_dq(id) = 0;
 			} else if (hannah_robot_q(id) < lower_limit[id]) {
 				hannah_robot_q(id) = lower_limit[id];
+				// hannah_robot_dq(id) = 0;
 			}
 		}
 
 		for (auto id : limited_joints) {
 			if (tracy_robot_q(id) > upper_limit[id]) {
 				tracy_robot_q[id] = upper_limit[id];
+				// tracy_robot_dq(id) = 0;
 			} else if (tracy_robot_q(id) < lower_limit[id]) {
 				tracy_robot_q(id) = lower_limit[id];
+				// tracy_robot_dq(id) = 0;
 			}
 		}
 
-		hannah->setQ(hannah_robot_q);
-		hannah->setDq(hannah_robot_dq);
-		hannah->updateModel();
+		// hannah->setQ(hannah_robot_q);
+		// hannah->setDq(hannah_robot_dq);
+		// hannah->updateModel();
 
-		tracy->setQ(tracy_robot_q);
-		tracy->setDq(tracy_robot_dq);
-		tracy->updateModel();
+		// tracy->setQ(tracy_robot_q);
+		// tracy->setDq(tracy_robot_dq);
+		// tracy->updateModel();
 
 		// VectorXd robot_q = (hannah_robot_q + tracy_robot_q)/2;
 		// VectorXd robot_dq = (hannah_robot_dq + tracy_robot_dq)/2;
 
-		redis_client.setEigen(MULTI_TORO_JOINT_ANGLES_KEY[0], hannah_robot_q);
-		redis_client.setEigen(MULTI_TORO_JOINT_VELOCITIES_KEY[0], hannah_robot_dq);
-		redis_client.setEigen(MULTI_TORO_JOINT_ANGLES_KEY[1], tracy_robot_q);
-		redis_client.setEigen(MULTI_TORO_JOINT_VELOCITIES_KEY[1], tracy_robot_dq);
+		// redis_client.setEigen(MULTI_TORO_JOINT_ANGLES_KEY[0], hannah_robot_q);
+		// redis_client.setEigen(MULTI_TORO_JOINT_VELOCITIES_KEY[0], hannah_robot_dq);
+		// redis_client.setEigen(MULTI_TORO_JOINT_ANGLES_KEY[1], tracy_robot_q);
+		// redis_client.setEigen(MULTI_TORO_JOINT_VELOCITIES_KEY[1], tracy_robot_dq);
 
         //robot_dq = 0.1 * VectorXd::Ones(robot_dq.size()) * sin(time);
 
-        // Get the mass matrix
-        MatrixXd hannah_robot_M = hannah->M();
-        VectorXd hannah_g = hannah->jointGravityVector();
-        double hannah_kinetic_energy = 0.5 * hannah_robot_dq.transpose() * hannah_robot_M * hannah_robot_dq;
-		Eigen::VectorXd hanah_comPosition = hannah->comPosition();
-		double hannah_potential_energy = 90 * hanah_comPosition(2) * -9.8;
-        double hannah_lagrangian = hannah_kinetic_energy - hannah_potential_energy;
+        // // Get the mass matrix
+        // MatrixXd hannah_robot_M = hannah->M();
+        // VectorXd hannah_g = hannah->jointGravityVector();
+        // double hannah_kinetic_energy = 0.5 * hannah_robot_dq.transpose() * hannah_robot_M * hannah_robot_dq;
+		// Eigen::VectorXd hanah_comPosition = hannah->comPosition();
+		// double hannah_potential_energy = 90 * hanah_comPosition(2) * -9.8;
+        // double hannah_lagrangian = hannah_kinetic_energy - hannah_potential_energy;
         
-		redis_client.set(HANNAH_KINETIC, std::to_string(hannah_kinetic_energy));
-		redis_client.set(HANNAH_POTENTIAL, std::to_string(hannah_potential_energy));
-		redis_client.set(HANNAH_LAGRANGIAN, std::to_string(hannah_lagrangian));
-
+		// redis_client.set(HANNAH_KINETIC, std::to_string(hannah_kinetic_energy));
+		// redis_client.set(HANNAH_POTENTIAL, std::to_string(hannah_potential_energy));
+		// redis_client.set(HANNAH_LAGRANGIAN, std::to_string(hannah_lagrangian));
 
 		// MatrixXd tracy_robot_M = tracy->M();
         // VectorXd tracy_g = tracy->jointGravityVector();
@@ -633,6 +680,11 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
         // {
         //     lock_guard<mutex> lock(mutex_update);
         // }
+
+
+		// execute write callback
+		redis_client.sendAllFromGroup();
+
 		}
     }
     timer.stop();
@@ -640,3 +692,6 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
     timer.printInfoPostRun();
 }
 
+void computeEnergy() {
+
+}

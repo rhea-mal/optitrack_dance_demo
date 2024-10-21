@@ -1228,7 +1228,7 @@
             <!-- <origin  xyz="-0.092 0 -0.1387"/> -->
             <origin  xyz="0.0 0 0.0"/>
             <geometry>
-                <mesh filename="../../../model/HRP4c/graphics/Helmet_roboCop_rev2_purple.obj"/>
+                <mesh filename="../../../model/HRP4c/graphics/Helmet_roboCop_rev2.obj"/>
             </geometry>
         </visual>
 <!--         <collision>
@@ -1262,6 +1262,5 @@
 <!--     <collision_pair link1="ground" link2="RL_foot"/>
     <collision_pair link1="ground" link2="LL_foot"/> -->
 </robot>
-
 
 

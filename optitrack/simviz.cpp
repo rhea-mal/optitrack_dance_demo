@@ -497,7 +497,7 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
     Sai2Common::LoopTimer timer(sim_freq);
 
     sim->setTimestep(1.0 / sim_freq);
-    sim->enableGravityCompensation(true);
+    // sim->enableGravityCompensation(true);
 
     // sim->enableJointLimits(toro_name);
 	sim->disableJointLimits(toro_name);
