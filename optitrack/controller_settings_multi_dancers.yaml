@@ -10,7 +10,8 @@ optitrack:
   debug: true 
   # limited_joints: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
   # limited_joints: [20, 21]
-  limited_joints: [6, 9, 13, 16, 21, 36, 37, 22, 29]
+  # limited_joints: [6, 9, 13, 16, 21, 36, 37, 24, 31]
+  limited_joints: [6, 9, 13, 16, 21]
   z_rotation: 0  # or 180 depending 
 
 controller:
