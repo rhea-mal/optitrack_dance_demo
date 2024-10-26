@@ -136,7 +136,7 @@ int main() {
     graphics = std::make_shared<Sai2Graphics::Sai2Graphics>(world_file, camera_name, false);
     //setBackgroundImage(graphics, "../../optitrack/assets/space.jpg"); // Set background to space
     graphics->getCamera(camera_name)->setClippingPlanes(0.1, 2000);  // set the near and far clipping planes 
-	graphics->setMirrorHorizontal(camera_name, true);
+	// graphics->setMirrorHorizontal(camera_name, true);
 
 	int total_robots = 2; // total number of robots to update (BEFORE WAS 10)
 
@@ -540,7 +540,7 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 	redis_client.addToSendGroup(MULTI_TORO_JOINT_VELOCITIES_KEY[1], tracy_robot_dq);
 
     // create a timer
-    double sim_freq = 2000;
+    double sim_freq = 1200;
     Sai2Common::LoopTimer timer(sim_freq);
 
     sim->setTimestep(1.0 / sim_freq);
@@ -559,14 +559,26 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 		// query reset key 
 		flag_reset = redis_client.getBool(RESET_SIM_KEY);  
 		if (flag_reset) {
-			sim->resetWorld(world_file);
+			// sim->resetWorld(world_file);
 			sim->setJointPositions(hannah_name, hannah_q_desired);
 			sim->setJointPositions(tracy_name, tracy_q_desired);
+			sim->setJointVelocities(hannah_name, 0 * hannah_q_desired);
+			sim->setJointVelocities(tracy_name, 0 * tracy_q_desired);
 			// redis_client.set(RESET_SIM_KEY, "0");
 			redis_client.set(MULTI_RESET_CONTROLLER_KEY[0], "1");  // hannah
 			redis_client.set(MULTI_RESET_CONTROLLER_KEY[1], "1");  // tracy 
 
 			// reset joint angles and velocities in the keys 
+			redis_client.setEigen(HANNAH_TORO_JOINT_ANGLES_KEY, hannah->q()); 
+			redis_client.setEigen(HANNAH_TORO_JOINT_VELOCITIES_KEY, hannah->dq()); 
+			redis_client.setEigen(HANNAH_TORO_JOINT_TORQUES_COMMANDED_KEY, 0 * hannah->q());
+
+			redis_client.setEigen(TRACY_TORO_JOINT_ANGLES_KEY, tracy->q()); 
+			redis_client.setEigen(TRACY_TORO_JOINT_VELOCITIES_KEY, tracy->dq()); 
+			redis_client.setEigen(TRACY_TORO_JOINT_TORQUES_COMMANDED_KEY, 0 * tracy->q());
+
+			hannah_control_torques.setZero();
+			tracy_control_torques.setZero();
 
 		} else {
 
@@ -725,7 +737,7 @@ void computeEnergy() {
 	MatrixXd motor_inertia_bias = motor_inertia * gear_inertia * gear_inertia * MatrixXd::Identity(hannah->dof(), hannah->dof());	
 
     // create a timer
-    double sim_freq = 1000;
+    double sim_freq = 100;
     Sai2Common::LoopTimer timer(sim_freq);
 
 	while (fSimulationRunning) {

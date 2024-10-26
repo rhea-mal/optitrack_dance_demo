@@ -77,7 +77,7 @@ struct ControllerData {
     std::vector<Vector3d> control_points;
 };
 
-const double MOTION_SF = 1.0;
+double MOTION_SF = 1.0;
 const double MAX_RADIUS_ARM = 0.5;  // saturate arms within a sphere distance of the pelvis 
 
 enum State {
@@ -160,8 +160,10 @@ int main(int argc, char** argv) {
     // parse input 
     if (NAME == "Hannah") {
         ROBOT_ID = 0;
+        MOTION_SF = 0.9;
     } else if (NAME == "Tracy") {
         ROBOT_ID = 1;
+        MOTION_SF = 0.9;
     } else if (NAME == "User") {
         ROBOT_ID = 2;
     }
@@ -853,6 +855,6 @@ void control(std::shared_ptr<Optitrack::Human> human,
 	timer.stop();
 	cout << "\nControl loop timer stats:\n";
 	timer.printInfoPostRun();
-    redis_client.setEigen(MULTI_TORO_JOINT_TORQUES_COMMANDED_KEY[ROBOT_ID], 0 * control_torques);
+    redis_client.setEigen(MULTI_TORO_JOINT_TORQUES_COMMANDED_KEY[ROBOT_ID], VectorXd::Zero(38));
 	
 }

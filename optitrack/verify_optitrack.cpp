@@ -76,11 +76,11 @@ const std::vector<std::string> object_names = {
 // correct mapping 
 std::map<int, int> index_mapping = {
     {1, 5}, // head; correct
-    {2, 47}, // left foot; flipped
-    {3, 23}, // left hand; correct
+    {2, 48}, // left foot; flipped
+    {3, 32}, // left hand; correct
     {4, 2}, // torso; correct 
-    {5, 50}, // right foot; flipped
-    {6, 32}  // right hand 
+    {5, 47}, // right foot; flipped
+    {6, 23}  // right hand 
 };
 
 const int N_RIGID_BODIES = 6;
@@ -180,8 +180,8 @@ int main() {
         for (int i = 0; i < N_RIGID_BODIES; ++i) {
             int index = index_mapping[i + 1];
         
-            Eigen::Vector3d current_position = redis_client.getEigen("5::" + std::to_string(index) + "::pos");
-            Eigen::MatrixXd quaternion_matrix = redis_client.getEigen("5::" + std::to_string(index) + "::ori");
+            Eigen::Vector3d current_position = redis_client.getEigen("0::" + std::to_string(index) + "::pos");
+            Eigen::MatrixXd quaternion_matrix = redis_client.getEigen("0::" + std::to_string(index) + "::ori");
 
             // Create the affine transformation
             Eigen::Affine3d current_pose = Eigen::Affine3d::Identity();
