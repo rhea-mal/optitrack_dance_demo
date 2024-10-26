@@ -225,6 +225,7 @@ int main() {
 		if (LAGRANGIAN_BACKGROUND_MODE) {
 		double lagrangian = stod(redis_client.get(LAGRANGIAN));
 		chai3d::cColorf backgroundColor = lagrangianToColor(lagrangian, -50.0, 200.0);
+		redis_client.set(LEDCOLOR, backgroundColor);
 		double red = backgroundColor.getR();
     	double green = backgroundColor.getG();
    		double blue = backgroundColor.getB();

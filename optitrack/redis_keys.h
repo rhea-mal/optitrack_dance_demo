@@ -56,3 +56,4 @@ const std::string TRACY_POTENTIAL = "sai2::sim::toro::potential";
 
 const std::string TEST_POS = "test::pos";
 const std::string TEST_ORI = "test::ori";
+const std::string LEDCOLOR = "ledcolor";
