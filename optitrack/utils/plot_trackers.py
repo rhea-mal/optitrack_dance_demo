@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import redis
-import time
 import numpy as np
+import time
 
 # Redis connection
 redis_client = redis.Redis(host='localhost', port=6379, decode_responses=True)
@@ -14,14 +14,15 @@ plt.ion()  # Enable interactive mode
 
 # Function to retrieve and parse position data from Redis
 def get_position_data():
-    keys = redis_client.keys("sai2::optitrack::rigid_body_pos::*")
+    keys = redis_client.keys("0::*::pos")  # Filter for keys starting with "0::" and ending with "::pos"
     positions = []
     labels = []
     for key in keys:
         pos_str = redis_client.get(key)
         if pos_str:
+            # Extract the ID from the key, which is between the two "::"
+            tracker_id = key.split("::")[1]  
             pos_list = [float(coord) for coord in pos_str.strip('[]').split(',')]
-            tracker_id = key.split("::")[-1]  # Extract tracker number from key
             positions.append(pos_list)
             labels.append(tracker_id)
     return positions, labels
@@ -35,7 +36,7 @@ while True:
         positions = np.array(positions)
         # Plot points
         ax.scatter(positions[:, 0], positions[:, 1], positions[:, 2], c='b', marker='o')
-        # Add labels for each point
+        # Add labels for each point using tracker_id
         for i, label in enumerate(labels):
             ax.text(positions[i, 0], positions[i, 1], positions[i, 2], label, color='red')
 
