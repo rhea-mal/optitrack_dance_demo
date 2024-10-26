@@ -78,3 +78,18 @@ const std::vector<std::string> DEBUG_LINK_NAMES = {"opti::neck_link2", "opti::tr
                                                     "opti::hip_base", "opti::LL_foot", \
                                                     "opti::RL_foot", "opti::la_end_effector", \
                                                     "opti::ra_end_effector", "opti::la_link4", "opti::ra_link4"};
+
+const std::string ROBOT_KINETIC_KEY = "sai2::sim::robot::kinetic";
+const std::string HUMAN_KINETIC_KEY = "sai2::sim::human::kinetic";
+const std::string ROBOT_EFFORT_KEY = "sai2::sim::robot::effort";
+const std::string HUMAN_EFFORT_KEY = "sai2::sim::human::effort";
+
+const std::string HANNAH_ROBOT_KINETIC_KEY = "sai2::sim::hannah::robot::kinetic";
+const std::string TRACY_ROBOT_KINETIC_KEY = "sai2::sim::tracy::robot::kinetic";
+const std::string HANNAH_HUMAN_KINETIC_KEY = "sai2::sim::hannah::human::kinetic";
+const std::string TRACY_HUMAN_KINETIC_KEY = "sai2::sim::tracy::human::kinetic";
+
+const std::string HANNAH_ROBOT_EFFORT_KEY = "sai2::sim::hannah::robot::effort";
+const std::string TRACY_ROBOT_EFFORT_KEY = "sai2::sim::tracy::robot::effort";
+const std::string HANNAH_HUMAN_EFFORT_KEY = "sai2::sim::hannah::human::effort";
+const std::string TRACY_HUMAN_EFFORT_KEY = "sai2::sim::tracy::human::effort";

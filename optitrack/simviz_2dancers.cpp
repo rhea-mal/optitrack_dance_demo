@@ -58,6 +58,7 @@ static const string camera_name = "camera_fixed";
 const std::string yaml_fname = "./resources/controller_settings_multi_dancers.yaml";
 
 static const string toro_file = "./resources/model/HRP4c.urdf";
+static const string human_file = "./resources/model/human.urdf";
 //static const string world_file = "./resources/world/world_basic_10.urdf";
 static const string world_file = "./resources/world/world_basic_2.urdf";
 
@@ -267,6 +268,7 @@ int main() {
 
 	// start simulation thread
 	thread sim_thread(simulation, sim, lower_joint_limits, upper_joint_limits);
+	thread compute_thread(computeEnergy);
 	
 	int robot_index = 0; // index to track which robot to update next
 
@@ -284,16 +286,21 @@ int main() {
 		// Get the Lagrangian value from Redis
 
 		if (true) {
-		double lagrangian = stod(redis_client.get(HANNAH_LAGRANGIAN));
-		chai3d::cColorf backgroundColor = lagrangianToColor(lagrangian, -50.0, 200.0);
-		double red = backgroundColor.getR();
-    	double green = backgroundColor.getG();
-   		double blue = backgroundColor.getB();
-		// graphics->setBackgroundColor(red, green, blue);
-		graphics->setBackgroundColor(0, 0, 0);
-		redis_client.set("red", std::to_string(red));
-		redis_client.set("green", std::to_string(green));
-		redis_client.set("blue", std::to_string(blue));
+			// double lagrangian = 1;
+			// if (stod(redis_client.get(HANNAH_HUMAN_KINETIC_KEY)) != 0) {
+				// lagrangian = stod(redis_client.get(HANNAH_ROBOT_KINETIC_KEY)) / stod(redis_client.get(HANNAH_HUMAN_KINETIC_KEY));
+			// } 
+			double lagrangian = stod(redis_client.get(HANNAH_ROBOT_KINETIC_KEY));
+			// std::cout << lagrangian << "\n";
+			chai3d::cColorf backgroundColor = lagrangianToColor(lagrangian, 0.0, 250);
+			double red = backgroundColor.getR();
+			double green = backgroundColor.getG();
+			double blue = backgroundColor.getB();
+			// graphics->setBackgroundColor(red, green, blue);
+			graphics->setBackgroundColor(0, 0, 0);
+			redis_client.set("red", std::to_string(red));
+			redis_client.set("green", std::to_string(green));
+			redis_client.set("blue", std::to_string(blue));
 		}
         
         // Update primary robot graphics
@@ -492,6 +499,7 @@ int main() {
     // stop simulation
 	fSimulationRunning = false;
 	sim_thread.join();
+	compute_thread.join();
 
 	return 0;
 }
@@ -549,7 +557,7 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 		redis_client.receiveAllFromGroup();
 
 		// query reset key 
-		// flag_reset = redis_client.getBool(RESET_SIM_KEY);  
+		flag_reset = redis_client.getBool(RESET_SIM_KEY);  
 		if (flag_reset) {
 			sim->resetWorld(world_file);
 			sim->setJointPositions(hannah_name, hannah_q_desired);
@@ -557,6 +565,9 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 			// redis_client.set(RESET_SIM_KEY, "0");
 			redis_client.set(MULTI_RESET_CONTROLLER_KEY[0], "1");  // hannah
 			redis_client.set(MULTI_RESET_CONTROLLER_KEY[1], "1");  // tracy 
+
+			// reset joint angles and velocities in the keys 
+
 		} else {
 
 		// t1 = high_resolution_clock::now();
@@ -573,7 +584,9 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
         // }
 
 		// t1 = high_resolution_clock::now();
-        sim->integrate();
+		if (!flag_reset) {
+        	sim->integrate();
+		}
 		// t2 = high_resolution_clock::now();
 		// ms_double = t2 - t1;
 		// std::cout << "integrate time: " << ms_double.count() << " ms\n";
@@ -692,6 +705,97 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
     timer.printInfoPostRun();
 }
 
+/**
+ * Separate thread to compute:
+ * 	- robot vs. human kinetic energies
+ *  - robot vs. human energy consumption 
+ */
 void computeEnergy() {
+	auto redis_client_energy = Sai2Common::RedisClient();
+	redis_client_energy.connect();
+	auto hannah = std::make_shared<Sai2Model::Sai2Model>(toro_file, false);
+	auto tracy = std::make_shared<Sai2Model::Sai2Model>(toro_file, false);
 
+	auto human_hannah = std::make_shared<Sai2Model::Sai2Model>(human_file, false);
+	auto human_tracy = std::make_shared<Sai2Model::Sai2Model>(human_file, false);
+
+	// gear inertia scaling for mass matrix diagonal
+	double motor_inertia = 0.1;
+	double gear_inertia = 20;
+	MatrixXd motor_inertia_bias = motor_inertia * gear_inertia * gear_inertia * MatrixXd::Identity(hannah->dof(), hannah->dof());	
+
+    // create a timer
+    double sim_freq = 1000;
+    Sai2Common::LoopTimer timer(sim_freq);
+
+	while (fSimulationRunning) {
+		timer.waitForNextLoop();
+		const double time = timer.elapsedSimTime();
+
+		/*
+			Hannah robot 
+		*/
+		hannah->setQ(redis_client_energy.getEigen(HANNAH_TORO_JOINT_ANGLES_KEY));
+		hannah->setDq(redis_client_energy.getEigen(HANNAH_TORO_JOINT_VELOCITIES_KEY));
+		hannah->updateModel();
+
+		double hannah_kinetic_energy = 0.5 * hannah->dq().transpose() * (hannah->M() + 0 * motor_inertia_bias) * hannah->dq();  // robot kinetic energy WITH ADDED MOTOR INERTIA BIAS
+
+		// robot effort from joint torques: may need to include the motor inertia through the gear ratio 
+		VectorXd hannah_control_torques = redis_client_energy.getEigen(HANNAH_TORO_JOINT_TORQUES_COMMANDED_KEY);
+		double hannah_robot_power = hannah_control_torques.cwiseAbs().transpose() * hannah->dq().cwiseAbs();
+
+		/*
+			Tracy robot 
+		*/
+		tracy->setQ(redis_client_energy.getEigen(TRACY_TORO_JOINT_ANGLES_KEY));
+		tracy->setDq(redis_client_energy.getEigen(TRACY_TORO_JOINT_VELOCITIES_KEY));
+		tracy->updateModel();
+
+		double tracy_kinetic_energy = 0.5 * tracy->dq().transpose() * (tracy->M() + 0 * motor_inertia_bias) * tracy->dq();  // robot kinetic energy WITH ADDED MOTOR INERTIA BIAS
+
+		// robot effort from joint torques: may need to include the motor inertia through the gear ratio 
+		VectorXd tracy_control_torques = redis_client_energy.getEigen(TRACY_TORO_JOINT_TORQUES_COMMANDED_KEY);
+		double tracy_robot_power = tracy_control_torques.cwiseAbs().transpose() * tracy->dq().cwiseAbs();
+
+		/*
+			Human Hannah 
+		*/
+		human_hannah->setQ(redis_client_energy.getEigen(HANNAH_TORO_JOINT_ANGLES_KEY));
+		human_hannah->setDq(redis_client_energy.getEigen(HANNAH_TORO_JOINT_VELOCITIES_KEY));
+		human_hannah->updateModel();
+
+		double hannah_human_kinetic_energy = 0.5 * human_hannah->dq().transpose() * human_hannah->M() * human_hannah->dq();
+
+		// human effort estimated from a similar robot urdf, but with human values 
+		VectorXd unit_mass_torques = (hannah->M() + motor_inertia_bias).inverse() * hannah_control_torques;
+		double hannah_human_power = human_hannah->dq().cwiseAbs().transpose() * (human_hannah->M() * unit_mass_torques).cwiseAbs();
+
+		/*
+			Human Tracy 
+		*/
+		human_tracy->setQ(redis_client_energy.getEigen(TRACY_TORO_JOINT_ANGLES_KEY));
+		human_tracy->setDq(redis_client_energy.getEigen(TRACY_TORO_JOINT_VELOCITIES_KEY));
+		human_tracy->updateModel();
+
+		double tracy_human_kinetic_energy = 0.5 * human_tracy->dq().transpose() * human_tracy->M() * human_tracy->dq();
+
+		// human effort estimated from a similar robot urdf, but with human values 
+		unit_mass_torques = (tracy->M() + motor_inertia_bias).inverse() * tracy_control_torques;
+		double tracy_human_power = human_tracy->dq().cwiseAbs().transpose() * (human_tracy->M() * unit_mass_torques).cwiseAbs();
+
+		// std::cout << "tracy robot power: " << tracy_robot_power << "\n";
+		// std::cout << "tracy human power: " << tracy_human_power << "\n";
+
+		// publish data
+		redis_client_energy.setDouble(HANNAH_ROBOT_KINETIC_KEY, hannah_kinetic_energy);
+		redis_client_energy.setDouble(TRACY_ROBOT_KINETIC_KEY, tracy_kinetic_energy);
+		redis_client_energy.setDouble(HANNAH_HUMAN_KINETIC_KEY, hannah_human_kinetic_energy);
+		redis_client_energy.setDouble(TRACY_HUMAN_KINETIC_KEY, tracy_human_kinetic_energy);
+
+		redis_client_energy.setDouble(HANNAH_ROBOT_EFFORT_KEY, hannah_robot_power);
+		redis_client_energy.setDouble(TRACY_ROBOT_EFFORT_KEY, tracy_robot_power);
+		redis_client_energy.setDouble(HANNAH_HUMAN_EFFORT_KEY, hannah_human_power);
+		redis_client_energy.setDouble(TRACY_HUMAN_EFFORT_KEY, tracy_human_power);
+	}
 }

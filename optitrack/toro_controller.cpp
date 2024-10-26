@@ -386,7 +386,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
                                                                                                         compliant_frame,
                                                                                                         controller_data.control_links[i]);
             tasks[controller_data.control_links[i]]->disableInternalOtg();
-            // tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(5e-1, 5e0);  // adjusted from 6e-3 to 6e-2
+            tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(3e-3, 3e-2);
             // tasks[controller_data.control_links[i]]->disableSingularityHandling();
             // tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(1e-2, 1e-1);
             tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);  // need to test 
@@ -405,7 +405,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
                                                                                                         compliant_frame,
                                                                                                         controller_data.control_links[i]);
             tasks[controller_data.control_links[i]]->disableInternalOtg();
-            // tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(1e-2, 1e-1);
+            tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(3e-3, 3e-2);
             // tasks[controller_data.control_links[i]]->disableSingularityHandling();
             tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);  // need to test 
             // tasks[controller_data.control_links[i]]->setSingularityHandlingGains(100, 20, 20);
@@ -519,9 +519,10 @@ void control(std::shared_ptr<Optitrack::Human> human,
         // int reset_robot = redis_client.getInt(MULTI_RESET_CONTROLLER_KEY[ROBOT_ID]);
         if (reset_robot) {
             std::cout << "Controller Reset\n";
-            state = RESET;
+            state = INIT;
             redis_client.setInt(MULTI_RESET_CONTROLLER_KEY[ROBOT_ID], 0);
             redis_client.setInt(RESET_SIM_KEY, 0);
+            continue;
         }
 
         // // read optitrack input and store in optitrack struct 
