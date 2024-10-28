@@ -45,6 +45,7 @@ void sighandler(int){runloop = false;}
 using namespace std;
 using namespace Eigen;
 using namespace Optitrack;
+using Vector6d = Eigen::Matrix<double, 6, 1>;
 
 // specify urdf and robots
 const string robot_file = "./resources/model/HRP4c.urdf";
@@ -77,7 +78,7 @@ struct ControllerData {
     std::vector<Vector3d> control_points;
 };
 
-double MOTION_SF = 1.0;
+double MOTION_SF = 0.9;
 const double MAX_RADIUS_ARM = 0.5;  // saturate arms within a sphere distance of the pelvis 
 
 enum State {
@@ -142,8 +143,8 @@ Matrix3d R_mirror;
 double Z_ROTATION = 0 * M_PI / 180;
 Matrix3d R_optitrack_to_sai;
 bool DEBUG = false;
-std::string NAME = "User";
-int ROBOT_ID = 2;
+std::string NAME = "Hannah";
+int ROBOT_ID = 0;
 
 double MAX_TORQUE_SPIKE = 50;
 double MAX_JOINT_TORQUE = 1000;
@@ -306,7 +307,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             tasks[controller_data.control_links[i]]->disableInternalOtg();
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-            tasks[controller_data.control_links[i]]->setOriControlGains(400, 40, 0);
+            tasks[controller_data.control_links[i]]->setOriControlGains(350, 25, 0);
 
         } else if (controller_data.control_links[i] == "neck_link2") {
             // 2 DOF task 
@@ -320,7 +321,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             tasks[controller_data.control_links[i]]->disableInternalOtg();
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-            tasks[controller_data.control_links[i]]->setOriControlGains(400, 40, 0);
+            tasks[controller_data.control_links[i]]->setOriControlGains(350, 25, 0);
 
         } else if (controller_data.control_links[i] == "ra_link4" || controller_data.control_links[i] == "la_link4") {
             // 1 DOF task
@@ -333,7 +334,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             tasks[controller_data.control_links[i]]->disableInternalOtg();
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-            tasks[controller_data.control_links[i]]->setOriControlGains(400, 40, 0);
+            tasks[controller_data.control_links[i]]->setOriControlGains(350, 25, 0);
 
         } else if (controller_data.control_links[i] == "LL_KOSY_L56" || controller_data.control_links[i] == "RL_KOSY_L56") {
             // 1 DOF task
@@ -346,7 +347,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             tasks[controller_data.control_links[i]]->disableInternalOtg();
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-            tasks[controller_data.control_links[i]]->setOriControlGains(400, 40, 0);
+            tasks[controller_data.control_links[i]]->setOriControlGains(350, 25, 0);
 
         } else if (controller_data.control_links[i] == "ra_end_effector" || controller_data.control_links[i] == "la_end_effector") {
 
@@ -368,7 +369,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             // tasks[controller_data.control_links[i] + "_pos"]->setSingularityHandlingBounds(5e-1, 5e0);
             // tasks[controller_data.control_links[i] + "_pos"]->handleAllSingularitiesAsType1(true);
             // tasks[controller_data.control_links[i] + "_pos"]->disableInternalOtg();
-            // tasks[controller_data.control_links[i] + "_pos"]->setPosControlGains(400, 40, 0);  
+            // tasks[controller_data.control_links[i] + "_pos"]->setPosControlGains(350, 25, 0);  
 
             // tasks[controller_data.control_links[i] + "_ori"] = std::make_shared<Sai2Primitives::MotionForceTask>(robot,
             //                                                                                             controller_data.control_links[i],
@@ -379,7 +380,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
 
             // tasks[controller_data.control_links[i] + "_ori"]->disableSingularityHandling();
             // tasks[controller_data.control_links[i] + "_ori"]->disableInternalOtg();
-            // tasks[controller_data.control_links[i] + "_ori"]->setOriControlGains(400, 40, 0);                    
+            // tasks[controller_data.control_links[i] + "_ori"]->setOriControlGains(350, 25, 0);                    
 
             // 6 DOF task 
             // compliant_frame.translation() = Vector3d(0, 0, 0.05);
@@ -394,11 +395,11 @@ void control(std::shared_ptr<Optitrack::Human> human,
             tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);  // need to test 
             // tasks[controller_data.control_links[i]]->setSingularityHandlingGains(100, 20, 20);
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-            tasks[controller_data.control_links[i]]->setPosControlGains(400, 40, 0);
-            tasks[controller_data.control_links[i]]->setOriControlGains(400, 40, 0);
+            tasks[controller_data.control_links[i]]->setPosControlGains(350, 25, 0);
+            tasks[controller_data.control_links[i]]->setOriControlGains(350, 25, 0);
 
             // add more singularity damping here
-            tasks[controller_data.control_links[i]]->setSingularityHandlingGains(0, 50, 200);
+            tasks[controller_data.control_links[i]]->setSingularityHandlingGains(0, 100, 200);
 
         } else {
             // 6 DOF task 
@@ -412,11 +413,11 @@ void control(std::shared_ptr<Optitrack::Human> human,
             tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);  // need to test 
             // tasks[controller_data.control_links[i]]->setSingularityHandlingGains(100, 20, 20);
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
-            tasks[controller_data.control_links[i]]->setPosControlGains(400, 40, 0);
-            tasks[controller_data.control_links[i]]->setOriControlGains(400, 40, 0);
+            tasks[controller_data.control_links[i]]->setPosControlGains(350, 25, 0);
+            tasks[controller_data.control_links[i]]->setOriControlGains(350, 25, 0);
 
             // add more singularity damping here
-            tasks[controller_data.control_links[i]]->setSingularityHandlingGains(0, 50, 200);
+            tasks[controller_data.control_links[i]]->setSingularityHandlingGains(0, 100, 200);
         }
     }
 
@@ -464,8 +465,10 @@ void control(std::shared_ptr<Optitrack::Human> human,
     }
 
     std::vector<Affine3d> optitrack_current_pose;
+    std::vector<Vector6d> optitrack_current_velocity;
     for (auto it = optitrack_data.body_index_mapping.begin(); it != optitrack_data.body_index_mapping.end(); ++it) {
         optitrack_current_pose.push_back(Affine3d::Identity());
+        optitrack_current_velocity.push_back(Vector6d::Zero());
     }
 
     // initialize
@@ -487,14 +490,21 @@ void control(std::shared_ptr<Optitrack::Human> human,
 
     std::map<std::string, Vector3d> optitrack_data_current_position;
     std::map<std::string, VectorXd> optitrack_data_current_orientation;  // quaternion
+    std::map<std::string, Vector3d> optitrack_data_current_linear_velocity;
+    std::map<std::string, VectorXd> optitrack_data_current_angular_velocity;
     for (auto it = optitrack_data.body_index_mapping.begin(); it != optitrack_data.body_index_mapping.end(); ++it) {
         std::string body_part_name = it->first;
         int index = it->second;
         optitrack_data_current_position[body_part_name] = Vector3d::Zero();
         optitrack_data_current_orientation[body_part_name] = VectorXd::Zero(4);
+        optitrack_data_current_linear_velocity[body_part_name] = Vector3d::Zero();
+        optitrack_data_current_angular_velocity[body_part_name] = Vector3d::Zero();
 
         redis_client.addToReceiveGroup(std::to_string(ROBOT_ID) + "::" + std::to_string(index) + "::pos", optitrack_data_current_position[body_part_name]);
         redis_client.addToReceiveGroup(std::to_string(ROBOT_ID) + "::" + std::to_string(index) + "::ori", optitrack_data_current_orientation[body_part_name]);
+
+        redis_client.addToReceiveGroup(std::to_string(ROBOT_ID) + "::" + std::to_string(index) + "::lin_vel", optitrack_data_current_linear_velocity[body_part_name]);
+        redis_client.addToReceiveGroup(std::to_string(ROBOT_ID) + "::" + std::to_string(index) + "::ang_vel", optitrack_data_current_angular_velocity[body_part_name]);
     }
 
     // redis_client.addToSendGroup(MULTI_TORO_JOINT_TORQUES_COMMANDED_KEY[ROBOT_ID], robot_control_torques);
@@ -502,7 +512,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
 	// create a loop timer
     int controller_counter = 0;
     runloop = true;
-	double control_freq = 1000;
+	double control_freq = 2000;
 	Sai2Common::LoopTimer timer(control_freq, 1e6);
 
 	while (runloop) {
@@ -718,6 +728,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             // std::vector<Affine3d> optitrack_current_pose;
             // if (controller_counter % 10 == 0) {
             Affine3d tmp_current_pose;
+            Vector6d tmp_current_vel;
             for (int i = 0; i < controller_data.control_links.size(); ++i) {
 
                 // push to lpdf
@@ -729,6 +740,10 @@ void control(std::shared_ptr<Optitrack::Human> human,
 
                 // optitrack_current_pose.push_back(optitrack_data.current_pose[controller_data.control_links[i]]);
                 // std::cout << "current position: " << tmp_current_pose.translation() << "\n";
+
+                tmp_current_vel.head(3) = optitrack_data_current_linear_velocity[controller_data.control_links[i]];
+                tmp_current_vel.tail(3) = optitrack_data_current_angular_velocity[controller_data.control_links[i]];
+                optitrack_current_velocity[i] = tmp_current_vel;
             }
             // }
 
@@ -750,11 +765,21 @@ void control(std::shared_ptr<Optitrack::Human> human,
                 // } else {
                     tasks[name]->setGoalPosition(desired_position);
                     tasks[name]->setGoalOrientation(desired_orientation);
+                    tasks[name]->setGoalLinearVelocity(optitrack_current_velocity[i].head(3));
+                    tasks[name]->setGoalAngularVelocity(optitrack_current_velocity[i].tail(3));
                 // }
                 i++;
             }
 
+            // for (auto name : controller_data.control_links) {
+            //     robot_control_torques += tasks[name]->computeTorques();
+            // }
+
+            // std::cout << robot_controller->computeControlTorques().transpose() << "\n";
+
             robot_control_torques = robot_controller->computeControlTorques() + robot->coriolisForce();
+
+            // std::cout << robot_control_torques.transpose() << "\n";
 
             // // saturate the absolute robot control torques
             // for (int i = 0; i < robot_control_torques.size(); ++i) {

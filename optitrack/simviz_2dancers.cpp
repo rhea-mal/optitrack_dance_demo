@@ -540,7 +540,7 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 	redis_client.addToSendGroup(MULTI_TORO_JOINT_VELOCITIES_KEY[1], tracy_robot_dq);
 
     // create a timer
-    double sim_freq = 1200;
+    double sim_freq = 2000;
     Sai2Common::LoopTimer timer(sim_freq);
 
     sim->setTimestep(1.0 / sim_freq);
@@ -580,7 +580,7 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 			hannah_control_torques.setZero();
 			tracy_control_torques.setZero();
 
-		} else {
+		} 
 
 		// t1 = high_resolution_clock::now();
         // VectorXd hannah_control_torques = redis_client.getEigen(HANNAH_TORO_JOINT_TORQUES_COMMANDED_KEY);
@@ -589,6 +589,9 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 		// ms_double = t2 - t1;
 		// std::cout << "get torques time: " << ms_double.count() << " ms\n";
 
+		// std::cout << flag_reset << "\n";
+		// std::cout << hannah_control_torques.transpose() << "\n";
+
         // {
             // lock_guard<mutex> lock(mutex_torques);
             sim->setJointTorques(hannah_name, hannah_control_torques);
@@ -596,9 +599,9 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
         // }
 
 		// t1 = high_resolution_clock::now();
-		if (!flag_reset) {
+		// if (!flag_reset) {
         	sim->integrate();
-		}
+		// }
 		// t2 = high_resolution_clock::now();
 		// ms_double = t2 - t1;
 		// std::cout << "integrate time: " << ms_double.count() << " ms\n";
@@ -710,7 +713,6 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 		// execute write callback
 		redis_client.sendAllFromGroup();
 
-		}
     }
     timer.stop();
     cout << "\nSimulation loop timer stats:\n";
