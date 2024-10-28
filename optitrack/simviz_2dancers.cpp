@@ -133,7 +133,7 @@ int main() {
     signal(SIGINT, &sighandler);
 
     // load graphics scene
-    graphics = std::make_shared<Sai2Graphics::Sai2Graphics>(world_file, camera_name, false);
+    graphics = std::make_shared<Sai2Graphics::Sai2Graphics>(world_file, "Humanoid Motion Mapping", false);
     //setBackgroundImage(graphics, "../../optitrack/assets/space.jpg"); // Set background to space
     graphics->getCamera(camera_name)->setClippingPlanes(0.1, 2000);  // set the near and far clipping planes 
 	// graphics->setMirrorHorizontal(camera_name, true);

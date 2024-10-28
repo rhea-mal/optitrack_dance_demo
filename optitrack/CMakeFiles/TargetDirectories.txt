@@ -1,0 +1,9 @@
+/home/kuka/OpenSai/projects/optitrack_dance_demo/optitrack/CMakeFiles/rebuild_cache.dir
+/home/kuka/OpenSai/projects/optitrack_dance_demo/optitrack/CMakeFiles/edit_cache.dir
+/home/kuka/OpenSai/projects/optitrack_dance_demo/optitrack/CMakeFiles/center-demo.dir
+/home/kuka/OpenSai/projects/optitrack_dance_demo/optitrack/optitrack/CMakeFiles/rebuild_cache.dir
+/home/kuka/OpenSai/projects/optitrack_dance_demo/optitrack/optitrack/CMakeFiles/edit_cache.dir
+/home/kuka/OpenSai/projects/optitrack_dance_demo/optitrack/optitrack/CMakeFiles/simviz_2dancers.dir
+/home/kuka/OpenSai/projects/optitrack_dance_demo/optitrack/optitrack/CMakeFiles/simviz_stage.dir
+/home/kuka/OpenSai/projects/optitrack_dance_demo/optitrack/optitrack/CMakeFiles/toro_controller.dir
+/home/kuka/OpenSai/projects/optitrack_dance_demo/optitrack/optitrack/CMakeFiles/verify_optitrack.dir

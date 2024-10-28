@@ -155,16 +155,20 @@ int main(int argc, char** argv) {
     argv = app.ensure_utf8(argv);
 
     app.add_option("--name", NAME, "Name (Tracy or Hannah or User)");
+    app.add_option("--sf", MOTION_SF, "Motion Scale Factor");
 
     CLI11_PARSE(app, argc, argv);
+
+    std::cout << "User Name: " << NAME << "\n";
+    std::cout << "Motion Scaling: " << MOTION_SF << "\n";
 
     // parse input 
     if (NAME == "Hannah") {
         ROBOT_ID = 0;
-        MOTION_SF = 0.9;
+        // MOTION_SF = 0.9;
     } else if (NAME == "Tracy") {
         ROBOT_ID = 1;
-        MOTION_SF = 0.9;
+        // MOTION_SF = 0.9;
     } else if (NAME == "User") {
         ROBOT_ID = 2;
     }
@@ -433,7 +437,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
     //             -0.1, -0.2, 0.3, -1.3, 0.2, 0.7, -0.7, 
     //             -0.1, 0.2, -0.3, -1.3, 0.7, 0.7, -0.7, 
     //             0, 0;
-	joint_task->setGains(400, 40, 0);
+	joint_task->setGains(350, 25, 0);
     joint_task->setDynamicDecouplingType(Sai2Primitives::DynamicDecouplingType::FULL_DYNAMIC_DECOUPLING);
 	joint_task->setGoalPosition(q_desired);  
     nominal_posture = q_desired;
@@ -848,8 +852,9 @@ void control(std::shared_ptr<Optitrack::Human> human,
 
         if (isnan(robot_control_torques(0))) {
             // throw runtime_error("nan torques");
-            std::cout << "nan torques: setting to previous torque\n";
-            robot_control_torques = prev_control_torques;
+            std::cout << "nan torques: setting to zero torques\n";
+            // robot_control_torques = prev_control_torques;
+            robot_control_torques.setZero();
             // throw runtime_error("nan torques");
         }
 
