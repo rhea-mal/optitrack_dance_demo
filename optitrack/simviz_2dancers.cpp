@@ -546,8 +546,8 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
     sim->setTimestep(1.0 / sim_freq);
     sim->enableGravityCompensation(false);
 
-    sim->disableJointLimits(hannah_name);
-	sim->disableJointLimits(tracy_name);
+    // sim->disableJointLimits(hannah_name);
+	// sim->disableJointLimits(tracy_name);
 
     while (fSimulationRunning) {
         timer.waitForNextLoop();

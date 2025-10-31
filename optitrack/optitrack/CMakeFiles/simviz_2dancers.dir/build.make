@@ -82,6 +82,7 @@ simviz_2dancers_EXTERNAL_OBJECTS =
 ../bin/optitrack/simviz_2dancers: /home/kuka/OpenSai/core/sai2-interfaces/build/libsai2-interfaces.a
 ../bin/optitrack/simviz_2dancers: /home/kuka/OpenSai/core/sai2-primitives/build/libsai2-primitives.a
 ../bin/optitrack/simviz_2dancers: /home/kuka/OpenSai/core/sai2-primitives/ruckig/build/libruckig.so
+../bin/optitrack/simviz_2dancers: /home/kuka/OpenSai/core/sai2-primitives/openGJK/build/libopengjk_ce.so
 ../bin/optitrack/simviz_2dancers: /home/kuka/OpenSai/core/sai2-simulation/build/libsai2-simulation.a
 ../bin/optitrack/simviz_2dancers: /home/kuka/OpenSai/core/sai2-simulation/lib/linux/x86_64/libsai2-simulation-core.a
 ../bin/optitrack/simviz_2dancers: /home/kuka/OpenSai/core/sai2-graphics/build/libsai2-graphics.a

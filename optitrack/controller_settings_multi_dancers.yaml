@@ -14,6 +14,7 @@ optitrack:
   # limited_joints: [20, 21]
   # limited_joints: [6, 9, 13, 16, 21, 36, 37, 24, 31]
   limited_joints: [6, 9, 13, 16, 21, 11, 18]
+  # z_rotation: 0  # or 180 depending 
   z_rotation: 0  # or 180 depending 
 
 controller:

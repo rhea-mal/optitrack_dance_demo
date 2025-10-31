@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.0)
 project (CENTER_DEMO)
 if (${CMAKE_SYSTEM_NAME} MATCHES Linux)
-	SET(CMAKE_CXX_FLAGS "-std=c++17 -I/usr/include -I/usr/local/include -O3")
+	SET(CMAKE_CXX_FLAGS "-std=c++17 -I/usr/include -I/usr/local/include -w -O3")
 elseif (${CMAKE_SYSTEM_NAME} MATCHES Darwin)
 	SET(CMAKE_CXX_FLAGS "-std=c++17 -I/usr/include -I/usr/local/include -I/opt/homebrew/include -w -O3")
 endif()

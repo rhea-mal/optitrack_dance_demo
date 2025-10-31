@@ -312,6 +312,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
             tasks[controller_data.control_links[i]]->setOriControlGains(350, 25, 0);
+            // tasks[controller_data.control_links[i]]->enableTrackingMode();
 
         } else if (controller_data.control_links[i] == "neck_link2") {
             // 2 DOF task 
@@ -326,6 +327,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
             tasks[controller_data.control_links[i]]->setOriControlGains(350, 25, 0);
+            // tasks[controller_data.control_links[i]]->enableTrackingMode();
 
         } else if (controller_data.control_links[i] == "ra_link4" || controller_data.control_links[i] == "la_link4") {
             // 1 DOF task
@@ -339,6 +341,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
             tasks[controller_data.control_links[i]]->setOriControlGains(350, 25, 0);
+            // tasks[controller_data.control_links[i]]->enableTrackingMode();
 
         } else if (controller_data.control_links[i] == "LL_KOSY_L56" || controller_data.control_links[i] == "RL_KOSY_L56") {
             // 1 DOF task
@@ -352,6 +355,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
             tasks[controller_data.control_links[i]]->disableSingularityHandling();
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
             tasks[controller_data.control_links[i]]->setOriControlGains(350, 25, 0);
+            // tasks[controller_data.control_links[i]]->enableTrackingMode();
 
         } else if (controller_data.control_links[i] == "ra_end_effector" || controller_data.control_links[i] == "la_end_effector") {
 
@@ -393,17 +397,20 @@ void control(std::shared_ptr<Optitrack::Human> human,
                                                                                                         compliant_frame,
                                                                                                         controller_data.control_links[i]);
             tasks[controller_data.control_links[i]]->disableInternalOtg();
-            tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(3e-3, 3e-2);
+            // tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(3e-3, 3e-2);
+            tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(6e-3, 6e-2);
+            // tasks[controller_data.control_links[i]]->setSingularityHandlingGains(10, 20, 10, 20);
             // tasks[controller_data.control_links[i]]->disableSingularityHandling();
             // tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(1e-2, 1e-1);
-            tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);  // need to test 
+            // tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);  // need to test 
             // tasks[controller_data.control_links[i]]->setSingularityHandlingGains(100, 20, 20);
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
             tasks[controller_data.control_links[i]]->setPosControlGains(350, 25, 0);
             tasks[controller_data.control_links[i]]->setOriControlGains(350, 25, 0);
+            tasks[controller_data.control_links[i]]->enableTrackingMode();
 
             // add more singularity damping here
-            tasks[controller_data.control_links[i]]->setSingularityHandlingGains(0, 100, 200);
+            // tasks[controller_data.control_links[i]]->setSingularityHandlingGains(0, 100, 200);
 
         } else {
             // 6 DOF task 
@@ -412,16 +419,19 @@ void control(std::shared_ptr<Optitrack::Human> human,
                                                                                                         compliant_frame,
                                                                                                         controller_data.control_links[i]);
             tasks[controller_data.control_links[i]]->disableInternalOtg();
-            tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(3e-3, 3e-2);
+            // tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(3e-3, 3e-2);
+            tasks[controller_data.control_links[i]]->setSingularityHandlingBounds(6e-3, 6e-2);
+            // tasks[controller_data.control_links[i]]->setSingularityHandlingGains(10, 20, 10, 20);
             // tasks[controller_data.control_links[i]]->disableSingularityHandling();
-            tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);  // need to test 
+            // tasks[controller_data.control_links[i]]->handleAllSingularitiesAsType1(true);  // need to test 
             // tasks[controller_data.control_links[i]]->setSingularityHandlingGains(100, 20, 20);
             tasks[controller_data.control_links[i]]->setDynamicDecouplingType(Sai2Primitives::FULL_DYNAMIC_DECOUPLING);
             tasks[controller_data.control_links[i]]->setPosControlGains(350, 25, 0);
             tasks[controller_data.control_links[i]]->setOriControlGains(350, 25, 0);
+            tasks[controller_data.control_links[i]]->enableTrackingMode();
 
             // add more singularity damping here
-            tasks[controller_data.control_links[i]]->setSingularityHandlingGains(0, 100, 200);
+            // tasks[controller_data.control_links[i]]->setSingularityHandlingGains(0, 100, 200);
         }
     }
 
@@ -440,6 +450,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
 	joint_task->setGains(350, 25, 0);
     joint_task->setDynamicDecouplingType(Sai2Primitives::DynamicDecouplingType::FULL_DYNAMIC_DECOUPLING);
 	joint_task->setGoalPosition(q_desired);  
+    joint_task->enableVelocitySaturation(M_PI / 3);
     nominal_posture = q_desired;
 
     // create robot controller
@@ -457,7 +468,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
 
     // low pass filter for each body part 
     int cutoff_freq = 100;
-    int sampling_rate = 1000;
+    int sampling_rate = 2000;
     std::map<std::string, Sai2Common::ButterworthFilter*> lpf_filters;
     for (auto it = optitrack_data.body_index_mapping.begin(); it != optitrack_data.body_index_mapping.end(); ++it) {
         std::string body_part_name = it->first;
@@ -516,7 +527,7 @@ void control(std::shared_ptr<Optitrack::Human> human,
 	// create a loop timer
     int controller_counter = 0;
     runloop = true;
-	double control_freq = 2000;
+	double control_freq = 1000;
 	Sai2Common::LoopTimer timer(control_freq, 1e6);
 
 	while (runloop) {

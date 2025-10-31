@@ -33,6 +33,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/home/kuka/OpenSai/core/sai2-model/rbdl/build/include"
   "/home/kuka/OpenSai/core/sai2-primitives/src"
   "/home/kuka/OpenSai/core/sai2-primitives/ruckig/include"
+  "/home/kuka/OpenSai/core/sai2-primitives/openGJK/include"
   "/home/kuka/OpenSai/core/sai2-interfaces/src"
   "/home/kuka/OpenSai/core/sai2-interfaces/src/third_party/glaze/include"
   "/home/kuka/anaconda3/include"

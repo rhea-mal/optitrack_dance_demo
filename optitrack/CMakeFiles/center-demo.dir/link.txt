@@ -1,0 +1,2 @@
+/usr/bin/ar qc libcenter-demo.a  CMakeFiles/center-demo.dir/include/Human.cpp.o
+/usr/bin/ranlib libcenter-demo.a

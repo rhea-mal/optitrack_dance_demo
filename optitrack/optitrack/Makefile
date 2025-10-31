@@ -141,6 +141,21 @@ simviz_stage/fast:
 .PHONY : simviz_stage/fast
 
 # Convenience name for target.
+optitrack/CMakeFiles/record_optitrack.dir/rule:
+	cd /home/kuka/OpenSai/projects/optitrack_dance_demo/optitrack && $(MAKE) -f CMakeFiles/Makefile2 optitrack/CMakeFiles/record_optitrack.dir/rule
+.PHONY : optitrack/CMakeFiles/record_optitrack.dir/rule
+
+# Convenience name for target.
+record_optitrack: optitrack/CMakeFiles/record_optitrack.dir/rule
+
+.PHONY : record_optitrack
+
+# fast build rule for target.
+record_optitrack/fast:
+	cd /home/kuka/OpenSai/projects/optitrack_dance_demo/optitrack && $(MAKE) -f optitrack/CMakeFiles/record_optitrack.dir/build.make optitrack/CMakeFiles/record_optitrack.dir/build
+.PHONY : record_optitrack/fast
+
+# Convenience name for target.
 optitrack/CMakeFiles/toro_controller.dir/rule:
 	cd /home/kuka/OpenSai/projects/optitrack_dance_demo/optitrack && $(MAKE) -f CMakeFiles/Makefile2 optitrack/CMakeFiles/toro_controller.dir/rule
 .PHONY : optitrack/CMakeFiles/toro_controller.dir/rule
@@ -169,6 +184,33 @@ verify_optitrack: optitrack/CMakeFiles/verify_optitrack.dir/rule
 verify_optitrack/fast:
 	cd /home/kuka/OpenSai/projects/optitrack_dance_demo/optitrack && $(MAKE) -f optitrack/CMakeFiles/verify_optitrack.dir/build.make optitrack/CMakeFiles/verify_optitrack.dir/build
 .PHONY : verify_optitrack/fast
+
+record_optitrack.o: record_optitrack.cpp.o
+
+.PHONY : record_optitrack.o
+
+# target to build an object file
+record_optitrack.cpp.o:
+	cd /home/kuka/OpenSai/projects/optitrack_dance_demo/optitrack && $(MAKE) -f optitrack/CMakeFiles/record_optitrack.dir/build.make optitrack/CMakeFiles/record_optitrack.dir/record_optitrack.cpp.o
+.PHONY : record_optitrack.cpp.o
+
+record_optitrack.i: record_optitrack.cpp.i
+
+.PHONY : record_optitrack.i
+
+# target to preprocess a source file
+record_optitrack.cpp.i:
+	cd /home/kuka/OpenSai/projects/optitrack_dance_demo/optitrack && $(MAKE) -f optitrack/CMakeFiles/record_optitrack.dir/build.make optitrack/CMakeFiles/record_optitrack.dir/record_optitrack.cpp.i
+.PHONY : record_optitrack.cpp.i
+
+record_optitrack.s: record_optitrack.cpp.s
+
+.PHONY : record_optitrack.s
+
+# target to generate assembly for a file
+record_optitrack.cpp.s:
+	cd /home/kuka/OpenSai/projects/optitrack_dance_demo/optitrack && $(MAKE) -f optitrack/CMakeFiles/record_optitrack.dir/build.make optitrack/CMakeFiles/record_optitrack.dir/record_optitrack.cpp.s
+.PHONY : record_optitrack.cpp.s
 
 simviz.o: simviz.cpp.o
 
@@ -288,8 +330,12 @@ help:
 	@echo "... edit_cache"
 	@echo "... simviz_2dancers"
 	@echo "... simviz_stage"
+	@echo "... record_optitrack"
 	@echo "... toro_controller"
 	@echo "... verify_optitrack"
+	@echo "... record_optitrack.o"
+	@echo "... record_optitrack.i"
+	@echo "... record_optitrack.s"
 	@echo "... simviz.o"
 	@echo "... simviz.i"
 	@echo "... simviz.s"
