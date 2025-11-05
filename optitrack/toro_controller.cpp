@@ -522,6 +522,36 @@ void control(std::shared_ptr<Optitrack::Human> human,
         redis_client.addToReceiveGroup(std::to_string(ROBOT_ID) + "::" + std::to_string(index) + "::ang_vel", optitrack_data_current_angular_velocity[body_part_name]);
     }
 
+    // error 
+    Vector3d right_hand_pos_error = Vector3d::Zero();
+    Vector3d left_hand_pos_error = Vector3d::Zero();
+    Vector3d right_foot_pos_error = Vector3d::Zero();
+    Vector3d left_foot_pos_error = Vector3d::Zero();
+
+    Vector3d right_hand_ori_error = Vector3d::Zero();
+    Vector3d left_hand_ori_error = Vector3d::Zero();
+    Vector3d right_foot_ori_error = Vector3d::Zero();
+    Vector3d left_foot_ori_error = Vector3d::Zero();
+
+    redis_client.addToSendGroup(HANNAH_RIGHT_HAND_POS_ERROR, right_hand_pos_error);
+    redis_client.addToSendGroup(HANNAH_LEFT_HAND_POS_ERROR, left_hand_pos_error);
+    redis_client.addToSendGroup(HANNAH_RIGHT_FOOT_POS_ERROR, right_foot_pos_error);
+    redis_client.addToSendGroup(HANNAH_LEFT_FOOT_POS_ERROR, left_foot_pos_error);
+
+    redis_client.addToSendGroup(HANNAH_RIGHT_HAND_ORI_ERROR, right_hand_ori_error);
+    redis_client.addToSendGroup(HANNAH_LEFT_HAND_ORI_ERROR, left_hand_ori_error);
+    redis_client.addToSendGroup(HANNAH_RIGHT_FOOT_ORI_ERROR, right_foot_ori_error);
+    redis_client.addToSendGroup(HANNAH_LEFT_FOOT_ORI_ERROR, left_foot_ori_error);
+
+    // bool right_hand_singularity = false;
+    // bool right_foot_singularity = false;
+    // bool left_hand_singularity = false;
+    // bool left_foot_singularity = false;
+    // redis_client.addToSendGroup(HANNAH_RIGHT_HAND_IN_SINGULARITY, right_hand_singularity);
+    // redis_client.addToSendGroup(HANNAH_RIGHT_FOOT_IN_SINGULARITY, right_foot_singularity);
+    // redis_client.addToSendGroup(HANNAH_LEFT_HAND_IN_SINGULARITY, left_hand_singularity);
+    // redis_client.addToSendGroup(HANNAH_LEFT_FOOT_IN_SINGULARITY, left_foot_singularity);
+
     // redis_client.addToSendGroup(MULTI_TORO_JOINT_TORQUES_COMMANDED_KEY[ROBOT_ID], robot_control_torques);
 
 	// create a loop timer
@@ -811,6 +841,46 @@ void control(std::shared_ptr<Optitrack::Human> human,
             // }
 
             // end 
+
+            // debug singularity graphics
+            if (NAME == "Hannah") {
+                redis_client.setBool(HANNAH_RIGHT_HAND_IN_SINGULARITY, tasks["ra_end_effector"]->getSingularityStatus());
+                redis_client.setBool(HANNAH_RIGHT_FOOT_IN_SINGULARITY, tasks["RL_foot"]->getSingularityStatus());
+                redis_client.setBool(HANNAH_LEFT_HAND_IN_SINGULARITY, tasks["la_end_effector"]->getSingularityStatus());
+                redis_client.setBool(HANNAH_LEFT_FOOT_IN_SINGULARITY, tasks["LL_foot"]->getSingularityStatus());
+
+                // right_hand_singularity = tasks["ra_end_effector"]->getSingularityStatus();
+                // right_foot_singularity = tasks["RL_foot"]->getSingularityStatus();
+                // left_hand_singularity = tasks["la_end_effector"]->getSingularityStatus();
+                // left_foot_singularity = tasks["LL_foot"]->getSingularityStatus();
+
+                // // error 
+                // redis_client.setEigen(HANNAH_RIGHT_HAND_POS_ERROR, tasks["ra_end_effector"]->getPositionError());
+                // redis_client.setEigen(HANNAH_LEFT_HAND_POS_ERROR, tasks["la_end_effector"]->getPositionError());
+                // redis_client.setEigen(HANNAH_RIGHT_FOOT_POS_ERROR, tasks["RL_foot"]->getPositionError());
+                // redis_client.setEigen(HANNAH_LEFT_FOOT_POS_ERROR, tasks["LL_foot"]->getPositionError());
+
+                // redis_client.setEigen(HANNAH_RIGHT_HAND_ORI_ERROR, tasks["ra_end_effector"]->getOrientationError());
+                // redis_client.setEigen(HANNAH_LEFT_HAND_ORI_ERROR, tasks["la_end_effector"]->getOrientationError());
+                // redis_client.setEigen(HANNAH_RIGHT_FOOT_ORI_ERROR, tasks["RL_foot"]->getOrientationError());
+                // redis_client.setEigen(HANNAH_LEFT_FOOT_ORI_ERROR, tasks["LL_foot"]->getOrientationError());
+
+                right_hand_pos_error = tasks["ra_end_effector"]->getPositionError();
+                left_hand_pos_error = tasks["la_end_effector"]->getPositionError();
+                right_foot_pos_error = tasks["RL_foot"]->getPositionError();
+                left_foot_pos_error = tasks["LL_foot"]->getPositionError();
+            
+                right_hand_ori_error = tasks["ra_end_effector"]->getOrientationError();
+                left_hand_ori_error = tasks["la_end_effector"]->getOrientationError();
+                right_foot_ori_error = tasks["RL_foot"]->getOrientationError();
+                left_foot_ori_error = tasks["LL_foot"]->getOrientationError();
+
+            } else {
+                redis_client.setBool(TRACY_RIGHT_HAND_IN_SINGULARITY, tasks["ra_end_effector"]->getSingularityStatus());
+                redis_client.setBool(TRACY_RIGHT_FOOT_IN_SINGULARITY, tasks["RL_foot"]->getSingularityStatus());
+                redis_client.setBool(TRACY_LEFT_HAND_IN_SINGULARITY, tasks["la_end_effector"]->getSingularityStatus());
+                redis_client.setBool(TRACY_LEFT_FOOT_IN_SINGULARITY, tasks["LL_foot"]->getSingularityStatus());
+            }
 
         } else if (state == TEST) {
             std::cout << "Test\n";

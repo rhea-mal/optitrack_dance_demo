@@ -93,3 +93,25 @@ const std::string HANNAH_ROBOT_EFFORT_KEY = "sai2::sim::hannah::robot::effort";
 const std::string TRACY_ROBOT_EFFORT_KEY = "sai2::sim::tracy::robot::effort";
 const std::string HANNAH_HUMAN_EFFORT_KEY = "sai2::sim::hannah::human::effort";
 const std::string TRACY_HUMAN_EFFORT_KEY = "sai2::sim::tracy::human::effort";
+
+// singularity debugging keys 
+const std::string HANNAH_RIGHT_HAND_IN_SINGULARITY = "sai2::sim::hannah::singularity::right_hand";
+const std::string HANNAH_LEFT_HAND_IN_SINGULARITY = "sai2::sim::hannah::singularity::left_hand";
+const std::string HANNAH_RIGHT_FOOT_IN_SINGULARITY = "sai2::sim::hannah::singularity::right_foot";
+const std::string HANNAH_LEFT_FOOT_IN_SINGULARITY = "sai2::sim::hannah::singularity::left_foot";
+
+const std::string TRACY_RIGHT_HAND_IN_SINGULARITY = "sai2::sim::tracy::singularity::right_hand";
+const std::string TRACY_LEFT_HAND_IN_SINGULARITY = "sai2::sim::tracy::singularity::left_hand";
+const std::string TRACY_RIGHT_FOOT_IN_SINGULARITY = "sai2::sim::tracy::singularity::right_foot";
+const std::string TRACY_LEFT_FOOT_IN_SINGULARITY = "sai2::sim::tracy::singularity::left_foot";
+
+// error 
+const std::string HANNAH_RIGHT_HAND_POS_ERROR = "sai2::sim::hannah::right_hand_pos_error";
+const std::string HANNAH_LEFT_HAND_POS_ERROR = "sai2::sim::hannah::left_hand_pos_error";
+const std::string HANNAH_RIGHT_FOOT_POS_ERROR = "sai2::sim::hannah::right_foot_pos_error";
+const std::string HANNAH_LEFT_FOOT_POS_ERROR = "sai2::sim::hannah::left_foot_pos_error";
+
+const std::string HANNAH_RIGHT_HAND_ORI_ERROR = "sai2::sim::hannah::right_hand_ori_error";
+const std::string HANNAH_LEFT_HAND_ORI_ERROR = "sai2::sim::hannah::left_hand_ori_error";
+const std::string HANNAH_RIGHT_FOOT_ORI_ERROR = "sai2::sim::hannah::right_foot_ori_error";
+const std::string HANNAH_LEFT_FOOT_ORI_ERROR = "sai2::sim::hannah::left_foot_ori_error";

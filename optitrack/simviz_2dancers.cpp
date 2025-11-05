@@ -66,6 +66,9 @@ bool DEBUG = false;
 std::vector<int> limited_joints;
 VectorXd hannah_q_desired(38);
 VectorXd tracy_q_desired(38);
+std::vector<chai3d::cShapeSphere*> hannah_spheres;
+std::vector<chai3d::cShapeSphere*> tracy_spheres;
+bool DISPLAY_SINGULARITY = true;  // set false to not display singularity spheres 
 
 const std::vector<std::string> background_paths = {
     "../../optitrack/assets/space.jpg",
@@ -97,12 +100,39 @@ chai3d::cColorf lagrangianToColor(double lagrangian, double min_lagrangian, doub
     return chai3d::cColorf(red, green, blue);
 }
 
+void addSphere(chai3d::cWorld* world, chai3d::cShapeSphere* sphere, chai3d::cVector3d position, chai3d::cColorf color) {
+	sphere->setLocalPos(position);
+	sphere->m_material->setColor(color);
+	world->addChild(sphere);
+}
+
 // simulation thread
 void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 				const std::vector<double>& lower_limit,
 				const std::vector<double>& upper_limit);
 
 void computeEnergy();
+
+std::string appendDateTimeToFilename(const std::string& filename) {
+    // Get current time
+    auto now = std::chrono::system_clock::now();
+    std::time_t time_now = std::chrono::system_clock::to_time_t(now);
+
+    // Format time (YYYYMMDD_HHMMSS)
+    std::tm local_tm;
+#ifdef _WIN32
+    localtime_s(&local_tm, &time_now); // Windows
+#else
+    localtime_r(&time_now, &local_tm); // POSIX
+#endif
+
+    std::ostringstream oss;
+    oss << std::put_time(&local_tm, "%Y%m%d_%H%M%S");
+
+    // Build new filename
+    std::string newFilename = filename + "_" + oss.str();
+    return newFilename;
+}
 
 int main() {
     std::cout << "Loading URDF world model file: " << world_file << endl;
@@ -187,7 +217,7 @@ int main() {
 	hannah->setQ(hannah_q_desired);
 	hannah->updateModel();
 
-	tracy->setQ(tracy_q_desired);	
+	tracy->setQ(tracy_q_desired * 1000);	
 	tracy->updateModel();
     
 	// hannah_joint_task->setGoalPosition(hannah_q_desired);
@@ -232,6 +262,20 @@ int main() {
 	for (auto limit : joint_limits) {
 		lower_joint_limits.push_back(limit.position_lower);
 		upper_joint_limits.push_back(limit.position_upper);
+	}
+
+	// add spheres
+	double radius = 0.05;
+	chai3d::cColorf coral_red(240.0/255, 128.0/255, 128.0/255);
+	for (int i = 0; i < 4; ++i) {
+		hannah_spheres.push_back(new chai3d::cShapeSphere(radius));
+		hannah_spheres.back()->setUseTransparency(true);
+		hannah_spheres.back()->setTransparencyLevel(0.3);
+		tracy_spheres.push_back(new chai3d::cShapeSphere(radius));
+		tracy_spheres.back()->setUseTransparency(true);
+		tracy_spheres.back()->setTransparencyLevel(0.3);
+		addSphere(graphics->_world, hannah_spheres[i], chai3d::cVector3d(100, 0, 0), coral_red);
+		addSphere(graphics->_world, tracy_spheres[i], chai3d::cVector3d(100, 0, 0), coral_red);
 	}
 
 	/*------- Set up visualization -------*/
@@ -530,15 +574,122 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 	VectorXd tracy_robot_q = redis_client.getEigen(MULTI_TORO_JOINT_ANGLES_KEY[1]);
 	VectorXd tracy_robot_dq = redis_client.getEigen(MULTI_TORO_JOINT_VELOCITIES_KEY[1]);
 
+	bool hannah_right_hand_singularity = false;
+	bool hannah_right_foot_singularity = false;
+	bool hannah_left_hand_singularity = false;
+	bool hannah_left_foot_singularity = false;
+
+	bool tracy_right_hand_singularity = false;
+	bool tracy_right_foot_singularity = false;
+	bool tracy_left_hand_singularity = false;
+	bool tracy_left_foot_singularity = false;
+
+	// position and orientation errors 
+	Vector3d hannah_right_hand_pos_error = Vector3d::Zero();
+	Vector3d hannah_left_hand_pos_error = Vector3d::Zero();
+	Vector3d hannah_right_foot_pos_error = Vector3d::Zero();
+	Vector3d hannah_left_foot_pos_error = Vector3d::Zero();
+
+	Vector3d hannah_right_hand_ori_error = Vector3d::Zero();
+	Vector3d hannah_left_hand_ori_error = Vector3d::Zero();
+	Vector3d hannah_right_foot_ori_error = Vector3d::Zero();
+	Vector3d hannah_left_foot_ori_error = Vector3d::Zero();
+
+	// set singularity info here first 
+	redis_client.setBool(HANNAH_RIGHT_HAND_IN_SINGULARITY, hannah_right_hand_singularity);
+	redis_client.setBool(HANNAH_RIGHT_FOOT_IN_SINGULARITY, hannah_right_foot_singularity);
+	redis_client.setBool(HANNAH_LEFT_HAND_IN_SINGULARITY, hannah_left_hand_singularity);
+	redis_client.setBool(HANNAH_LEFT_FOOT_IN_SINGULARITY, hannah_left_foot_singularity);
+
+	redis_client.setBool(TRACY_RIGHT_HAND_IN_SINGULARITY, tracy_right_hand_singularity);
+	redis_client.setBool(TRACY_RIGHT_FOOT_IN_SINGULARITY, tracy_right_foot_singularity);
+	redis_client.setBool(TRACY_LEFT_HAND_IN_SINGULARITY, tracy_left_hand_singularity);
+	redis_client.setBool(TRACY_LEFT_FOOT_IN_SINGULARITY, tracy_left_foot_singularity);
+
+	redis_client.setEigen(HANNAH_RIGHT_HAND_POS_ERROR, hannah_right_hand_pos_error);
+	redis_client.setEigen(HANNAH_LEFT_HAND_POS_ERROR, hannah_left_hand_pos_error);
+	redis_client.setEigen(HANNAH_RIGHT_FOOT_POS_ERROR, hannah_right_foot_pos_error);
+	redis_client.setEigen(HANNAH_LEFT_FOOT_POS_ERROR, hannah_left_foot_pos_error);
+
+	redis_client.setEigen(HANNAH_RIGHT_HAND_ORI_ERROR, hannah_right_hand_ori_error);
+	redis_client.setEigen(HANNAH_LEFT_HAND_ORI_ERROR, hannah_left_hand_ori_error);
+	redis_client.setEigen(HANNAH_RIGHT_FOOT_ORI_ERROR, hannah_right_foot_ori_error);
+	redis_client.setEigen(HANNAH_LEFT_FOOT_ORI_ERROR, hannah_left_foot_ori_error);
+
 	// create redis client get and set pipeline 
 	redis_client.addToReceiveGroup(HANNAH_TORO_JOINT_TORQUES_COMMANDED_KEY, hannah_control_torques);
 	redis_client.addToReceiveGroup(TRACY_TORO_JOINT_TORQUES_COMMANDED_KEY, tracy_control_torques);
+
+	// singularity info
+	redis_client.addToReceiveGroup(HANNAH_RIGHT_HAND_IN_SINGULARITY, hannah_right_hand_singularity);
+	redis_client.addToReceiveGroup(HANNAH_RIGHT_FOOT_IN_SINGULARITY, hannah_right_foot_singularity);
+	redis_client.addToReceiveGroup(HANNAH_LEFT_HAND_IN_SINGULARITY, hannah_left_hand_singularity);
+	redis_client.addToReceiveGroup(HANNAH_LEFT_FOOT_IN_SINGULARITY, hannah_left_foot_singularity);
+
+	redis_client.addToReceiveGroup(TRACY_RIGHT_HAND_IN_SINGULARITY, tracy_right_hand_singularity);
+	redis_client.addToReceiveGroup(TRACY_RIGHT_FOOT_IN_SINGULARITY, tracy_right_foot_singularity);
+	redis_client.addToReceiveGroup(TRACY_LEFT_HAND_IN_SINGULARITY, tracy_left_hand_singularity);
+	redis_client.addToReceiveGroup(TRACY_LEFT_FOOT_IN_SINGULARITY, tracy_left_foot_singularity);
+
+	// pos + ori error 
+	redis_client.addToReceiveGroup(HANNAH_RIGHT_HAND_POS_ERROR, hannah_right_hand_pos_error);
+	redis_client.addToReceiveGroup(HANNAH_LEFT_HAND_POS_ERROR, hannah_left_hand_pos_error);
+	redis_client.addToReceiveGroup(HANNAH_RIGHT_FOOT_POS_ERROR, hannah_right_foot_pos_error);
+	redis_client.addToReceiveGroup(HANNAH_LEFT_FOOT_POS_ERROR, hannah_left_foot_pos_error);
+
+	redis_client.addToReceiveGroup(HANNAH_RIGHT_HAND_ORI_ERROR, hannah_right_hand_ori_error);
+	redis_client.addToReceiveGroup(HANNAH_LEFT_HAND_ORI_ERROR, hannah_left_hand_ori_error);
+	redis_client.addToReceiveGroup(HANNAH_RIGHT_FOOT_ORI_ERROR, hannah_right_foot_ori_error);
+	redis_client.addToReceiveGroup(HANNAH_LEFT_FOOT_ORI_ERROR, hannah_left_foot_ori_error);
 
 	redis_client.addToSendGroup(MULTI_TORO_JOINT_ANGLES_KEY[0], hannah_robot_q);
 	redis_client.addToSendGroup(MULTI_TORO_JOINT_ANGLES_KEY[1], tracy_robot_q);
 	redis_client.addToSendGroup(MULTI_TORO_JOINT_VELOCITIES_KEY[0], hannah_robot_dq);
 	redis_client.addToSendGroup(MULTI_TORO_JOINT_VELOCITIES_KEY[1], tracy_robot_dq);
 
+	// create logger for joint positions and singularity conditions 
+	std::string fname = appendDateTimeToFilename("motion_data");
+	Sai2Common::Logger logger(fname, false);
+
+    // joint angles log 
+	VectorXd joint_angles = hannah_robot_q;
+	VectorXd joint_velocities = hannah_robot_dq;
+
+    logger.addToLog(joint_angles, "joint_angles");
+    logger.addToLog(joint_velocities, "joint_velocities");
+
+	bool right_hand_singularity = hannah_right_hand_singularity;
+	bool right_foot_singularity = hannah_right_foot_singularity;
+	bool left_hand_singularity = hannah_left_hand_singularity;
+	bool left_foot_singularity = hannah_left_foot_singularity;
+
+	logger.addToLog(right_hand_singularity, "right_hand_singularity");
+    logger.addToLog(right_foot_singularity, "right_foot_singularity");
+	logger.addToLog(left_hand_singularity, "left_hand_singularity");
+    logger.addToLog(left_foot_singularity, "left_foot_singularity");
+
+	Vector3d right_hand_pos_error = Vector3d::Zero();
+	Vector3d left_hand_pos_error = Vector3d::Zero();
+	Vector3d right_foot_pos_error = Vector3d::Zero();
+	Vector3d left_foot_pos_error = Vector3d::Zero();
+
+	Vector3d right_hand_ori_error = Vector3d::Zero();
+	Vector3d left_hand_ori_error = Vector3d::Zero();
+	Vector3d right_foot_ori_error = Vector3d::Zero();
+	Vector3d left_foot_ori_error = Vector3d::Zero();
+
+	logger.addToLog(right_hand_pos_error, "right_hand_pos_error");
+	logger.addToLog(left_hand_pos_error, "left_hand_pos_error");
+	logger.addToLog(right_foot_pos_error, "right_foot_pos_error");
+	logger.addToLog(left_foot_pos_error, "left_foot_pos_error");
+
+	logger.addToLog(right_hand_ori_error, "right_hand_ori_error");
+	logger.addToLog(left_hand_ori_error, "left_hand_ori_error");
+	logger.addToLog(right_foot_ori_error, "right_foot_ori_error");
+	logger.addToLog(left_foot_ori_error, "left_foot_ori_error");
+
+	logger.start();
+	
     // create a timer
     double sim_freq = 2000;
     Sai2Common::LoopTimer timer(sim_freq);
@@ -659,6 +810,90 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
 			}
 		}
 
+		/*
+			Display spheres for singularity data
+			bool hannah_right_hand_singularity = false;
+			bool hannah_right_foot_singularity = false;
+			bool hannah_left_hand_singularity = false;
+			bool hannah_left_foot_singularity = false;
+
+			bool tracy_right_hand_singularity = false;
+			bool tracy_right_foot_singularity = false;
+			bool tracy_left_hand_singularity = false;
+			bool tracy_left_foot_singularity = false;
+		*/
+	    if (DISPLAY_SINGULARITY) {
+			hannah->setQ(hannah_robot_q);
+			hannah->updateKinematics();
+			if (hannah_right_hand_singularity) {
+				Vector3d sphere_pos = hannah->positionInWorld("ra_end_effector");
+				hannah_spheres[0]->setLocalPos(chai3d::cVector3d(sphere_pos));
+			} else {
+				hannah_spheres[0]->setLocalPos(chai3d::cVector3d(100, 0, 0));
+			}
+
+			if (hannah_right_foot_singularity) {
+				Vector3d sphere_pos = hannah->positionInWorld("RL_foot");
+				hannah_spheres[1]->setLocalPos(chai3d::cVector3d(sphere_pos));
+			} else {
+				hannah_spheres[1]->setLocalPos(chai3d::cVector3d(100, 0, 0));
+			}
+
+			if (hannah_left_hand_singularity) {
+				Vector3d sphere_pos = hannah->positionInWorld("la_end_effector");
+				hannah_spheres[2]->setLocalPos(chai3d::cVector3d(sphere_pos));
+			} else {
+				hannah_spheres[2]->setLocalPos(chai3d::cVector3d(100, 0, 0));
+			}
+
+			if (hannah_left_foot_singularity) {
+				Vector3d sphere_pos = hannah->positionInWorld("LL_foot");
+				hannah_spheres[3]->setLocalPos(chai3d::cVector3d(sphere_pos));
+			} else {
+				hannah_spheres[3]->setLocalPos(chai3d::cVector3d(100, 0, 0));
+			}
+
+			tracy->setQ(tracy_robot_q);
+			tracy->updateKinematics();
+			if (tracy_right_hand_singularity) {
+				Vector3d sphere_pos = tracy->positionInWorld("ra_end_effector");
+				tracy_spheres[0]->setLocalPos(chai3d::cVector3d(sphere_pos));
+			} else {
+				tracy_spheres[0]->setLocalPos(chai3d::cVector3d(100, 0, 0));
+			}
+
+			if (tracy_right_foot_singularity) {
+				Vector3d sphere_pos = tracy->positionInWorld("RL_foot");
+				tracy_spheres[1]->setLocalPos(chai3d::cVector3d(sphere_pos));
+			} else {
+				tracy_spheres[1]->setLocalPos(chai3d::cVector3d(100, 0, 0));
+			}
+
+			if (tracy_left_hand_singularity) {
+				Vector3d sphere_pos = tracy->positionInWorld("la_end_effector");
+				tracy_spheres[2]->setLocalPos(chai3d::cVector3d(sphere_pos));
+			} else {
+				tracy_spheres[2]->setLocalPos(chai3d::cVector3d(100, 0, 0));
+			}
+
+			if (tracy_left_foot_singularity) {
+				Vector3d sphere_pos = tracy->positionInWorld("LL_foot");
+				tracy_spheres[3]->setLocalPos(chai3d::cVector3d(sphere_pos));
+			} else {
+				tracy_spheres[3]->setLocalPos(chai3d::cVector3d(100, 0, 0));
+			}
+		}
+
+		right_hand_pos_error = hannah_right_hand_pos_error;
+		left_hand_pos_error = hannah_left_hand_pos_error;
+		right_foot_pos_error = hannah_right_foot_pos_error;
+		left_foot_pos_error = hannah_left_foot_pos_error;
+	
+		right_hand_ori_error = hannah_right_hand_ori_error;
+		left_hand_ori_error = hannah_left_hand_ori_error;
+		right_foot_ori_error = hannah_right_foot_ori_error;
+		left_foot_ori_error = hannah_left_foot_ori_error;
+
 		// hannah->setQ(hannah_robot_q);
 		// hannah->setDq(hannah_robot_dq);
 		// hannah->updateModel();
@@ -709,6 +944,14 @@ void simulation(std::shared_ptr<Sai2Simulation::Sai2Simulation> sim,
         //     lock_guard<mutex> lock(mutex_update);
         // }
 
+		// log
+		right_hand_singularity = hannah_right_hand_singularity;
+		right_foot_singularity = hannah_right_foot_singularity;
+		left_hand_singularity = hannah_left_hand_singularity;
+		left_foot_singularity = hannah_left_foot_singularity;
+
+		joint_angles = hannah_robot_q;
+		joint_velocities = hannah_robot_dq;
 
 		// execute write callback
 		redis_client.sendAllFromGroup();
